@@ -17,7 +17,7 @@ SDL_Rect* copyRect(SDL_Rect* src){
 	return res;
 }
 
-SDL_Rect* CreateInvlidRect(){
+SDL_Rect* createInvlidRect(){
 	SDL_Rect* res = malloc(sizeof(SDL_Rect));
 	if(res==NULL){
 		return NULL;
@@ -29,12 +29,12 @@ SDL_Rect* CreateInvlidRect(){
 	return res;
 }
 
-SDL_bool IsCharLoweCase(char c)
+SDL_bool isCharLoweCase(char c)
 {
 	return (c >= 'a' && c <= 'z');
 }
 
-DifficultyLevel GetDifficulty(int difficultyButtonIndex) {
+DifficultyLevel getDifficulty(int difficultyButtonIndex) {
 	switch(difficultyButtonIndex) {
 		case DIFFICULTY_SELECTION_WINDOW_NOOB_BUTTON_INDEX:
 			return NOOB;
@@ -55,7 +55,7 @@ DifficultyLevel GetDifficulty(int difficultyButtonIndex) {
 	return DIFFICULTY_UNDEFINED;
 }
 
-GameMode GetMode(int modeButtonIndex) {
+GameMode getMode(int modeButtonIndex) {
 	switch(modeButtonIndex) {
 		case MODE_SELECTION_WINDOW_SINGLE_PALYER_BUTTON_INDEX:
 			return SINGLE_PLAYER;
@@ -68,7 +68,7 @@ GameMode GetMode(int modeButtonIndex) {
 	return MODE_UNDEFINED;
 }
 
-UserColor GetColor(int colorButtonIndex) {
+UserColor getColor(int colorButtonIndex) {
 	switch(colorButtonIndex) {
 		case COLOR_SELECTION_WINDOW_WHITE_BUTTON_INDEX:
 			return WHITE;

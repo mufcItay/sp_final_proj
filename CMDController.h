@@ -3,9 +3,9 @@
 
 #include "UIController.h"
 
-void SetCMDController(UIController* controller);
+void setCMDController(UIController* controller);
 void* CMDInit();
-int CMDHandleInput(void* src);
+int CMDHandleInput(void* src, GameSettings* settings, GameState* state);
 void CMDDraw(void* src);
 void CMDDestroyController(void* src);
 

@@ -32,14 +32,14 @@ Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* rendere
 void destroyGameBoardWindow(Window* src);
 void drawGameBoardWindow(Window* src);
 Command* handleEventGameBoardWindow(Window* src, SDL_Event* event);
-void FillSoldierButtonsMatrix(Window* holdingWindow, Window*** soldierButtonsMatrix, SDL_Renderer* renderer, char** initialBoard);
+void fillSoldierButtonsMatrix(Window* holdingWindow, Window*** soldierButtonsMatrix, SDL_Renderer* renderer, char** initialBoard);
 Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer);
-Command* RestartButtonHandler(Window* src, SDL_Event* event);
-Command* SaveButtonHandler(Window* src, SDL_Event* event);
-Command* UndoButtonHandler(Window* src, SDL_Event* event);
-Command* ExitBoardButtonHandler(Window* src, SDL_Event* event);
-Command* MainMenuButtonHandler(Window* src, SDL_Event* event);
-Command* LoadGameBoardButtonHandler(Window* src, SDL_Event* event);
+Command* restartButtonHandler(Window* src, SDL_Event* event);
+Command* saveButtonHandler(Window* src, SDL_Event* event);
+Command* undoButtonHandler(Window* src, SDL_Event* event);
+Command* exitBoardButtonHandler(Window* src, SDL_Event* event);
+Command* mainMenuButtonHandler(Window* src, SDL_Event* event);
+Command* loadGameBoardButtonHandler(Window* src, SDL_Event* event);
 void setGameBoardInnerReDraw(Window* src, SDL_bool reDraw);
-Command* MoveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier);
+Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier);
 #endif

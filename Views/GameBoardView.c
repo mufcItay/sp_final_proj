@@ -6,9 +6,10 @@
 #include "MainWindow.h"
 #include "CommonStructures.h"
 #include "Commands.h"
+#include "FileSystemUtil.h"
 
 
-void FillSoldierButtonsMatrix(Window* holdingWindow, Window*** soldierButtonsMatrix, SDL_Renderer* renderer, char** initialBoard) {
+void fillSoldierButtonsMatrix(Window* holdingWindow, Window*** soldierButtonsMatrix, SDL_Renderer* renderer, char** initialBoard) {
 	for (int i = 0; i < BOARD_WINDOW_ROWS_AMOUNT; ++i) {
 		for (int j = 0; j < BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
 			soldierButtonsMatrix[i][j] = (Window*) createSoldierButton(holdingWindow,
@@ -48,7 +49,7 @@ Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* rendere
 		}
 	}
 
-	FillSoldierButtonsMatrix(holdingWindow, soldierButtonsMatrix, renderer, initialBoard);
+	fillSoldierButtonsMatrix(holdingWindow, soldierButtonsMatrix, renderer, initialBoard);
 
 	return soldierButtonsMatrix;
 }
@@ -64,12 +65,12 @@ Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 	SDL_Rect undoR = { .x = SOLDIER_BUTTON_IMAGE_WIDTH * BOARD_WINDOW_COLUMNS_AMOUNT + BOARD_WINDOW_BUTTON_SPACING , .y = 4*BOARD_WINDOW_BUTTON_SPACING+ 3*BOARD_WINDOW_BUTTON_HEIGHT, .h = BOARD_WINDOW_BUTTON_HEIGHT, .w = BOARD_WINDOW_BUTTON_WIDTH};
 	SDL_Rect mainmenuR = { .x = SOLDIER_BUTTON_IMAGE_WIDTH * BOARD_WINDOW_COLUMNS_AMOUNT + BOARD_WINDOW_BUTTON_SPACING , .y = 5*BOARD_WINDOW_BUTTON_SPACING+ 4*BOARD_WINDOW_BUTTON_HEIGHT, .h = BOARD_WINDOW_BUTTON_HEIGHT, .w = BOARD_WINDOW_BUTTON_WIDTH};
 	SDL_Rect exitR = { .x = SOLDIER_BUTTON_IMAGE_WIDTH * BOARD_WINDOW_COLUMNS_AMOUNT + BOARD_WINDOW_BUTTON_SPACING , .y = 6*BOARD_WINDOW_BUTTON_SPACING+ 5*BOARD_WINDOW_BUTTON_HEIGHT, .h = BOARD_WINDOW_BUTTON_HEIGHT, .w = BOARD_WINDOW_BUTTON_WIDTH};
-	menuButtons[BOARD_WINDOW_RESTART_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &restartR,BOARD_WINDOW_RESTART_BUTTON_PIC_PATH ,RestartButtonHandler);
-	menuButtons[BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &loadR, BOARD_WINDOW_LOAD_GAME_BUTTON_PIC_PATH, LoadGameBoardButtonHandler);
-	menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &saveR, BOARD_WINDOW_SAVE_GAME_BUTTON_PIC_PATH,SaveButtonHandler);
-	menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &undoR, BOARD_WINDOW_UNDO_BUTTON_PIC_PATH,UndoButtonHandler);
-	menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &mainmenuR, BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH, MainMenuButtonHandler);
-	menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &exitR, BOARD_WINDOW_EXIT_BUTTON_PIC_PATH,ExitBoardButtonHandler);
+	menuButtons[BOARD_WINDOW_RESTART_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &restartR,BOARD_WINDOW_RESTART_BUTTON_PIC_PATH ,restartButtonHandler);
+	menuButtons[BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &loadR, BOARD_WINDOW_LOAD_GAME_BUTTON_PIC_PATH, loadGameBoardButtonHandler);
+	menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &saveR, BOARD_WINDOW_SAVE_GAME_BUTTON_PIC_PATH,saveButtonHandler);
+	menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &undoR, BOARD_WINDOW_UNDO_BUTTON_PIC_PATH,undoButtonHandler);
+	menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &mainmenuR, BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH, mainMenuButtonHandler);
+	menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &exitR, BOARD_WINDOW_EXIT_BUTTON_PIC_PATH,exitBoardButtonHandler);
 
 	setEnabledSimpleButton(menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX], SDL_FALSE);
 
@@ -199,38 +200,39 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 			}
 		}
 	}
-	cmd = CreateNOPCommand();
+
+	cmd = createNOPCommand();
 	return cmd;
 }
 
-Command* SaveButtonHandler(Window* src, SDL_Event* event) {
+Command* saveButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
 			return NULL;
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
-		cmd = CreateSaveCommand(SAVED_GAMES_DIRECTORY_PATH);
+		cmd = createSaveCommand(SAVED_GAMES_DIRECTORY_PATH);
 	}
 	return cmd;
 }
-Command* RestartButtonHandler(Window* src, SDL_Event* event) {
+Command* restartButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
-		cmd = CreateResetCommand();
+		cmd = createResetCommand();
 	}
 
 	return cmd;
 }
-Command* UndoButtonHandler(Window* src, SDL_Event* event) {
+Command* undoButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 
 	SimpleButton* data = (SimpleButton*) src->data;
 	if(data->isEnabled == SDL_FALSE)
@@ -238,40 +240,40 @@ Command* UndoButtonHandler(Window* src, SDL_Event* event) {
 		return cmd;
 	}
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
-		cmd = CreateUndoCommand();
+		cmd = createUndoCommand();
 	}
 
 	return cmd;
 }
 
-Command* ExitBoardButtonHandler(Window* src, SDL_Event* event){
+Command* exitBoardButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		src->holdingWindow->isClosed = SDL_TRUE;
-		cmd = CreateQuitCommand();
+		cmd = createQuitCommand();
 	}
 	return cmd;
 }
 
-Command* MainMenuButtonHandler(Window* src, SDL_Event* event){
+Command* mainMenuButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		setCurrentView(src->holdingWindow->holdingWindow, MAIN_VIEW);
 	}
 	return cmd;
 }
 
-Command* LoadGameBoardButtonHandler(Window* src, SDL_Event* event){
+Command* loadGameBoardButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		setCurrentView(src->holdingWindow->holdingWindow, LOAD_GAME_VIEW);
@@ -295,7 +297,7 @@ void setGameBoardInnerReDraw(Window* src, SDL_bool reDraw){
 	}
 }
 
-Command* MoveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
+Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	if(gameBoard->selectedSoldier == NULL){
 		return NULL;
 	}
@@ -321,6 +323,6 @@ Command* MoveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 
 	SDL_Point origin = {.x = soldierToMove->rowIndex, .y = soldierToMove->columnIndex};
 	SDL_Point destination = {.x = destinationSoldier->rowIndex, .y = destinationSoldier->columnIndex};
-	cmd = CreateMoveCommand(origin,destination);
+	cmd = createMoveCommand(origin,destination);
 	return cmd;
 }

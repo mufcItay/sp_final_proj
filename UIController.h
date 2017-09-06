@@ -6,10 +6,10 @@
 
 typedef struct uicontroller_t UIController;
 struct uicontroller_t {
-	void* (*Init)(GameSettings* ,GameState* );
-	void (*Draw) (void* );
-	int (*HandleInput)(void* );
-	void (*DestroyController)(void* );
+	void* (*init)(GameSettings* ,GameState* );
+	void (*draw) (void* );
+	int (*handleInput)(void* ,GameSettings* ,GameState*);
+	void (*destroyController)(void* );
 };
 
 #endif

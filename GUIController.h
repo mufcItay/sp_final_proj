@@ -6,9 +6,9 @@
 #include "CommonGUIUtil.h"
 #include "UIController.h"
 
-void SetGUIController(UIController* controller);
+void setGUIController(UIController* controller);
 void* GUIInit();
-int GUIHandleInput(void* src);
+int GUIHandleInput(void* src, GameSettings* settings, GameState* state);
 void GUIDraw(void* src);
 void GUIDestroyController(void* src);
 

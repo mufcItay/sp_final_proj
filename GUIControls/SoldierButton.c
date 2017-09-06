@@ -78,14 +78,14 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	SoldierButton* castData = (SoldierButton*) src->data;
 	GameBoardData* gameBoard = (GameBoardData*)(src->holdingWindow->data);
 
 	if(event->type == SDL_MOUSEBUTTONUP  && event->button.button == SDL_BUTTON_RIGHT){
 		// show possible moves
 		SDL_Point origin = {.x =castData->rowIndex , .y = castData->columnIndex};
-		cmd = CreateGetMovesCommand(origin);
+		cmd = createGetMovesCommand(origin);
 		return cmd;
 	}
 
@@ -102,7 +102,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 			return NULL;
 		}
 		// perform movement
-		cmd = MoveSelectedSoldierTo(gameBoard,src);
+		cmd = moveSelectedSoldierTo(gameBoard,src);
 		gameBoard->selectedSoldier = NULL;
 		castData->isSelected = SDL_FALSE;
 		return cmd;
@@ -140,7 +140,7 @@ char* getImagePath(SoldierButton* src)
 	}
 	else
 	{
-		soldierColorChar = IsCharLoweCase(src->soldierType) ? SOLDIER_COLOR_WHITE:SOLDIER_COLOR_BLACK;
+		soldierColorChar = isCharLoweCase(src->soldierType) ? SOLDIER_COLOR_WHITE:SOLDIER_COLOR_BLACK;
 		soldierTypeChar = src->soldierType;
 	}
 	char* imageName = malloc(sizeof(char) +  sizeof(char) * SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH);

@@ -22,9 +22,9 @@ Window** createMainWindowWidgets(Window* window,SDL_Renderer* renderer) {
 	SDL_Rect startR = { .x = MAIN_BUTTON_X_POS , .y = MAIN_BUTTON_SPACING, .h = MAIN_BUTTON_HEIGHT, .w = MAIN_BUTTON_WIDTH};
 	SDL_Rect boardR = { .x = MAIN_BUTTON_X_POS , .y = 2 * MAIN_BUTTON_SPACING + MAIN_BUTTON_HEIGHT, .h = MAIN_BUTTON_HEIGHT, .w = MAIN_BUTTON_WIDTH };
 	SDL_Rect exitR = { .x = MAIN_BUTTON_X_POS , .y = 3*MAIN_BUTTON_SPACING + 2*MAIN_BUTTON_HEIGHT, .h = MAIN_BUTTON_HEIGHT, .w = MAIN_BUTTON_WIDTH};
-	widgets[NEW_GAME_BUTTON_INDEX] = createSimpleButton(window,renderer, &startR, NEW_GAME_PIC_PATH,NewGameButtonHandler);
-	widgets[LOAD_GAME_BUTTON_INDEX] = createSimpleButton(window,renderer, &boardR, LOAD_GAME_PIC_PATH, LoadGameButtonHandler);
-	widgets[EXIT_BUTTON_INDEX] = createSimpleButton(window,renderer, &exitR, EXIT_PIC_PATH,ExitButtonHandler);
+	widgets[NEW_GAME_BUTTON_INDEX] = createSimpleButton(window,renderer, &startR, NEW_GAME_PIC_PATH,newGameButtonHandler);
+	widgets[LOAD_GAME_BUTTON_INDEX] = createSimpleButton(window,renderer, &boardR, LOAD_GAME_PIC_PATH, loadGameButtonHandler);
+	widgets[EXIT_BUTTON_INDEX] = createSimpleButton(window,renderer, &exitR, EXIT_PIC_PATH,exitButtonHandler);
 	if (widgets[NEW_GAME_BUTTON_INDEX] == NULL || widgets[LOAD_GAME_BUTTON_INDEX] == NULL || widgets[EXIT_BUTTON_INDEX] == NULL ) {
 		destroyWindow(widgets[NEW_GAME_BUTTON_INDEX]); //NULL SAFE
 		destroyWindow(widgets[LOAD_GAME_BUTTON_INDEX]); //NULL SAFE
@@ -43,7 +43,7 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	MainWindow* data = malloc(sizeof(MainWindow));
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
-	res->location = CreateInvlidRect();
+	res->location = createInvlidRect();
 	SDL_Window* window = SDL_CreateWindow(MAIN_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
@@ -163,7 +163,7 @@ Command* handleEventMainWindow(Window* src, SDL_Event* event){
 	if(src == NULL || event==NULL){
 		return NULL;
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	MainWindow* data = (MainWindow*)src->data;
 
 	switch(data->view)
@@ -202,36 +202,36 @@ Command* handleEventMainWindow(Window* src, SDL_Event* event){
 	return cmd;
 }
 
-Command* NewGameButtonHandler(Window* src, SDL_Event* event)
+Command* newGameButtonHandler(Window* src, SDL_Event* event)
 {
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		setCurrentView(src->holdingWindow, MODE_SELECTION_VIEW);
 	}
 	return cmd;
 }
 
-Command* LoadGameButtonHandler(Window* src, SDL_Event* event) {
+Command* loadGameButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		setCurrentView(src->holdingWindow, LOAD_GAME_VIEW);
 	}
 	return cmd;
 }
-Command* ExitButtonHandler(Window* src, SDL_Event* event) {
+Command* exitButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		src->holdingWindow->isClosed = SDL_TRUE;
-		cmd = CreateQuitCommand();
+		cmd = createQuitCommand();
 	}
 	return cmd;
 }

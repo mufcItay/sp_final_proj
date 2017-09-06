@@ -18,16 +18,16 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	SetGUIController(&controller);
-	void* ui = controller.Init(gameSettings, gameState);
+	setGUIController(&controller);
+	void* ui = controller.init(gameSettings, gameState);
 	while (1) {
-		int ret = controller.HandleInput(ui);
+		int ret = controller.handleInput(ui,gameSettings, gameState);
 		if (ret == ERROR || ret == CONTROLLER_END) {
 			break;
 		}
-		controller.Draw(ui);
+		controller.draw(ui);
 	}
-	controller.DestroyController(ui);
+	controller.destroyController(ui);
 	DestroyGameSettings(gameSettings);
 	DestroyGameState(gameState);
 	return 0;

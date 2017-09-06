@@ -200,12 +200,12 @@
 #define DISABLED_BUTTON_CHAR 'd'
 
 SDL_Rect* copyRect(SDL_Rect* src);
-SDL_Rect* CreateInvlidRect();
-SDL_bool IsCharLoweCase(char c);
+SDL_Rect* createInvlidRect();
+SDL_bool isCharLoweCase(char c);
 
-DifficultyLevel GetDifficulty(int difficultyButtonIndex);
-GameMode GetMode(int modeButtonIndex);
-UserColor GetColor(int colorButtonIndex);
+DifficultyLevel getDifficulty(int difficultyButtonIndex);
+GameMode getMode(int modeButtonIndex);
+UserColor getColor(int colorButtonIndex);
 
 
 #endif

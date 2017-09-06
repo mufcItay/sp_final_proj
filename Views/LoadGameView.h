@@ -29,10 +29,10 @@ Window** createLoadGameMenuButtons(Window* holdingWindow, SDL_Renderer* renderer
 void destroyLoadGameView(Window* src);
 void drawLoadGameView(Window* src);
 Command* handleEventLoadGameView(Window* src, SDL_Event* event);
-Command* BackLoadGameButtonHandler(Window* src, SDL_Event* event);
-Command* LoadSlotButtonHandler(Window* src, SDL_Event* event);
-Command* SlotButtonHandler(Window* src, SDL_Event* event);
-SDL_bool GetUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view);
+Command* backLoadGameButtonHandler(Window* src, SDL_Event* event);
+Command* loadSlotButtonHandler(Window* src, SDL_Event* event);
+Command* slotButtonHandler(Window* src, SDL_Event* event);
+SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view);
 void setLoadGameInnerReDraw(Window* src, SDL_bool reDraw);
-char* GetSlotImagePath(int slot);
+char* getSlotImagePath(int slot);
 #endif

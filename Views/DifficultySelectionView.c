@@ -19,9 +19,9 @@ Window** createDifficultyButtons(Window* holdingWindow, SDL_Renderer* renderer)
 	}
 	for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
 		SDL_Rect difficultyButtonR = {.x = 0, .y = DIFFICULTY_SELECTION_WINDOW_BUTTON_HEIGHT * i + DIFFICULTY_SELECTION_WINDOW_BUTTON_SPACING *i, .h = DIFFICULTY_SELECTION_WINDOW_BUTTON_HEIGHT, .w = DIFFICULTY_SELECTION_WINDOW_BUTTON_WIDTH};
-		char* imagePath = GetDifficultyImagePath(i);
+		char* imagePath = getDifficultyImagePath(i);
 		if(imagePath != NULL){
-			difficultyButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &difficultyButtonR,imagePath ,DifficultyButtonHandler);
+			difficultyButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &difficultyButtonR,imagePath ,difficultyButtonHandler);
 		}
 		if (difficultyButtons[i] == NULL) {
 			for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
@@ -41,12 +41,10 @@ Window** createDifficultyNavigationButtons(Window* holdingWindow, SDL_Renderer* 
 	}
 	SDL_Rect nextR = { .x = 0, .y = DIFFICULTY_SELECTION_NAVIGTION_PANE_Y_POS, .h = DIFFICULTY_SELECTION_WINDOW_BUTTON_HEIGHT, .w = DIFFICULTY_SELECTION_WINDOW_BUTTON_WIDTH};
 	SDL_Rect backR = { .x = DIFFICULTY_SELECTION_WINDOW_BUTTON_WIDTH + BOARD_WINDOW_BUTTON_SPACING , .y = DIFFICULTY_SELECTION_NAVIGTION_PANE_Y_POS, .h = DIFFICULTY_SELECTION_WINDOW_BUTTON_HEIGHT, .w = DIFFICULTY_SELECTION_WINDOW_BUTTON_WIDTH};
-	navigationButtons[DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &backR,DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH ,BackDifficultiesButtonHandler);
+	navigationButtons[DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &backR,DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH ,backDifficultiesButtonHandler);
 	initWindow(navigationButtons[DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_INDEX]);
-	navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &nextR, DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH, NextDifficultiesButtonHandler);
+	navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &nextR, DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH, nextDifficultiesButtonHandler);
 	initWindow(navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX]);
-
-	setEnabledSimpleButton(navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_FALSE);
 
 	if (navigationButtons[DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL || navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX] == NULL ) {
 		destroyWindow(navigationButtons[DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
@@ -83,7 +81,7 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	data->difficultyButtons = difficultyWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
-	data->selectedDifficulty = DIFFICULTY_UNSELECTED;
+	data->selectedDifficulty = gameSettings->difficulty;
 	res->data = (void*) data;
 	res->destroyWindow = destroyDifficultySelectionView;
 	res->drawWindow = drawDifficultySelectionView;
@@ -141,19 +139,19 @@ Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event){
 	if(src == NULL || event==NULL){
 		return NULL;
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	DifficultySelectionView* data = (DifficultySelectionView*) src->data;
 	for (int i = 0; i< DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->difficultyButtons[i], event) == SDL_TRUE){
 			data->difficultyButtons[i]->handleEventWindow(data->difficultyButtons[i],event);
-			if(UpdateSelectedDifficulty(data->selectedDifficulty,i,data) == SDL_FALSE) {
+			if(updateSelectedDifficulty(data->selectedDifficulty,i,data) == SDL_FALSE) {
 				// exit the program properly TODO: CHECK!!!
 				src->holdingWindow->holdingWindow->isClosed = SDL_TRUE;
 				return NULL;
 			}
 			else {
-				DifficultyLevel selectedDifficulty = GetColor(data->selectedDifficulty);
-				cmd = CreateDifficultyCommand(selectedDifficulty);
+				DifficultyLevel selectedDifficulty = getColor(data->selectedDifficulty);
+				cmd = createDifficultyCommand(selectedDifficulty);
 				return cmd;
 			}
 		}
@@ -165,11 +163,11 @@ Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event){
 	}
 	return cmd;
 }
-Command* NextDifficultiesButtonHandler(Window* src, SDL_Event* event){
+Command* nextDifficultiesButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	SimpleButton* data = (SimpleButton*) src->data;
 	if(data->isEnabled == SDL_FALSE)
 	{
@@ -181,11 +179,11 @@ Command* NextDifficultiesButtonHandler(Window* src, SDL_Event* event){
 	return cmd;
 }
 
-Command* BackDifficultiesButtonHandler(Window* src, SDL_Event* event){
+Command* backDifficultiesButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		setCurrentView(src->holdingWindow->holdingWindow, MODE_SELECTION_VIEW);
@@ -193,11 +191,11 @@ Command* BackDifficultiesButtonHandler(Window* src, SDL_Event* event){
 	return cmd;
 }
 
-Command* DifficultyButtonHandler(Window* src, SDL_Event* event){
+Command* difficultyButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 	}
@@ -205,7 +203,7 @@ Command* DifficultyButtonHandler(Window* src, SDL_Event* event){
 }
 
 
-SDL_bool UpdateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelectedDifficulty, DifficultySelectionView* view) {
+SDL_bool updateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelectedDifficulty, DifficultySelectionView* view) {
 	Window* selectedDiff = (Window*) view->difficultyButtons[currentlySelectedDifficulty];
 	char* imageName = malloc(DIFFICULTY_SELECTION_WINDOW_DIFF__PIC_PATH_LENGTH);
 	if(imageName == NULL)
@@ -240,7 +238,7 @@ SDL_bool UpdateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelec
 	return SDL_TRUE;
 }
 
-char* GetDifficultyImagePath(int difficulty) {
+char* getDifficultyImagePath(int difficulty) {
 	char* imageName = malloc(DIFFICULTY_SELECTION_WINDOW_DIFF__PIC_PATH_LENGTH);
 	if(imageName == NULL)
 	{

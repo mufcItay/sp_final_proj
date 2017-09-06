@@ -31,9 +31,9 @@ Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 	//for (int i = 0; i < LOAD_GAME_WINDOW_SLOTS_AMOUNT; ++i) {
 	for (int i = 0; i < availableSlots; ++i) {
 		SDL_Rect slotButtonR = {.x = 0, .y = LOAD_GAME_WINDOW_BUTTON_HEIGHT * i + LOAD_GAME_WINDOW_BUTTON_SPACING *i, .h = LOAD_GAME_WINDOW_BUTTON_HEIGHT, .w = LOAD_GAME_WINDOW_BUTTON_WIDTH};
-		char* imagePath = GetSlotImagePath(i);
+		char* imagePath = getSlotImagePath(i);
 		if(imagePath != NULL){
-			slotButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &slotButtonR,imagePath ,SlotButtonHandler);
+			slotButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &slotButtonR,imagePath ,slotButtonHandler);
 		}
 		if (slotButtons[i] == NULL) {
 			for (int i = 0; i < view->slotsAmount; ++i) {
@@ -53,9 +53,9 @@ Window** createLoadGameMenuButtons(Window* holdingWindow, SDL_Renderer* renderer
 	}
 	SDL_Rect loadR = { .x = 0, .y = LOAD_GAME_NAVIGTION_PANE_Y_POS, .h = LOAD_GAME_WINDOW_BUTTON_HEIGHT, .w = LOAD_GAME_WINDOW_BUTTON_WIDTH};
 	SDL_Rect backR = { .x = LOAD_GAME_WINDOW_BUTTON_WIDTH + BOARD_WINDOW_BUTTON_SPACING , .y = LOAD_GAME_NAVIGTION_PANE_Y_POS, .h = LOAD_GAME_WINDOW_BUTTON_HEIGHT, .w = LOAD_GAME_WINDOW_BUTTON_WIDTH};
-	menuButtons[LOAD_GAME_WINDOW_BACK_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &backR,LOAD_GAME_WINDOW_BACK_BUTTON_PIC_PATH ,BackLoadGameButtonHandler);
+	menuButtons[LOAD_GAME_WINDOW_BACK_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &backR,LOAD_GAME_WINDOW_BACK_BUTTON_PIC_PATH ,backLoadGameButtonHandler);
 	initWindow(menuButtons[LOAD_GAME_WINDOW_BACK_BUTTON_INDEX]);
-	menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &loadR, LOAD_GAME_WINDOW_LOAD_BUTTON_PIC_PATH, LoadSlotButtonHandler);
+	menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &loadR, LOAD_GAME_WINDOW_LOAD_BUTTON_PIC_PATH, loadSlotButtonHandler);
 	initWindow(menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX]);
 
 	setEnabledSimpleButton(menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX], SDL_FALSE);
@@ -159,7 +159,7 @@ Command* handleEventLoadGameView(Window* src, SDL_Event* event){
 	for (int i = 0; i< data->slotsAmount; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->slotButtons[i], event) == SDL_TRUE){
 			data->slotButtons[i]->handleEventWindow(data->slotButtons[i],event);
-			if(GetUpdatedImagePathForSlot(data->selectedSlot,i,data) == SDL_FALSE) {
+			if(getUpdatedImagePathForSlot(data->selectedSlot,i,data) == SDL_FALSE) {
 				// exit the program properly TODO: CHECK!!!
 				src->holdingWindow->holdingWindow->isClosed = SDL_TRUE;
 				return NULL;
@@ -175,29 +175,27 @@ Command* handleEventLoadGameView(Window* src, SDL_Event* event){
 		}
 	}
 
-	cmd = CreateNOPCommand();
+	cmd = createNOPCommand();
 	return cmd;
 }
-Command* LoadSlotButtonHandler(Window* src, SDL_Event* event){
+Command* loadSlotButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	SimpleButton* data = (SimpleButton*) src->data;
 	if(data->isEnabled == SDL_FALSE)
 	{
 		return cmd;
 	}
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
-		//load a game and set current view to board?
-		cmd = CreateLoadCommand(SAVED_GAMES_DIRECTORY_PATH);
+		cmd = createLoadCommand(SAVED_GAMES_DIRECTORY_PATH);
+		setCurrentView(src->holdingWindow->holdingWindow, BOARD_VIEW);
 	}
-
 	return cmd;
 }
 
-Command* BackLoadGameButtonHandler(Window* src, SDL_Event* event){
+Command* backLoadGameButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
@@ -205,23 +203,23 @@ Command* BackLoadGameButtonHandler(Window* src, SDL_Event* event){
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		setCurrentView(src->holdingWindow->holdingWindow, view->lastView);//MODE_SELECTION_VIEW);
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	return cmd;
 }
 
-Command* SlotButtonHandler(Window* src, SDL_Event* event){
+Command* slotButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 	}
 
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	return cmd;
 }
 
 
-SDL_bool GetUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view) {
+SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view) {
 	Window* selectedSlot = (Window*) view->slotButtons[currentlySelectedSlot];
 	char* imageName = malloc(LOAD_GAME_WINDOW_SLOT__PIC_PATH_LENGTH);
 	if(imageName == NULL)
@@ -257,7 +255,7 @@ SDL_bool GetUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedS
 	return SDL_TRUE;
 }
 
-char* GetSlotImagePath(int slot) {
+char* getSlotImagePath(int slot) {
 	char* imageName = malloc(LOAD_GAME_WINDOW_SLOT__PIC_PATH_LENGTH);
 	if(imageName == NULL)
 	{

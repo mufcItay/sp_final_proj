@@ -19,9 +19,9 @@ Window** createColorButtons(Window* holdingWindow, SDL_Renderer* renderer)
 	}
 	for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
 		SDL_Rect difficultyButtonR = {.x = 0, .y = COLOR_SELECTION_WINDOW_BUTTON_HEIGHT * i + COLOR_SELECTION_WINDOW_BUTTON_SPACING *i, .h = COLOR_SELECTION_WINDOW_BUTTON_HEIGHT, .w = COLOR_SELECTION_WINDOW_BUTTON_WIDTH};
-		char* imagePath = GetColorImagePath(i, SDL_FALSE);
+		char* imagePath = getColorImagePath(i, SDL_FALSE);
 		if(imagePath != NULL){
-			colorButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &difficultyButtonR,imagePath ,ColorButtonHandler);
+			colorButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &difficultyButtonR,imagePath ,colorButtonHandler);
 		}
 		if (colorButtons[i] == NULL) {
 			for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
@@ -41,9 +41,9 @@ Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* rende
 	}
 	SDL_Rect startR = { .x = 0, .y = COLOR_SELECTION_NAVIGTION_PANE_Y_POS, .h = COLOR_SELECTION_WINDOW_BUTTON_HEIGHT, .w = COLOR_SELECTION_WINDOW_BUTTON_WIDTH};
 	SDL_Rect backR = { .x = COLOR_SELECTION_WINDOW_BUTTON_WIDTH + BOARD_WINDOW_BUTTON_SPACING , .y = COLOR_SELECTION_NAVIGTION_PANE_Y_POS, .h = COLOR_SELECTION_WINDOW_BUTTON_HEIGHT, .w = COLOR_SELECTION_WINDOW_BUTTON_WIDTH};
-	navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &backR,COLOR_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH ,BackColorButtonHandler);
+	navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &backR,COLOR_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH ,backColorButtonHandler);
 	initWindow(navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX]);
-	navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &startR, COLOR_SELECTION_WINDOW_START_BUTTON_PIC_PATH, StartButtonHandler);
+	navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &startR, COLOR_SELECTION_WINDOW_START_BUTTON_PIC_PATH, startButtonHandler);
 	initWindow(navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX]);
 
 	setEnabledSimpleButton(navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX], SDL_FALSE);
@@ -83,7 +83,7 @@ Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettin
 	data->colorButtons = difficultyWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
-	data->selectedColor = COLOR_UNSELECTED;
+	data->selectedColor = gameSettings->color;
 	res->data = (void*) data;
 	res->destroyWindow = destroyColorSelectionView;
 	res->drawWindow = drawColorSelectionView;
@@ -146,14 +146,14 @@ Command* handleEventColorSelectionView(Window* src, SDL_Event* event){
 	for (int i = 0; i< COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->colorButtons[i], event) == SDL_TRUE){
 			data->colorButtons[i]->handleEventWindow(data->colorButtons[i],event);
-			if(UpdateSelectedColor(data->selectedColor,i,data) == SDL_FALSE) {
+			if(updateSelectedColor(data->selectedColor,i,data) == SDL_FALSE) {
 				// exit the program properly TODO: CHECK!!!
 				src->holdingWindow->holdingWindow->isClosed = SDL_TRUE;
 				return NULL;
 			}
 			else {
-				UserColor selectedColor = GetColor(data->selectedColor);
-				cmd = CreateUserColorCommand(selectedColor);
+				UserColor selectedColor = getColor(data->selectedColor);
+				cmd = createUserColorCommand(selectedColor);
 				return cmd;
 			}
 		}
@@ -167,14 +167,14 @@ Command* handleEventColorSelectionView(Window* src, SDL_Event* event){
 		}
 	}
 
-	cmd = CreateNOPCommand();
+	cmd = createNOPCommand();
 	return cmd;
 }
-Command* StartButtonHandler(Window* src, SDL_Event* event){
+Command* startButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
-	Command* cmd = CreateNOPCommand();
+	Command* cmd = createNOPCommand();
 	SimpleButton* data = (SimpleButton*) src->data;
 	if(data->isEnabled == SDL_FALSE)
 	{
@@ -183,14 +183,14 @@ Command* StartButtonHandler(Window* src, SDL_Event* event){
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		setCurrentView(src->holdingWindow->holdingWindow, BOARD_VIEW);
 
-		cmd = CreateStartCommand();
+		cmd = createStartCommand();
 	}
 
 	return cmd;
 }
 
-Command* BackColorButtonHandler(Window* src, SDL_Event* event){
-	Command* cmd = CreateNOPCommand();
+Command* backColorButtonHandler(Window* src, SDL_Event* event){
+	Command* cmd = createNOPCommand();
 
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
@@ -202,8 +202,8 @@ Command* BackColorButtonHandler(Window* src, SDL_Event* event){
 	return cmd;
 }
 
-Command* ColorButtonHandler(Window* src, SDL_Event* event){
-	Command* cmd = CreateNOPCommand();
+Command* colorButtonHandler(Window* src, SDL_Event* event){
+	Command* cmd = createNOPCommand();
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
@@ -213,17 +213,16 @@ Command* ColorButtonHandler(Window* src, SDL_Event* event){
 }
 
 
-SDL_bool UpdateSelectedColor(int lastSelectedColor, int currentlySelectedColor, ColorSelectionView* view) {
+SDL_bool updateSelectedColor(int lastSelectedColor, int currentlySelectedColor, ColorSelectionView* view) {
 
 	Window* selectedColor = (Window*) view->colorButtons[currentlySelectedColor];
-	char* imagePath = GetColorImagePath(currentlySelectedColor, SDL_TRUE);
+	char* imagePath = getColorImagePath(currentlySelectedColor, SDL_TRUE);
 	// get image for selected Color
 	updateImage(selectedColor, imagePath);
-	setEnabledSimpleButton(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_TRUE);
 
 	if(lastSelectedColor != COLOR_UNSELECTED)
 	{
-		imagePath = GetColorImagePath(lastSelectedColor, SDL_FALSE);
+		imagePath = getColorImagePath(lastSelectedColor, SDL_FALSE);
 		Window* lastSelected = (Window*) view->colorButtons[lastSelectedColor];
 		updateImage(lastSelected, imagePath);
 		if(lastSelectedColor == currentlySelectedColor)
@@ -238,7 +237,7 @@ SDL_bool UpdateSelectedColor(int lastSelectedColor, int currentlySelectedColor, 
 	return SDL_TRUE;
 }
 
-char* GetColorImagePath(int difficulty, SDL_bool isSelected) {
+char* getColorImagePath(int difficulty, SDL_bool isSelected) {
 	if(difficulty == COLOR_SELECTION_WINDOW_BLACK_BUTTON_INDEX) {
 		if(isSelected == SDL_TRUE){
 			return COLOR_SELECTION_WINDOW_BLACK_BUTTON_SELECTED_PIC_PATH;

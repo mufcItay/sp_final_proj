@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include "CMDController.h"
 
-void SetCMDController(UIController* controller) {
-	controller->Init = CMDInit;
-	controller->Draw= CMDDraw;
-	controller->HandleInput = CMDHandleInput;
-	controller->DestroyController = CMDDestroyController;
+void setCMDController(UIController* controller) {
+	controller->init = CMDInit;
+	controller->draw= CMDDraw;
+	controller->handleInput = CMDHandleInput;
+	controller->destroyController = CMDDestroyController;
 }
 
 void* CMDInit(GameSettings* gameSettings ,GameState* gameState) {
@@ -14,7 +14,7 @@ void* CMDInit(GameSettings* gameSettings ,GameState* gameState) {
 	return NULL;
 }
 
-int CMDHandleInput(void* src){
+int CMDHandleInput(void* src, GameSettings* settings, GameState* state){
 	//
 	return OK;
 }

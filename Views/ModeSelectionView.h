@@ -23,10 +23,10 @@ Window** createModeNavigationButtons(Window* holdingWindow, SDL_Renderer* render
 void destroyModeSelectionView(Window* src);
 void drawModeSelectionView(Window* src);
 Command* handleEventModeSelectionView(Window* src, SDL_Event* event);
-Command* BackModeButtonHandler(Window* src, SDL_Event* event);
-Command* NextModeButtonHandler(Window* src, SDL_Event* event);
-Command* ModeButtonHandler(Window* src, SDL_Event* event);
-SDL_bool UpdateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view);
+Command* backModeButtonHandler(Window* src, SDL_Event* event);
+Command* nextModeButtonHandler(Window* src, SDL_Event* event);
+Command* modeButtonHandler(Window* src, SDL_Event* event);
+SDL_bool updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view);
 void setModeSelectionInnerReDraw(Window* src, SDL_bool reDraw);
-char* GetModeImagePath(int mode, SDL_bool isSelected);
+char* getModeImagePath(int mode, SDL_bool isSelected);
 #endif

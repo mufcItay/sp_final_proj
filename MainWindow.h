@@ -35,9 +35,9 @@ Window** createMainWindowWidgets(Window* window, SDL_Renderer* renderer);
 void destroyMainWindow(Window* src);
 void drawMainWindow(Window* src);
 Command* handleEventMainWindow(Window* src, SDL_Event* event);
-Command* LoadGameButtonHandler(Window* src, SDL_Event* event);
-Command* NewGameButtonHandler(Window* src, SDL_Event* event);
-Command* ExitButtonHandler(Window* src, SDL_Event* event);
+Command* loadGameButtonHandler(Window* src, SDL_Event* event);
+Command* newGameButtonHandler(Window* src, SDL_Event* event);
+Command* exitButtonHandler(Window* src, SDL_Event* event);
 void setCurrentView(Window* src, enum WindowView view);
 void setMainWindowInnerReDraw(Window* src, SDL_bool reDraw);
 

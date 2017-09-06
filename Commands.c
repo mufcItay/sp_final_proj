@@ -9,55 +9,55 @@ void destroyCommand(Command* src){
 	src->destroyCommand(src);
 }
 
-Command* CreateGameModeCommand(GameMode mode){
+Command* createGameModeCommand(GameMode mode){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	GameModeCommand* data = (GameModeCommand*) malloc(sizeof(GameModeCommand));
 	data->mode = mode;
-		cmd->destroyCommand = DestroyGameModeCommand;
-	cmd->handleCommand = HandleGameModeCommand;
+		cmd->destroyCommand = destroyGameModeCommand;
+	cmd->handleCommand = handleGameModeCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateDifficultyCommand(DifficultyLevel difficulty){
+Command* createDifficultyCommand(DifficultyLevel difficulty){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	DifficultyCommand* data = (DifficultyCommand*) malloc(sizeof(DifficultyCommand));
 	data->difficulty= difficulty;
-		cmd->destroyCommand = DestroyDifficultyCommand;
-	cmd->handleCommand = HandleDifficultyCommand;
+		cmd->destroyCommand = destroyDifficultyCommand;
+	cmd->handleCommand = handleDifficultyCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateQuitCommand(){
+Command* createQuitCommand(){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	QuitCommand* data = (QuitCommand*) malloc(sizeof(QuitCommand));
-	cmd->destroyCommand = DestroyQuitCommand;
-	cmd->handleCommand = HandleQuitCommand;
+	cmd->destroyCommand = destroyQuitCommand;
+	cmd->handleCommand = handleQuitCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateResetCommand(){
+Command* createResetCommand(){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	ResetCommand* data = (ResetCommand*) malloc(sizeof(ResetCommand));
-	cmd->destroyCommand = DestroyResetCommand;
-	cmd->handleCommand = HandleResetCommand;
+	cmd->destroyCommand = destroyResetCommand;
+	cmd->handleCommand = handleResetCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateUserColorCommand(UserColor color){
+Command* createUserColorCommand(UserColor color){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	UserColorCommand* data = (UserColorCommand*) malloc(sizeof(UserColorCommand));
 	data->color = color;
-	cmd->destroyCommand = DestroyUserColorCommand;
-	cmd->handleCommand = HandleUserColorCommand;
+	cmd->destroyCommand = destroyUserColorCommand;
+	cmd->handleCommand = handleUserColorCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateLoadCommand(char* path){
+Command* createLoadCommand(char* path){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	LoadCommand* data = (LoadCommand*) malloc(sizeof(LoadCommand));
 	data->path = malloc(sizeof(char) * strlen(path));
@@ -65,53 +65,53 @@ Command* CreateLoadCommand(char* path){
 		return NULL;
 	}
 	strcpy(data->path, path);
-	cmd->destroyCommand = DestroyLoadCommand;
-	cmd->handleCommand = HandleLoadCommand;
+	cmd->destroyCommand = destroyLoadCommand;
+	cmd->handleCommand = handleLoadCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateDefaultCommand(){
+Command* createDefaultCommand(){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	DefaultCommand* data = (DefaultCommand*) malloc(sizeof(DefaultCommand));
-	cmd->destroyCommand = DestroyDefaultCommand;
-	cmd->handleCommand = HandleDefaultCommand;
+	cmd->destroyCommand = destroyDefaultCommand;
+	cmd->handleCommand = handleDefaultCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreatePrintSettingsCommand(){
+Command* createPrintSettingsCommand(){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	PrintSettingsCommand* data = (PrintSettingsCommand*) malloc(sizeof(PrintSettingsCommand));
-	cmd->destroyCommand = DestroyPrintSettingsCommand;
-	cmd->handleCommand = HandlePrintSettingsCommand;
+	cmd->destroyCommand = destroyPrintSettingsCommand;
+	cmd->handleCommand = handlePrintSettingsCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateMoveCommand(SDL_Point origin, SDL_Point destination){
+Command* createMoveCommand(SDL_Point origin, SDL_Point destination){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	MoveCommand* data = (MoveCommand*) malloc(sizeof(MoveCommand));
 	data->originPoint.x = origin.x;
 	data->originPoint.x = origin.y;
 	data->destinationPoint.x = destination.x;
 	data->destinationPoint.x = destination.y;
-	cmd->destroyCommand = DestroyMoveCommand;
-	cmd->handleCommand = HandleMoveCommand;
+	cmd->destroyCommand = destroyMoveCommand;
+	cmd->handleCommand = handleMoveCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateStartCommand(){
+Command* createStartCommand(){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	StartCommand* data = (StartCommand*) malloc(sizeof(StartCommand));
-	cmd->destroyCommand = DestroyStartCommand;
-	cmd->handleCommand = HandleStartCommand;
+	cmd->destroyCommand = destroyStartCommand;
+	cmd->handleCommand = handleStartCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateSaveCommand(char* path){
+Command* createSaveCommand(char* path){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	SaveCommand* data = (SaveCommand*) malloc(sizeof(SaveCommand));
 	data->path = malloc(sizeof(char) * strlen(path));
@@ -119,55 +119,83 @@ Command* CreateSaveCommand(char* path){
 		return NULL;
 	}
 	strcpy(data->path, path);
-	cmd->destroyCommand = DestroySaveCommand;
-	cmd->handleCommand = HandleSaveCommand;
+	cmd->destroyCommand = destroySaveCommand;
+	cmd->handleCommand = handleSaveCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateUndoCommand(){
+Command* createUndoCommand(){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	UndoCommand* data = (UndoCommand*) malloc(sizeof(UndoCommand));
-	cmd->destroyCommand = DestroyUndoCommand;
-	cmd->handleCommand = HandleUndoCommand;
+	cmd->destroyCommand = destroyUndoCommand;
+	cmd->handleCommand = handleUndoCommand;
 	cmd->data = data;
 	return cmd;
 }
 
-Command* CreateGetMovesCommand(SDL_Point origin){
+Command* createGetMovesCommand(SDL_Point origin){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	GetMovesCommand* data = (GetMovesCommand*) malloc(sizeof(GetMovesCommand));
 	data->originPoint.x = origin.x;
 	data->originPoint.x = origin.y;
-	cmd->destroyCommand = DestroyGetMovesCommand;
-	cmd->handleCommand = HandleGetMovesCommand;
+	cmd->destroyCommand = destroyGetMovesCommand;
+	cmd->handleCommand = handleGetMovesCommand;
 	cmd->data = data;
 	return cmd;
 }
-Command* CreateNOPCommand(){
+Command* createNOPCommand(){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	cmd->data = NOP_COMMAND_DATA;
-	cmd->destroyCommand = DestroyGeneralCommand;
-	cmd->handleCommand = HandleNOPCommand;
+	cmd->destroyCommand = destroyGeneralCommand;
+	cmd->handleCommand = handleNOPCommand;
 	return cmd;
 }
 
-int HandleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleQuitCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleResetCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleLoadCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleStartCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleUndoCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleGetMovesCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int HandleNOPCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleQuitCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleResetCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state) {
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return ERROR;
+	}
 
-void DestroyGeneralCommand(Command* cmd){
+	LoadCommand* loadCmd = (LoadCommand*) cmd;
+	//int err = saveGame(settings,state,saveCmd->path);
+	int err = loadGame(settings,state,"C:/CProj/my.xml");
+//	if(err == XML_ERROR) {
+//		return ERROR:
+//	}
+	return OK;
+}
+
+int handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleStartCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+
+int handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return ERROR;
+	}
+
+	SaveCommand* saveCmd = (SaveCommand*) cmd;
+	//int err = saveGame(settings,state,saveCmd->path);
+	int err = saveGame(settings,state,"C:/CProj/my.xml");
+
+//	if(err == XML_ERROR) {
+//		return ERROR:
+//	}
+	return OK;
+}
+
+int handleUndoCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleGetMovesCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleNOPCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+
+void destroyGeneralCommand(Command* cmd){
 	if (cmd == NULL ) {
 		return;
 	}
@@ -178,49 +206,45 @@ void DestroyGeneralCommand(Command* cmd){
 	free(cmd);
 }
 
-void DestroyGameModeCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyGameModeCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
 
-void DestroyDifficultyCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyDifficultyCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyQuitCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
-}
-
-void DestroyResetCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyQuitCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
 
-void DestroyUserColorCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyResetCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyLoadCommand(Command* cmd){
-	LoadCommand* data = (LoadCommand*) cmd->data;
-	free(data->path);
-	DestroyGeneralCommand(cmd);
+
+void destroyUserColorCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyDefaultCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyLoadCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyPrintSettingsCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyDefaultCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyMoveCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyPrintSettingsCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyStartCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyMoveCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroySaveCommand(Command* cmd){
-	SaveCommand* data = (SaveCommand*) cmd->data;
-	free(data->path);
-	DestroyGeneralCommand(cmd);
+void destroyStartCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyUndoCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroySaveCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }
-void DestroyGetMovesCommand(Command* cmd){
-	DestroyGeneralCommand(cmd);
+void destroyUndoCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
+}
+void destroyGetMovesCommand(Command* cmd){
+	destroyGeneralCommand(cmd);
 }

@@ -25,10 +25,10 @@ Window** createDifficultyNavigationButtons(Window* holdingWindow, SDL_Renderer* 
 void destroyDifficultySelectionView(Window* src);
 void drawDifficultySelectionView(Window* src);
 Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event);
-Command* BackDifficultiesButtonHandler(Window* src, SDL_Event* event);
-Command* NextDifficultiesButtonHandler(Window* src, SDL_Event* event);
-Command* DifficultyButtonHandler(Window* src, SDL_Event* event);
-SDL_bool UpdateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelectedDifficulty, DifficultySelectionView* view);
+Command* backDifficultiesButtonHandler(Window* src, SDL_Event* event);
+Command* nextDifficultiesButtonHandler(Window* src, SDL_Event* event);
+Command* difficultyButtonHandler(Window* src, SDL_Event* event);
+SDL_bool updateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelectedDifficulty, DifficultySelectionView* view);
 void setDifficultySelectionInnerReDraw(Window* src, SDL_bool reDraw);
-char* GetDifficultyImagePath(int difficulty);
+char* getDifficultyImagePath(int difficulty);
 #endif

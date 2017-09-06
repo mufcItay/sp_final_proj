@@ -1,15 +1,20 @@
 #include "CommonStructures.h"
+#include "Commands.h"
 
 
 GameState* CreateGameState(){
 	GameState* state = (GameState*) malloc(sizeof(char**) + sizeof(int) + sizeof(void**));
 	state->board = CreateInitialBoard();
+	state->turn = WHITE;
 	return state;
 
 }
 
 GameSettings* CreateGameSettings(){
 	GameSettings* settings = (GameSettings*) malloc(sizeof(GameSettings));
+	settings->color = WHITE;
+	settings->mode = SINGLE_PLAYER;
+	settings->difficulty = EASY;
 	return settings;
 }
 

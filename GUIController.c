@@ -7,11 +7,11 @@
 #include "MainWindow.h"
 #include "CommonStructures.h"
 
-void SetGUIController(UIController* controller) {
-	controller->Init = GUIInit;
-	controller->Draw= GUIDraw;
-	controller->HandleInput = GUIHandleInput;
-	controller->DestroyController = GUIDestroyController;
+void setGUIController(UIController* controller) {
+	controller->init = GUIInit;
+	controller->draw= GUIDraw;
+	controller->handleInput = GUIHandleInput;
+	controller->destroyController = GUIDestroyController;
 }
 
 void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
@@ -34,7 +34,7 @@ void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
 	return window;
 }
 
-int GUIHandleInput(void* src){
+int GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	Window* window = (Window*) src;
 	SDL_Event event;
 	SDL_WaitEvent(&event);
@@ -42,7 +42,7 @@ int GUIHandleInput(void* src){
 		return CONTROLLER_END;
 	}
 	Command* cmd = window->handleEventWindow(window,&event);
-
+	cmd->handleCommand(cmd, settings,state);
 	// check if re draw needed. if so then draw
 	if(window->isClosed == SDL_TRUE)
 	{

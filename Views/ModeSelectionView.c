@@ -89,6 +89,7 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	res->holdingWindow = holdingWindow;
 	res->setInnerWidgetsReDraw = setModeSelectionInnerReDraw;
 	initWindow(res);
+	updateSelectedMode(MODE_UNSELECTED, gameSettings->mode,data);
 	return res;
 
 }

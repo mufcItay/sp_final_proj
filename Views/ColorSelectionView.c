@@ -46,8 +46,6 @@ Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* rende
 	navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &startR, COLOR_SELECTION_WINDOW_START_BUTTON_PIC_PATH, startButtonHandler);
 	initWindow(navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX]);
 
-	setEnabledSimpleButton(navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX], SDL_FALSE);
-
 	if (navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL || navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX] == NULL ) {
 		destroyWindow(navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
 		destroyWindow(navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX]); //NULL SAFE
@@ -91,6 +89,7 @@ Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettin
 	res->holdingWindow = holdingWindow;
 	res->setInnerWidgetsReDraw = setColorSelectionInnerReDraw;
 	initWindow(res);
+	updateSelectedColor(COLOR_UNSELECTED, gameSettings->color,data);
 	return res;
 
 }

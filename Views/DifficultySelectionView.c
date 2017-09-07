@@ -89,6 +89,7 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	res->holdingWindow = holdingWindow;
 	res->setInnerWidgetsReDraw = setDifficultySelectionInnerReDraw;
 	initWindow(res);
+	updateSelectedDifficulty(DIFFICULTY_UNSELECTED, gameSettings->difficulty,data);
 	return res;
 
 }

@@ -93,9 +93,9 @@ Command* createMoveCommand(SDL_Point origin, SDL_Point destination){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	MoveCommand* data = (MoveCommand*) malloc(sizeof(MoveCommand));
 	data->originPoint.x = origin.x;
-	data->originPoint.x = origin.y;
+	data->originPoint.y = origin.y;
 	data->destinationPoint.x = destination.x;
-	data->destinationPoint.x = destination.y;
+	data->destinationPoint.y = destination.y;
 	cmd->destroyCommand = destroyMoveCommand;
 	cmd->handleCommand = handleMoveCommand;
 	cmd->data = data;
@@ -156,7 +156,7 @@ int handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state
 	if(cmd == NULL || settings == NULL || state == NULL) {
 		return ERROR;
 	}
-	GameModeCommand* modeCmd = (GameModeCommand*) cmd;
+	GameModeCommand* modeCmd = (GameModeCommand*) cmd->data;
 	settings->mode = modeCmd->mode;
 	return OK;
 }
@@ -166,7 +166,7 @@ int handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* sta
 	if(cmd == NULL || settings == NULL || state == NULL) {
 		return ERROR;
 	}
-	DifficultyCommand* difficultyCmd = (DifficultyCommand*) cmd;
+	DifficultyCommand* difficultyCmd = (DifficultyCommand*) cmd->data;
 	settings->difficulty = difficultyCmd->difficulty;
 	return OK;
 }
@@ -180,7 +180,7 @@ int handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* stat
 	if(cmd == NULL || settings == NULL || state == NULL) {
 		return ERROR;
 	}
-	UserColorCommand* colorCmd = (UserColorCommand*) cmd;
+	UserColorCommand* colorCmd = (UserColorCommand*) cmd->data;
 	settings->color= colorCmd->color;
 	return OK;
 }
@@ -190,7 +190,7 @@ int handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state) {
 		return ERROR;
 	}
 
-	LoadCommand* loadCmd = (LoadCommand*) cmd;
+	LoadCommand* loadCmd = (LoadCommand*) cmd->data;
 	int ret = loadGame(settings,state,"C:/CProj/my.xml");
 	return ret;
 }
@@ -211,7 +211,7 @@ int handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){
 		return ERROR;
 	}
 	// if move invalid get out. supposed to check it here or in the UI? cause error message happens in UI
-	MoveCommand* moveCmd = (MoveCommand*) cmd;
+	MoveCommand* moveCmd = (MoveCommand*) cmd->data;
 	char soldierTypeToMove = state->board[moveCmd->originPoint.x][moveCmd->originPoint.y];
 	state->board[moveCmd->originPoint.x][moveCmd->originPoint.y] = SOLDIER_TYPE_EMPTY;
 	state->board[moveCmd->destinationPoint.x][moveCmd->destinationPoint.y] = soldierTypeToMove;
@@ -235,8 +235,7 @@ int handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
 		return ERROR;
 	}
 
-	SaveCommand* saveCmd = (SaveCommand*) cmd;
-	//int err = saveGame(settings,state,saveCmd->path);
+	SaveCommand* saveCmd = (SaveCommand*) cmd->data;
 	int ret = saveGame(settings,state,"C:/CProj/my.xml");
 	return ret;
 }

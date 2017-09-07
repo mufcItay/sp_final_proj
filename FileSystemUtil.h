@@ -4,8 +4,8 @@
 
 #define REDUNDANT_FILES_AMOUNT 2
 
-#define XML_ERROR 1
-#define XML_OK 0
+#define XML_ERROR ERROR
+#define XML_OK OK
 
 
 #define XML_TURN_WHITE 1

@@ -5,6 +5,12 @@
 #define ERROR 1
 #define OK 0
 
+
+#define DEFAULT_GAME_MODE 1
+#define DEFAULT_DIFFICULTY 2
+#define DEFAULT_USER_COLOR 1
+
+
 #define BOARD_ROWS_AMOUNT 8
 #define BOARD_COLUMNS_AMOUNT 8
 
@@ -35,10 +41,10 @@ typedef struct gameState_t {
 	int turn;
 } GameState;
 
-GameState* CreateGameState();
-GameSettings* CreateGameSettings();
-void DestroyGameState(GameState* gameState);
-void DestroyGameSettings(GameSettings* gameSettings);
-char** CreateInitialBoard();
-
+GameState* createGameState();
+GameSettings* createGameSettings();
+void destroyGameState(GameState* gameState);
+void destroyGameSettings(GameSettings* gameSettings);
+char** createInitialBoard();
+void setDefaultSettings(GameSettings* settings);
 #endif

@@ -2,24 +2,30 @@
 #include "Commands.h"
 
 
-GameState* CreateGameState(){
+GameState* createGameState(){
 	GameState* state = (GameState*) malloc(sizeof(char**) + sizeof(int) + sizeof(void**));
-	state->board = CreateInitialBoard();
+	state->board = createInitialBoard();
 	state->turn = WHITE;
 	return state;
 
 }
 
-GameSettings* CreateGameSettings(){
+GameSettings* createGameSettings(){
 	GameSettings* settings = (GameSettings*) malloc(sizeof(GameSettings));
-	settings->color = WHITE;
-	settings->mode = SINGLE_PLAYER;
-	settings->difficulty = EASY;
+
+	setDefaultSettings(settings);
 	return settings;
 }
 
+void setDefaultSettings(GameSettings* settings) {
+	settings->mode =  DEFAULT_GAME_MODE;
+	settings->difficulty=  DEFAULT_DIFFICULTY;
+	settings->color=  DEFAULT_USER_COLOR;
+}
 
-void DestroyGameState(GameState* gameState) {
+
+
+void destroyGameState(GameState* gameState) {
 	for (int i = 0; i < BOARD_ROWS_AMOUNT; ++i) {
 		free(gameState->board[i]);
 	}
@@ -28,11 +34,11 @@ void DestroyGameState(GameState* gameState) {
 	free(gameState);
 }
 
-void DestroyGameSettings(GameSettings* gameSettings) {
+void destroyGameSettings(GameSettings* gameSettings) {
 	free(gameSettings);
 }
 
-char** CreateInitialBoard()
+char** createInitialBoard()
 {
 	char ** board = malloc(sizeof(char*) * BOARD_ROWS_AMOUNT);
 	for(int i =0; i< BOARD_ROWS_AMOUNT;++i)

@@ -4,16 +4,16 @@
 #include "SDL2\SDL_video.h"
 #include "UIController.h"
 #include "GUIController.h"
-#include "MainWindow.h"
+#include "CMDController.h"
 #include "Window.h"
 
 int main(int argc, char* argv[]) {
 	UIController controller;
-	GameSettings* gameSettings = CreateGameSettings();
+	GameSettings* gameSettings = createGameSettings();
 	if (gameSettings == NULL) {
 		return 1;
 	}
-	GameState* gameState = CreateGameState();
+	GameState* gameState = createGameState();
 	if (gameState == NULL) {
 		return 1;
 	}
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 		controller.draw(ui);
 	}
 	controller.destroyController(ui);
-	DestroyGameSettings(gameSettings);
-	DestroyGameState(gameState);
+	destroyGameSettings(gameSettings);
+	destroyGameState(gameState);
 	return 0;
 }

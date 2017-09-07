@@ -152,28 +152,82 @@ Command* createNOPCommand(){
 	return cmd;
 }
 
-int handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+int handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state){
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return ERROR;
+	}
+	GameModeCommand* modeCmd = (GameModeCommand*) cmd;
+	settings->mode = modeCmd->mode;
+	return OK;
+}
+
+int handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state)
+{
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return ERROR;
+	}
+	DifficultyCommand* difficultyCmd = (DifficultyCommand*) cmd;
+	settings->difficulty = difficultyCmd->difficulty;
+	return OK;
+}
+
 int handleQuitCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+
 int handleResetCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+
+int handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state)
+{
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return ERROR;
+	}
+	UserColorCommand* colorCmd = (UserColorCommand*) cmd;
+	settings->color= colorCmd->color;
+	return OK;
+}
+
 int handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state) {
 	if(cmd == NULL || settings == NULL || state == NULL) {
 		return ERROR;
 	}
 
 	LoadCommand* loadCmd = (LoadCommand*) cmd;
-	//int err = saveGame(settings,state,saveCmd->path);
-	int err = loadGame(settings,state,"C:/CProj/my.xml");
-//	if(err == XML_ERROR) {
-//		return ERROR:
-//	}
+	int ret = loadGame(settings,state,"C:/CProj/my.xml");
+	return ret;
+}
+
+int handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state){
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return ERROR;
+	}
+
+	setDefaultSettings(settings);
 	return OK;
 }
 
-int handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
 int handlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+
+int handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return ERROR;
+	}
+	// if move invalid get out. supposed to check it here or in the UI? cause error message happens in UI
+	MoveCommand* moveCmd = (MoveCommand*) cmd;
+	char soldierTypeToMove = state->board[moveCmd->originPoint.x][moveCmd->originPoint.y];
+	state->board[moveCmd->originPoint.x][moveCmd->originPoint.y] = SOLDIER_TYPE_EMPTY;
+	state->board[moveCmd->destinationPoint.x][moveCmd->destinationPoint.y] = soldierTypeToMove;
+
+	if(settings->mode == SINGLE_PLAYER) {
+		// get and perform computer play
+	}
+	else {
+		state->turn =  state->turn == WHITE ? BLACK : WHITE;
+	}
+
+	// update undo array
+
+	return OK;
+}
+
 int handleStartCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
 
 int handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
@@ -183,12 +237,8 @@ int handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
 
 	SaveCommand* saveCmd = (SaveCommand*) cmd;
 	//int err = saveGame(settings,state,saveCmd->path);
-	int err = saveGame(settings,state,"C:/CProj/my.xml");
-
-//	if(err == XML_ERROR) {
-//		return ERROR:
-//	}
-	return OK;
+	int ret = saveGame(settings,state,"C:/CProj/my.xml");
+	return ret;
 }
 
 int handleUndoCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}

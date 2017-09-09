@@ -5,6 +5,7 @@
 #define ERROR 1
 #define OK 0
 
+#define BMP_FILE_TYPE ".bmp"
 
 #define DEFAULT_GAME_MODE 1
 #define DEFAULT_DIFFICULTY 2

@@ -25,6 +25,43 @@ int getNumberOfSavedGames() {
 	return numberOfFiles - REDUNDANT_FILES_AMOUNT;
 }
 
+int reArrageSavedGames() {
+	int numOfSavedGames = getNumberOfSavedGames();
+	if(numOfSavedGames > MAX_SLOTS) {
+		return XML_ERROR;
+	}
+	if(numOfSavedGames == 0) {
+		return XML_OK;
+	}
+
+	if (numOfSavedGames == MAX_SLOTS) {
+		// path len is dir path + slot number + xml file type + 1 for /0
+		int pathLen = strlen(SAVED_GAMES_DIRECTORY_PATH) + sizeof(char) + strlen(XML_FILE_TYPE) + 1;
+		char path[pathLen];
+		sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,MAX_SLOTS,XML_FILE_TYPE);
+		int ret = remove(path);
+		if (ret != 0) {
+			return XML_ERROR;
+		}
+		numOfSavedGames--;
+	}
+
+	// rename (1->2, ..., 4->5)
+	for (int slotIndex = numOfSavedGames; slotIndex > 0; --slotIndex) {
+		// path len is dir path + slot number + xml file type + 1 for /0
+		int pathLen = strlen(SAVED_GAMES_DIRECTORY_PATH) + sizeof(char) + strlen(XML_FILE_TYPE) + 1;
+		char oldName[pathLen];
+		char newName[pathLen];
+		sprintf(oldName,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,slotIndex,XML_FILE_TYPE);
+		sprintf(newName,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,slotIndex + 1 ,XML_FILE_TYPE);
+		int ret = rename(oldName,newName);
+		if (ret != 0) {
+			return XML_ERROR;
+		}
+	}
+	return XML_OK;
+}
+
 int saveGame(GameSettings* settings, GameState* state, char* path) {
 	FILE* gameFile = fopen(path, "w");
 	if (gameFile == NULL) {
@@ -113,10 +150,7 @@ int loadGame(GameSettings* settings, GameState* state, char* path) {
 		return XML_ERROR;
 	}
 	settings->color = (settings->color == XML_COLOR_BLACK) ? BLACK : WHITE;
-	if (fscanf(gameFile, XML_BOARD_TAG) <= 0) {
-		fclose(gameFile);
-		return XML_ERROR;
-	}
+	fscanf(gameFile, XML_BOARD_TAG);
 	for (int i = BOARD_ROWS_AMOUNT; i > 0; i--) {
 		int rowIndex = -1;
 		char soldierTypes[BOARD_COLUMNS_AMOUNT + 1];

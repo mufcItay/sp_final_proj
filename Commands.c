@@ -1,6 +1,7 @@
 #include "CommonStructures.h"
 #include "Commands.h"
 #include "SDL2\SDL.h"
+#include "FileSystemUtil.h"
 
 void destroyCommand(Command* src){
 	if(!src){
@@ -60,11 +61,10 @@ Command* createUserColorCommand(UserColor color){
 Command* createLoadCommand(char* path){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	LoadCommand* data = (LoadCommand*) malloc(sizeof(LoadCommand));
-	data->path = malloc(sizeof(char) * strlen(path));
+	data->path = path;
 	if(data->path == NULL) {
 		return NULL;
 	}
-	strcpy(data->path, path);
 	cmd->destroyCommand = destroyLoadCommand;
 	cmd->handleCommand = handleLoadCommand;
 	cmd->data = data;
@@ -114,11 +114,7 @@ Command* createStartCommand(){
 Command* createSaveCommand(char* path){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	SaveCommand* data = (SaveCommand*) malloc(sizeof(SaveCommand));
-	data->path = malloc(sizeof(char) * strlen(path));
-	if(data->path == NULL) {
-		return NULL;
-	}
-	strcpy(data->path, path);
+	data->path = path;
 	cmd->destroyCommand = destroySaveCommand;
 	cmd->handleCommand = handleSaveCommand;
 	cmd->data = data;
@@ -191,7 +187,7 @@ int handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state) {
 	}
 
 	LoadCommand* loadCmd = (LoadCommand*) cmd->data;
-	int ret = loadGame(settings,state,"C:/CProj/my.xml");
+	int ret = loadGame(settings,state,loadCmd->path);
 	return ret;
 }
 
@@ -234,9 +230,8 @@ int handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
 		return ERROR;
 	}
-
 	SaveCommand* saveCmd = (SaveCommand*) cmd->data;
-	int ret = saveGame(settings,state,"C:/CProj/my.xml");
+	int ret = saveGame(settings,state,saveCmd->path);
 	return ret;
 }
 
@@ -274,6 +269,10 @@ void destroyUserColorCommand(Command* cmd){
 	destroyGeneralCommand(cmd);
 }
 void destroyLoadCommand(Command* cmd){
+	LoadCommand* loadCmd = (LoadCommand*) cmd->data;
+	if(loadCmd->path != NULL) {
+		free(loadCmd->path);
+	}
 	destroyGeneralCommand(cmd);
 }
 void destroyDefaultCommand(Command* cmd){
@@ -289,6 +288,10 @@ void destroyStartCommand(Command* cmd){
 	destroyGeneralCommand(cmd);
 }
 void destroySaveCommand(Command* cmd){
+	SaveCommand* saveCmd = (SaveCommand*) cmd->data;
+	if(saveCmd->path != NULL) {
+		free(saveCmd->path);
+	}
 	destroyGeneralCommand(cmd);
 }
 void destroyUndoCommand(Command* cmd){

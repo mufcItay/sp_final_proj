@@ -13,11 +13,13 @@ Window** createModeButtons(Window* holdingWindow, SDL_Renderer* renderer)
 	if (holdingWindow == NULL) {
 		return NULL ;
 	}
+	// allocate memory
 	Window** modeButtons = calloc(MODE_SELECTION_WINDOW_MODES_AMOUNT,sizeof(Window*));
 	if (modeButtons == NULL ) {
 		return NULL;
 	}
 	for (int i = 0; i < MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
+		// create rectangles and actual buttons of mode selection
 		SDL_Rect modeButtonR = {.x = 0, .y = MODE_SELECTION_WINDOW_BUTTON_HEIGHT * i + MODE_SELECTION_WINDOW_BUTTON_SPACING *i, .h = MODE_SELECTION_WINDOW_BUTTON_HEIGHT, .w = MODE_SELECTION_WINDOW_BUTTON_WIDTH};
 		char* imagePath = getModeImagePath(i, SDL_FALSE);
 		if(imagePath != NULL){
@@ -35,38 +37,42 @@ Window** createModeButtons(Window* holdingWindow, SDL_Renderer* renderer)
 }
 
 Window** createModeNavigationButtons(Window* holdingWindow, SDL_Renderer* renderer){
+	// allocate memory
 	Window** navigationButtons = calloc(MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT,sizeof(Window*));
 	if (navigationButtons == NULL ) {
 		return NULL;
 	}
+	// create rectangles and actual buttons of navigation
 	SDL_Rect nextR = { .x = 0, .y = MODE_SELECTION_NAVIGTION_PANE_Y_POS, .h = MODE_SELECTION_WINDOW_BUTTON_HEIGHT, .w = MODE_SELECTION_WINDOW_BUTTON_WIDTH};
 	SDL_Rect backR = { .x = MODE_SELECTION_WINDOW_BUTTON_WIDTH + BOARD_WINDOW_BUTTON_SPACING , .y = MODE_SELECTION_NAVIGTION_PANE_Y_POS, .h = MODE_SELECTION_WINDOW_BUTTON_HEIGHT, .w = MODE_SELECTION_WINDOW_BUTTON_WIDTH};
 	navigationButtons[MODE_SELECTION_WINDOW_BACK_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &backR,MODE_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH ,backModeButtonHandler);
 	initWindow(navigationButtons[MODE_SELECTION_WINDOW_BACK_BUTTON_INDEX]);
 	navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &nextR, MODE_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH, nextModeButtonHandler);
 	initWindow(navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX]);
-
+	// handle navigation buttons creation error
 	if (navigationButtons[MODE_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL || navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX] == NULL ) {
 		destroyWindow(navigationButtons[MODE_SELECTION_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
 		destroyWindow(navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX]); //NULL SAFE
 		free(navigationButtons);
 		return NULL ;
 	}
-
 	return navigationButtons;
 }
 
 Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
+	// allocate memory
 	Window* res = malloc(sizeof(Window));
 	ModeSelectionView* data = malloc(sizeof(ModeSelectionView));
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
 	MainWindow* main = (MainWindow*)holdingWindow->data;
+	// create rectangle for the view
 	SDL_Rect difficultiesR = { .x = 0, .y = 0, .h = MODE_SELECTION_WINDOW_HEIGHT, .w = MODE_SELECTION_WINDOW_WIDTH};
 	res->location = &difficultiesR;
 	SDL_Renderer* renderer = main->windowRenderer;
 	Window** modeWidgets = createModeButtons(res, renderer);
 	Window** navigationButtons = createModeNavigationButtons(res, renderer);
+	// handle buttons creation errors
 	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
 			|| modeWidgets == NULL || navigationButtons == NULL) {
 		free(res);
@@ -78,6 +84,7 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 		destroyWindow(holdingWindow); //NULL safe
 		return NULL ;
 	}
+	// set members
 	data->modeButtons = modeWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
@@ -89,6 +96,7 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	res->holdingWindow = holdingWindow;
 	res->setInnerWidgetsReDraw = setModeSelectionInnerReDraw;
 	initWindow(res);
+	// set default mode selection
 	updateSelectedMode(MODE_UNSELECTED, gameSettings->mode,data);
 	return res;
 
@@ -122,10 +130,12 @@ void drawModeSelectionView(Window* src) {
 		SDL_RenderClear(data->windowRenderer);
 	}
 	for (int i = 0; i< MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
+		// draw mode selection buttons
 		src->reDrawNeeded |= data->modeButtons[i]->reDrawNeeded;
 		data->modeButtons[i]->drawWindow(data->modeButtons[i]);
 	}
 	for (int i = 0; i < MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
+		// draw navigation buttons
 		src->reDrawNeeded |= data->navigationButtons[i]->reDrawNeeded;
 		data->navigationButtons[i]->drawWindow(data->navigationButtons[i]);
 	}
@@ -144,6 +154,7 @@ Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 	ModeSelectionView* data = (ModeSelectionView*) src->data;
 	for (int i = 0; i< MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->modeButtons[i], event) == SDL_TRUE){
+			// handle event for selection buttons
 			data->modeButtons[i]->handleEventWindow(data->modeButtons[i],event);
 			if(updateSelectedMode(data->selectedMode,i,data) == SDL_FALSE) {
 				// exit the program properly TODO: CHECK!!!
@@ -151,6 +162,7 @@ Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 				return NULL;
 			}
 			else {
+				// handle error in selection buttons
 				GameMode selectedMode = getMode(data->selectedMode);
 				cmd = createGameModeCommand(selectedMode);
 				return cmd;
@@ -159,6 +171,7 @@ Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 	}
 	for (int i = 0; i < MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->navigationButtons[i], event) == SDL_TRUE){
+			// handle event for navigation buttons
 			cmd = data->navigationButtons[i]->handleEventWindow(data->navigationButtons[i],event);
 			if(cmd->data != NOP_COMMAND_DATA) {
 				return cmd;
@@ -183,14 +196,11 @@ Command* nextModeButtonHandler(Window* src, SDL_Event* event){
 		if(modeSelectionView->selectedMode == MODE_UNSELECTED) {
 			return NULL;
 		}
-
 		enum WindowView nextView = DIFFICULTY_SELECTION_VIEW;
 		if(modeSelectionView->selectedMode == MODE_SELECTION_WINDOW_TWO_PLAYERS_INDEX) {
 			nextView = BOARD_VIEW;
 		}
-
 		setCurrentView(src->holdingWindow->holdingWindow, nextView);
-
 		cmd = createGameModeCommand(modeSelectionView->selectedMode);
 		return cmd;
 	}
@@ -220,14 +230,15 @@ Command* modeButtonHandler(Window* src, SDL_Event* event){
 
 
 SDL_bool updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view) {
-
+	// get window of selected mode
 	Window* selectedMode = (Window*) view->modeButtons[currentlySelectedMode];
+	// update image of selected mode
 	char* imagePath = getModeImagePath(currentlySelectedMode, SDL_TRUE);
-	// get image for selected Mode
 	updateImage(selectedMode, imagePath);
 	setEnabledSimpleButton(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_TRUE);
 	if(lastSelectedMode != MODE_UNSELECTED)
 	{
+		// update image of last selected mode
 		imagePath = getModeImagePath(lastSelectedMode, SDL_FALSE);
 		Window* lastSelected = (Window*) view->modeButtons[lastSelectedMode];
 		updateImage(lastSelected, imagePath);

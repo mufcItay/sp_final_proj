@@ -1,8 +1,11 @@
 #ifndef FILESYSTEMUTIL_H_
 #define FILESYSTEMUTIL_H_
 #include "CommonStructures.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 #define REDUNDANT_FILES_AMOUNT 2
+#define MAX_SLOTS 5
 
 #define XML_ERROR ERROR
 #define XML_OK OK
@@ -33,12 +36,16 @@
 #define XML_DIFFICULTY_TAG "\t<difficulty>%d</difficulty>\n"
 #define XML_MODE_TAG "\t<game_mode>%d</game_mode>\n"
 #define XML_TURN_TAG "\t<current_turn>%d</current_turn>\n"
+#define XML_FILE_TYPE ".xml"
+#define SLOT_PATH_FORMAT "%s%d%s"
+#define FIRST_SLOT_NAME 1
 
 
 int getNumberOfSavedGames();
 int saveGame(GameSettings* settings, GameState* state, char* path);
 int loadGame(GameSettings* settings, GameState* state, char* path);
 int updateDifficulty(GameSettings* settings, FILE* gameFile);
+int reArrageSavedGames();
 int writeDifficultyToXML(GameSettings* settings, FILE* gameFile);
 
 

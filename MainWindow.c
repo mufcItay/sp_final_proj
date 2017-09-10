@@ -15,16 +15,19 @@ Window** createMainWindowWidgets(Window* window,SDL_Renderer* renderer) {
 	if (renderer == NULL ) {
 		return NULL ;
 	}
+	// allocate memory
 	Window** widgets = malloc(sizeof(Window*) * MAIN_NUMBER_OF_BUTTONS);
 	if (widgets == NULL ) {
 		return NULL ;
 	}
+	// create buttons rectangles and actual buttons
 	SDL_Rect startR = { .x = MAIN_BUTTON_X_POS , .y = MAIN_BUTTON_SPACING, .h = MAIN_BUTTON_HEIGHT, .w = MAIN_BUTTON_WIDTH};
 	SDL_Rect boardR = { .x = MAIN_BUTTON_X_POS , .y = 2 * MAIN_BUTTON_SPACING + MAIN_BUTTON_HEIGHT, .h = MAIN_BUTTON_HEIGHT, .w = MAIN_BUTTON_WIDTH };
 	SDL_Rect exitR = { .x = MAIN_BUTTON_X_POS , .y = 3*MAIN_BUTTON_SPACING + 2*MAIN_BUTTON_HEIGHT, .h = MAIN_BUTTON_HEIGHT, .w = MAIN_BUTTON_WIDTH};
 	widgets[NEW_GAME_BUTTON_INDEX] = createSimpleButton(window,renderer, &startR, NEW_GAME_PIC_PATH,newGameButtonHandler);
 	widgets[LOAD_GAME_BUTTON_INDEX] = createSimpleButton(window,renderer, &boardR, LOAD_GAME_PIC_PATH, loadGameButtonHandler);
 	widgets[EXIT_BUTTON_INDEX] = createSimpleButton(window,renderer, &exitR, EXIT_PIC_PATH,exitButtonHandler);
+	//handle errors
 	if (widgets[NEW_GAME_BUTTON_INDEX] == NULL || widgets[LOAD_GAME_BUTTON_INDEX] == NULL || widgets[EXIT_BUTTON_INDEX] == NULL ) {
 		destroyWindow(widgets[NEW_GAME_BUTTON_INDEX]); //NULL SAFE
 		destroyWindow(widgets[LOAD_GAME_BUTTON_INDEX]); //NULL SAFE
@@ -38,33 +41,38 @@ Window** createMainWindowWidgets(Window* window,SDL_Renderer* renderer) {
 	return widgets;
 }
 Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
+	// allocate memory
 	Window* res = malloc(sizeof(Window));
-	res->isClosed = SDL_FALSE;
 	MainWindow* data = malloc(sizeof(MainWindow));
+	res->isClosed = SDL_FALSE;
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
 	res->location = createInvlidRect();
+	// create the main wondow of GUI
 	SDL_Window* window = SDL_CreateWindow(MAIN_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
 			SDL_RENDERER_ACCELERATED);
+	// create buttons of the view
 	Window** widgets = createMainWindowWidgets(res,renderer);
+	// handle creation errors
 	if (res == NULL || data == NULL || window == NULL || renderer == NULL
 			|| widgets == NULL ) {
 		free(res);
 		free(data);
 		free(widgets);
-		//We first destroy the renderer
-		SDL_DestroyRenderer(renderer); //NULL safe
-		SDL_DestroyWindow(window); //NULL safe
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
 		return NULL ;
 	}
+	// set data members
 	data->numOfWidgets = MAIN_NUMBER_OF_BUTTONS;
 	data->window = window;
 	data->windowRenderer = renderer;
 	data->mainMenuWidgets = widgets;
-	if (data->boardViewWindow == NULL || data->difficultySelectionViewWindow== NULL/* || data->modeSelectionViewWindow== NULL ||
-			data->colorSelectionViewWindow == NULL */|| data->loadGameViewWindow== NULL) {
+	// handle errors
+	if (data->boardViewWindow == NULL || data->difficultySelectionViewWindow== NULL || data->modeSelectionViewWindow== NULL ||
+			data->colorSelectionViewWindow == NULL || data->loadGameViewWindow== NULL) {
 		SDL_Quit();
 		return NULL;
 	}
@@ -72,6 +80,7 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	data->viewWindow = res;
 	initWindow(res);
 	res->data = (void*) data;
+	// init and set views
 	data->boardViewWindow = (Window*) createBoardWindow(res, data->gameSettings, data->gameState);
 	initWindow(data->boardViewWindow);
 	data->difficultySelectionViewWindow = (Window*) createDifficultySelectionView(res, data->gameSettings, data->gameState);
@@ -116,6 +125,7 @@ void drawMainWindow(Window* src) {
 		return;
 	}
 	MainWindow* data = (MainWindow*) src->data;
+	// draw according to current view
 	switch(data->view)
 	{
 		case MAIN_VIEW:
@@ -165,10 +175,11 @@ Command* handleEventMainWindow(Window* src, SDL_Event* event){
 	}
 	Command* cmd = createNOPCommand();
 	MainWindow* data = (MainWindow*)src->data;
-
+	// handle events according to current view
 	switch(data->view)
 	{
 		case MAIN_VIEW:
+			// check each of the view buttons
 			for(int i =0;i<data->numOfWidgets;i++){
 				if(isEventWindowRelated(data->mainMenuWidgets[i], event) == SDL_TRUE)
 				{
@@ -209,7 +220,9 @@ Command* newGameButtonHandler(Window* src, SDL_Event* event)
 	}
 	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
+		cmd = createStartCommand();
 		setCurrentView(src->holdingWindow, MODE_SELECTION_VIEW);
+		return cmd;
 	}
 	return cmd;
 }
@@ -272,6 +285,7 @@ void setCurrentView(Window* src, enum WindowView view) {
 			return;
 	}
 	mainWin->view = view;
+	// we want to redraw the view cause we are switching to it
 	mainWin->viewWindow->setInnerWidgetsReDraw(mainWin->viewWindow,SDL_TRUE);
 }
 

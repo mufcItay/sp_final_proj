@@ -3,23 +3,24 @@
 #include "SDL2\SDL_video.h"
 #include "Commands.h"
 
+// Controller consts
 #define CONTROLLER_ERROR 0
 #define CONTROLLER_OK 1
 #define CONTROLLER_END 2
+
+// redraw states
 #define REDRAW_NEEDED 1
 #define REDRAW_NOT_NEEDED 0
 
-
+// MAIN_GUI CONSTS
 #define INVALID_LOCATION -1
 #define MAIN_BUTTON_X_POS 75
 #define MAIN_BUTTON_HEIGHT 100
 #define MAIN_BUTTON_WIDTH 250
 #define MAIN_BUTTON_SPACING 30
 #define MAIN_NUMBER_OF_BUTTONS 3
-
 #define MAIN_WINDOW_WIDTH 550
 #define MAIN_WINDOW_HEIGHT 550
-
 #define MAIN_WINDOW_BGCOLOR_RED 245
 #define MAIN_WINDOW_BGCOLOR_GREEN 230
 #define MAIN_WINDOW_BGCOLOR_BLUE 0
@@ -30,6 +31,7 @@
 #define LOAD_GAME_BUTTON_INDEX 1
 #define EXIT_BUTTON_INDEX 2
 
+// board window GUI consts
 #define BOARD_WINDOW_WIDTH 550
 #define BOARD_WINDOW_HEIGHT 550
 #define BOARD_WINDOW_BUTTON_HEIGHT 45
@@ -52,6 +54,8 @@
 #define BOARD_WINDOW_BGCOLOR_BLUE 0
 #define BOARD_WINDOW_BGCOLOR_ALPHA 255
 
+
+// load window GUI consts
 #define LOAD_GAME_WINDOW_WIDTH 550
 #define LOAD_GAME_WINDOW_HEIGHT 550
 #define LOAD_GAME_NAVIGTION_PANE_Y_POS 400
@@ -76,6 +80,8 @@
 #define LOAD_GAME_WINDOW_BGCOLOR_BLUE 100
 #define LOAD_GAME_WINDOW_BGCOLOR_ALPHA 255
 
+
+// difficulty window GUI consts
 #define DIFFICULTY_SELECTION_WINDOW_WIDTH 550
 #define DIFFICULTY_SELECTION_WINDOW_HEIGHT 550
 #define DIFFICULTY_SELECTION_NAVIGTION_PANE_Y_POS 400
@@ -100,6 +106,8 @@
 #define DIFFICULTY_SELECTION_WINDOW_BGCOLOR_BLUE 255
 #define DIFFICULTY_SELECTION_WINDOW_BGCOLOR_ALPHA 255
 
+
+// color window GUI consts
 #define COLOR_SELECTION_WINDOW_WIDTH 550
 #define COLOR_SELECTION_WINDOW_HEIGHT 550
 #define COLOR_SELECTION_WINDOW_BUTTON_HEIGHT 80
@@ -121,6 +129,8 @@
 #define COLOR_SELECTION_WINDOW_BGCOLOR_BLUE 100
 #define COLOR_SELECTION_WINDOW_BGCOLOR_ALPHA 255
 
+
+// mode window GUI consts
 #define MODE_SELECTION_WINDOW_WIDTH 550
 #define MODE_SELECTION_WINDOW_HEIGHT 550
 #define MODE_SELECTION_NAVIGTION_PANE_Y_POS 450
@@ -142,6 +152,8 @@
 #define MODE_SELECTION_WINDOW_BGCOLOR_BLUE 0
 #define MODE_SELECTION_WINDOW_BGCOLOR_ALPHA 255
 
+
+// soldier button GUI consts
 #define SOLDIER_BUTTON_IMAGE_HEIGHT 40
 #define SOLDIER_BUTTON_IMAGE_WIDTH 40
 
@@ -154,6 +166,10 @@
 #define SOLDIER_BUTTON_SELECTED 'y'
 #define SOLDIER_BUTTON_NOT_SELECTED 'n'
 
+//saved games paths
+#define SAVED_GAMES_DIRECTORY_PATH "./SavedGames/"
+
+// image paths
 #define NEW_GAME_PIC_PATH "./pics/MainWindow/newgame.bmp"
 #define LOAD_GAME_PIC_PATH "./pics/MainWindow/loadgame.bmp"
 #define EXIT_PIC_PATH "./pics/MainWindow/exit.bmp"
@@ -166,7 +182,6 @@
 #define BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH "./pics/BoardView/mainmenu.bmp"
 #define BOARD_WINDOW_EXIT_BUTTON_PIC_PATH "./pics/BoardView/exitboard.bmp"
 
-#define SAVED_GAMES_DIRECTORY_PATH "./SavedGames/"
 
 #define LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH "./pics/loadGameView/%d%c.bmp"
 #define LOAD_GAME_WINDOW_LOAD_BUTTON_PIC_PATH "./pics/loadGameView/load.bmp"
@@ -199,12 +214,32 @@
 #define BMP_FILE_TYPE ".bmp"
 #define DISABLED_BUTTON_CHAR 'd'
 
+/*
+ * The function makes deep copy of a rectangle
+ */
 SDL_Rect* copyRect(SDL_Rect* src);
+/*
+ * The function creates a stub invalid rectangle
+ */
 SDL_Rect* createInvlidRect();
+/*
+ * the function is a utility to check if given char is lower case
+ */
 SDL_bool isCharLoweCase(char c);
 
+/*
+ * the function converts difficulty button index to DifficutyLevel enum
+ */
 DifficultyLevel getDifficulty(int difficultyButtonIndex);
+
+/*
+ * the function converts mode button index to GameMode enum
+ */
 GameMode getMode(int modeButtonIndex);
+
+/*
+ * the function converts color button index to UserColor enum
+ */
 UserColor getColor(int colorButtonIndex);
 
 

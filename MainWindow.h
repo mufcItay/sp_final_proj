@@ -2,6 +2,7 @@
 #define MAINWINDOW_H_
 #include "Window.h"
 
+// enum which indicated a view
 enum  WindowView {
     MAIN_VIEW,
     COLOR_SELECTION_VIEW,
@@ -12,6 +13,9 @@ enum  WindowView {
 	UNINITIALIZED_VIEW
 };
 
+/*
+ * struct that hold main window data
+ */
 typedef struct mainwindow_t  MainWindow;
 struct mainwindow_t {
 	SDL_Window* window;
@@ -30,15 +34,51 @@ struct mainwindow_t {
 
 };
 
+/*
+ * The function creates the view
+ */
 Window* createMainWindow(GameSettings* gameSettings, GameState* gameState);
+
+/*
+ * The function creates the inner windows of the view
+ */
 Window** createMainWindowWidgets(Window* window, SDL_Renderer* renderer);
+/*
+ * The function frees resources of the view
+ */
 void destroyMainWindow(Window* src);
+/*
+ * The function draws the view
+ */
 void drawMainWindow(Window* src);
+/*
+ * The function handles events relating to the view
+ */
 Command* handleEventMainWindow(Window* src, SDL_Event* event);
+
+/*
+ * handler for load button
+ */
 Command* loadGameButtonHandler(Window* src, SDL_Event* event);
+
+/*
+ * handler for new game button
+ */
 Command* newGameButtonHandler(Window* src, SDL_Event* event);
+
+/*
+ * handler for exit button
+ */
 Command* exitButtonHandler(Window* src, SDL_Event* event);
+
+/*
+ * the function sets the current view relating to which view to draw and which view reacts to events
+ */
 void setCurrentView(Window* src, enum WindowView view);
+
+/*
+ * the fucntion sets the re draw state of each of the view's inner components
+ */
 void setMainWindowInnerReDraw(Window* src, SDL_bool reDraw);
 
 #endif

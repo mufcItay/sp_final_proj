@@ -4,6 +4,9 @@
 
 GameState* createGameState(){
 	GameState* state = (GameState*) malloc(sizeof(char**) + sizeof(int) + sizeof(void**));
+	if(state == NULL) {
+		return NULL;
+	}
 	state->board = createInitialBoard();
 	state->turn = WHITE;
 	return state;
@@ -12,7 +15,9 @@ GameState* createGameState(){
 
 GameSettings* createGameSettings(){
 	GameSettings* settings = (GameSettings*) malloc(sizeof(GameSettings));
-
+	if(settings == NULL) {
+		return NULL;
+	}
 	setDefaultSettings(settings);
 	return settings;
 }
@@ -40,10 +45,17 @@ void destroyGameSettings(GameSettings* gameSettings) {
 
 char** createInitialBoard()
 {
+	// allocate memory
 	char ** board = malloc(sizeof(char*) * BOARD_ROWS_AMOUNT);
+	if(board == NULL){
+		return NULL;
+	}
 	for(int i =0; i< BOARD_ROWS_AMOUNT;++i)
 	{
 		board[i] = (char*) malloc(sizeof(char) * BOARD_COLUMNS_AMOUNT);
+		if(board[i] == NULL){
+			return NULL;
+		}
 	}
 
 	board[0][0]=SOLDIER_TYPE_BLACK_ROCK; board[0][1]=SOLDIER_TYPE_BLACK_KNIGHT;board[0][2]=SOLDIER_TYPE_BLACK_BISHOP;board[0][3]=SOLDIER_TYPE_BLACK_QUEEN; board[0][4]=SOLDIER_TYPE_BLACK_KING;board[0][5]=SOLDIER_TYPE_BLACK_BISHOP;board[0][6]=SOLDIER_TYPE_BLACK_KNIGHT;board[0][7]=SOLDIER_TYPE_BLACK_ROCK;

@@ -6,10 +6,27 @@
 #include "CommonGUIUtil.h"
 #include "UIController.h"
 
+/*
+ * The function sets the functions of the GUI relevant controller
+ */
 void setGUIController(UIController* controller);
+/*
+ * The function initialzes GUI
+ */
 void* GUIInit();
+/*
+ * The function is responsible for handling user input, returning error code
+ */
 int GUIHandleInput(void* src, GameSettings* settings, GameState* state);
+
+/*
+ * the function draws the GUI according to programs current state
+ */
 void GUIDraw(void* src);
+
+/*
+ * The function frees all resources held by the GUI controller
+ */
 void GUIDestroyController(void* src);
 
 #endif

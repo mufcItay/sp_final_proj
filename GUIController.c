@@ -24,6 +24,7 @@ void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
 		return CONTROLLER_ERROR;
 	}
 
+	// create main window of the GUI
 	Window* window = (Window*) createMainWindow(gameSettings ,gameState);
 	initWindow(window);
 	if (window == NULL ) {
@@ -37,10 +38,13 @@ void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
 int GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	Window* window = (Window*) src;
 	SDL_Event event;
+	// wait for a user event
 	SDL_WaitEvent(&event);
+	// if we need to close gui..
 	if((event.type == SDL_WINDOWEVENT) && (event.window.event == SDL_WINDOWEVENT_CLOSE)){
 		return CONTROLLER_END;
 	}
+	// handle the event by calling it's unique handler
 	Command* cmd = window->handleEventWindow(window,&event);
 	cmd->handleCommand(cmd, settings,state);
 	// check if re draw needed. if so then draw
@@ -56,6 +60,7 @@ int GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 
 void GUIDraw(void* src){
 	Window* window = (Window*) src;
+	// always draw the main window
 	window->drawWindow(window);
 }
 

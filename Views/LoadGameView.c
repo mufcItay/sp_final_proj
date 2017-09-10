@@ -27,6 +27,7 @@ Window** updateSlotButtons(Window* holdingWindow) {
 	if(ret == NULL){
 		return NULL;
 	}
+	data->selectedSlot = SLOT_UNSELECTED;
 	data->slotButtons = ret;
 	return ret;
 }

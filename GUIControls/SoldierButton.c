@@ -6,16 +6,19 @@
 #include "Commands.h"
 
 Window* createSoldierButton(Window* holdingWindow, SDL_Renderer* windowRenderer,int row, int col, char type) {
-	//Allocate data
+	//Allocate memory
 	Window* res = (Window*) malloc(sizeof(Window));
 	SoldierButton* data = (SoldierButton*) malloc(sizeof(SoldierButton));
+	// hnadle memory error
 	if (res == NULL || data == NULL || windowRenderer == NULL) {
 		free(res);
 		free(data);
 		//We first destroy the renderer
 		return NULL ;
 	}
+	// create rectangle and actual button
 	SDL_Rect location = { .x = col * SOLDIER_BUTTON_IMAGE_WIDTH , .y = row * SOLDIER_BUTTON_IMAGE_HEIGHT, .h = SOLDIER_BUTTON_IMAGE_HEIGHT, .w = SOLDIER_BUTTON_IMAGE_WIDTH };
+	// set data members
 	res->location = copyRect(&location);
 	res->holdingWindow = holdingWindow;
 	data->rowIndex = row;
@@ -46,11 +49,14 @@ SDL_bool setImageData(Window* src)
 {
 	src->reDrawNeeded = SDL_FALSE;
 	SoldierButton* data = (SoldierButton*) (src->data);
+	// get current image path
 	char* imagePath = getImagePath(data);
+	// set the surface and texture to be able to draw the soldier image
 	SDL_Surface* loadingSurface = SDL_LoadBMP(imagePath); //We use the surface as a temp var;
 	SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(data->windowRenderer,
 			loadingSurface);
 	data->buttonTexture = buttonTexture;
+	// handle errors
 	if (data == NULL || loadingSurface == NULL
 			|| buttonTexture == NULL) {
 		free(data);
@@ -58,6 +64,7 @@ SDL_bool setImageData(Window* src)
 		SDL_DestroyTexture(buttonTexture); ////It is safe to pass NULL
 		return SDL_FALSE ;
 	}
+	// free memory
 	SDL_FreeSurface(loadingSurface); //Surface is not actually needed after texture is created
 	free(imagePath);
 	return SDL_TRUE;
@@ -83,6 +90,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 	SoldierButton* castData = (SoldierButton*) src->data;
 	GameBoardData* gameBoard = (GameBoardData*)(src->holdingWindow->data);
 
+	// get moves command
 	if(event->type == SDL_MOUSEBUTTONUP  && event->button.button == SDL_BUTTON_RIGHT){
 		// show possible moves
 		SDL_Point origin = {.x =castData->rowIndex , .y = castData->columnIndex};
@@ -94,7 +102,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 		if(castData->soldierType == SOLDIER_TYPE_EMPTY) {
 			return cmd;
 		}
-
+		// set selected state
 		castData->isSelected = SDL_TRUE;
 		gameBoard->selectedSoldier = src;
 	}
@@ -118,7 +126,7 @@ void drawSoldierButton(Window* src) {
 	}
 
 	SoldierButton* castData = (SoldierButton*) src->data;
-	//if has changed
+	//if the image has changed
 	if(src->reDrawNeeded == SDL_TRUE)
 	{
 		setImageData(src);
@@ -144,6 +152,7 @@ char* getImagePath(SoldierButton* src)
 		soldierColorChar = isCharLoweCase(src->soldierType) ? SOLDIER_COLOR_WHITE:SOLDIER_COLOR_BLACK;
 		soldierTypeChar = src->soldierType;
 	}
+	// allocate memory for path string
 	char* imageName = malloc(sizeof(char) +  sizeof(char) * SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH);
     sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isSelectedChar);
 	return imageName;

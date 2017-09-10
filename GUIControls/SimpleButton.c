@@ -5,18 +5,19 @@
 #include "CommonGUIUtil.h"
 #include "Window.h"
 
-//You need a create function:
 Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SDL_Rect* location,
 		char* image, Command* (*handler)(Window* , SDL_Event* )) {
 	if (windowRender == NULL || location == NULL || image == NULL ) {
 		return NULL ;
 	}
-	//Allocate data
+	//Allocate memory
 	Window* res = (Window*) malloc(sizeof(Window));
 	SimpleButton* data = (SimpleButton*) malloc(sizeof(SimpleButton));
-	SDL_Surface* loadingSurface = SDL_LoadBMP(image); //We use the surface as a temp var;
+	// create image texture and surface
+	SDL_Surface* loadingSurface = SDL_LoadBMP(image);
 	SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(windowRender,
 			loadingSurface);
+	// handle errors
 	if (res == NULL || data == NULL || loadingSurface == NULL
 			|| buttonTexture == NULL) {
 		free(res);
@@ -25,7 +26,9 @@ Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SD
 		SDL_DestroyTexture(buttonTexture); ////It is safe to pass NULL
 		return NULL ;
 	}
+	// free image resources
 	SDL_FreeSurface(loadingSurface); //Surface is not actually needed after texture is created
+	// set members
 	res->location = copyRect(location);
 	res->holdingWindow = holdingWindow;
 	data->buttonTexture = buttonTexture;
@@ -87,6 +90,7 @@ SDL_bool setNewImage(Window* src)
 	SimpleButton* data = (SimpleButton*) (src->data);
 	char* imagePath = data->imagePath;
 	if(data->isEnabled == SDL_FALSE) {
+		// set image accoridng to selected state
 		imagePath = (char*) malloc(sizeof(char) * strlen(data->imagePath) +sizeof(char) +sizeof(char));// + backslash 0 + new disabled char
 		for (int i = 0; i < strlen(data->imagePath); ++i) {
 			char* currentStr = data->imagePath + i;
@@ -99,11 +103,12 @@ SDL_bool setNewImage(Window* src)
 			imagePath[i] = data->imagePath[i];
 		}
 	}
-
+	// create texture and surface of image
 	SDL_Surface* loadingSurface = SDL_LoadBMP(imagePath); //We use the surface as a temp var;
 	SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(data->windowRenderer,
 			loadingSurface);
 	data->buttonTexture = buttonTexture;
+	// handle errors
 	if (data == NULL || loadingSurface == NULL
 			|| buttonTexture == NULL) {
 		destroySimpleButton(src);
@@ -111,6 +116,7 @@ SDL_bool setNewImage(Window* src)
 		SDL_DestroyTexture(buttonTexture); ////It is safe to pass NULL
 		return SDL_FALSE ;
 	}
+	//free unnesecerray memory resources
 	SDL_FreeSurface(loadingSurface); //Surface is not actually needed after texture is created
 	if(data->isEnabled == SDL_FALSE) {
 		free(imagePath);
@@ -122,6 +128,7 @@ void updateImage(Window* src, char* newImagePath){
 	SimpleButton* button = (SimpleButton*) (src->data);
 	src->reDrawNeeded = SDL_TRUE;
 	int newImageLen = strlen(newImagePath) +1;
+	// allocate image path string memory
 	button->imagePath= (char*) malloc(sizeof(char) * newImageLen);
 	strcpy(button->imagePath, newImagePath);
 }

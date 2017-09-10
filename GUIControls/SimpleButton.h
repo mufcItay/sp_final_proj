@@ -47,7 +47,7 @@ SDL_bool setNewImage(Window* src);
 void updateImage(Window* src, char* newImagePath);
 
 /*
- * The function sets the re draw state of each of the window's sub components
+ * The function sets the enabled state of each of the button
  */
 void setEnabledSimpleButton(Window* src,SDL_bool enabled);
 

@@ -11,28 +11,43 @@ void destroyCommand(Command* src){
 }
 
 Command* createGameModeCommand(GameMode mode){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	GameModeCommand* data = (GameModeCommand*) malloc(sizeof(GameModeCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	data->mode = mode;
-		cmd->destroyCommand = destroyGameModeCommand;
+	cmd->destroyCommand = destroyGameModeCommand;
 	cmd->handleCommand = handleGameModeCommand;
 	cmd->data = data;
 	return cmd;
 }
 
 Command* createDifficultyCommand(DifficultyLevel difficulty){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	DifficultyCommand* data = (DifficultyCommand*) malloc(sizeof(DifficultyCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	data->difficulty= difficulty;
-		cmd->destroyCommand = destroyDifficultyCommand;
+	cmd->destroyCommand = destroyDifficultyCommand;
 	cmd->handleCommand = handleDifficultyCommand;
 	cmd->data = data;
 	return cmd;
 }
 
 Command* createQuitCommand(){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	QuitCommand* data = (QuitCommand*) malloc(sizeof(QuitCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroyQuitCommand;
 	cmd->handleCommand = handleQuitCommand;
 	cmd->data = data;
@@ -40,8 +55,13 @@ Command* createQuitCommand(){
 }
 
 Command* createResetCommand(){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	ResetCommand* data = (ResetCommand*) malloc(sizeof(ResetCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroyResetCommand;
 	cmd->handleCommand = handleResetCommand;
 	cmd->data = data;
@@ -49,8 +69,13 @@ Command* createResetCommand(){
 }
 
 Command* createUserColorCommand(UserColor color){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	UserColorCommand* data = (UserColorCommand*) malloc(sizeof(UserColorCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	data->color = color;
 	cmd->destroyCommand = destroyUserColorCommand;
 	cmd->handleCommand = handleUserColorCommand;
@@ -59,8 +84,13 @@ Command* createUserColorCommand(UserColor color){
 }
 
 Command* createLoadCommand(char* path){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	LoadCommand* data = (LoadCommand*) malloc(sizeof(LoadCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	data->path = path;
 	if(data->path == NULL) {
 		return NULL;
@@ -72,8 +102,13 @@ Command* createLoadCommand(char* path){
 }
 
 Command* createDefaultCommand(){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	DefaultCommand* data = (DefaultCommand*) malloc(sizeof(DefaultCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroyDefaultCommand;
 	cmd->handleCommand = handleDefaultCommand;
 	cmd->data = data;
@@ -81,8 +116,13 @@ Command* createDefaultCommand(){
 }
 
 Command* createPrintSettingsCommand(){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	PrintSettingsCommand* data = (PrintSettingsCommand*) malloc(sizeof(PrintSettingsCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroyPrintSettingsCommand;
 	cmd->handleCommand = handlePrintSettingsCommand;
 	cmd->data = data;
@@ -90,8 +130,13 @@ Command* createPrintSettingsCommand(){
 }
 
 Command* createMoveCommand(SDL_Point origin, SDL_Point destination){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	MoveCommand* data = (MoveCommand*) malloc(sizeof(MoveCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	data->originPoint.x = origin.x;
 	data->originPoint.y = origin.y;
 	data->destinationPoint.x = destination.x;
@@ -103,8 +148,13 @@ Command* createMoveCommand(SDL_Point origin, SDL_Point destination){
 }
 
 Command* createStartCommand(){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	StartCommand* data = (StartCommand*) malloc(sizeof(StartCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroyStartCommand;
 	cmd->handleCommand = handleStartCommand;
 	cmd->data = data;
@@ -112,9 +162,14 @@ Command* createStartCommand(){
 }
 
 Command* createSaveCommand(char* path){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	SaveCommand* data = (SaveCommand*) malloc(sizeof(SaveCommand));
 	data->path = path;
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroySaveCommand;
 	cmd->handleCommand = handleSaveCommand;
 	cmd->data = data;
@@ -122,8 +177,13 @@ Command* createSaveCommand(char* path){
 }
 
 Command* createUndoCommand(){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	UndoCommand* data = (UndoCommand*) malloc(sizeof(UndoCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroyUndoCommand;
 	cmd->handleCommand = handleUndoCommand;
 	cmd->data = data;
@@ -131,8 +191,13 @@ Command* createUndoCommand(){
 }
 
 Command* createGetMovesCommand(SDL_Point origin){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	GetMovesCommand* data = (GetMovesCommand*) malloc(sizeof(GetMovesCommand));
+	// handle error
+	if(cmd == NULL || data == NULL) {
+		return NULL;
+	}
 	data->originPoint.x = origin.x;
 	data->originPoint.x = origin.y;
 	cmd->destroyCommand = destroyGetMovesCommand;
@@ -141,8 +206,13 @@ Command* createGetMovesCommand(SDL_Point origin){
 	return cmd;
 }
 Command* createNOPCommand(){
+	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	cmd->data = NOP_COMMAND_DATA;
+	// handle error
+	if(cmd == NULL) {
+		return NULL;
+	}
 	cmd->destroyCommand = destroyGeneralCommand;
 	cmd->handleCommand = handleNOPCommand;
 	return cmd;

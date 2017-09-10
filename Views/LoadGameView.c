@@ -8,6 +8,29 @@
 #include "FileSystemUtil.h"
 #include "Commands.h"
 
+
+Window** updateSlotButtons(Window* holdingWindow) {
+	if (holdingWindow == NULL) {
+		return NULL ;
+	}
+
+	LoadGameView* data = (LoadGameView*) holdingWindow->data;
+	if(data->slotButtons != NULL) {
+		// free old slot buttons
+		for (int i = 0; i< data->slotsAmount; ++i) {
+			destroyWindow(data->slotButtons[i]);
+		}
+		free(data->slotButtons);
+	}
+
+	Window** ret = createSlotButtons(holdingWindow,data->windowRenderer);
+	if(ret == NULL){
+		return NULL;
+	}
+	data->slotButtons = ret;
+	return ret;
+}
+
 Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
 	if (holdingWindow == NULL) {

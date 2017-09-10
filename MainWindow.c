@@ -277,6 +277,7 @@ void setCurrentView(Window* src, enum WindowView view) {
 			mainWin->modeSelectionViewWindow->reDrawNeeded = SDL_TRUE;
 			break;
 		case LOAD_GAME_VIEW:
+			updateSlotButtons(mainWin->loadGameViewWindow);
 			loadWin->lastView = mainWin->view;
 			mainWin->viewWindow = mainWin->loadGameViewWindow;
 			mainWin->loadGameViewWindow->reDrawNeeded = SDL_TRUE;

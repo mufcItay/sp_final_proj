@@ -88,5 +88,11 @@ void setLoadGameInnerReDraw(Window* src, SDL_bool reDraw);
  * the function gets the path of the image that is relevant to given slot.
  */
 char* getSlotImagePath(int slot);
+
+/*
+ * The function deletes old slot buttons and creates new ones for updating saved games live
+ */
+Window** updateSlotButtons(Window* holdingWindow);
+
 #endif
 

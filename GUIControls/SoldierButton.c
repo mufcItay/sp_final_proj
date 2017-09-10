@@ -27,6 +27,7 @@ Window* createSoldierButton(Window* holdingWindow, SDL_Renderer* windowRenderer,
 	res->destroyWindow = destroySoldierButton;
 	res->drawWindow = drawSoldierButton;
 	res->data = data;
+	res->setInnerWidgetsReDraw = setSoldierButtonInnerReDraw;
 	res->isClosed = SDL_FALSE;
 	res->handleEventWindow = handleEventSoldierButton;
 	setImageData(res);
@@ -146,4 +147,11 @@ char* getImagePath(SoldierButton* src)
 	char* imageName = malloc(sizeof(char) +  sizeof(char) * SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH);
     sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isSelectedChar);
 	return imageName;
+}
+
+/*
+ * the function sets re draw state of the view and each of it's inner components
+ */
+void setSoldierButtonInnerReDraw(Window* src, SDL_bool reDraw) {
+	src->reDrawNeeded = reDraw;
 }

@@ -248,7 +248,6 @@ void setCurrentView(Window* src, enum WindowView view) {
 			src->reDrawNeeded = SDL_TRUE;
 			break;
 		case BOARD_VIEW:
-			setBoard(mainWin->boardViewWindow, mainWin->gameState->board);
 			mainWin->viewWindow = mainWin->boardViewWindow;
 			mainWin->boardViewWindow->reDrawNeeded = SDL_TRUE;
 			break;

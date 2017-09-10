@@ -30,4 +30,8 @@ SDL_bool setImageData(Window* data);
 
 void updateSoldierData(Window* src, char newType);
 
+/*
+ * the function sets re draw state of the view and each of it's inner components
+ */
+void setSoldierButtonInnerReDraw(Window* src, SDL_bool reDraw);
 #endif

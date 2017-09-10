@@ -153,13 +153,13 @@ int loadGame(GameSettings* settings, GameState* state, char* path) {
 	fscanf(gameFile, XML_BOARD_TAG);
 	for (int i = BOARD_ROWS_AMOUNT; i > 0; i--) {
 		int rowIndex = -1;
-		char soldierTypes[BOARD_COLUMNS_AMOUNT + 1];
-		if (fscanf(gameFile, XML_ROW_TAG, &rowIndex, soldierTypes, &rowIndex) <= 0) {
+		char soldierTypes[BOARD_COLUMNS_AMOUNT];
+		if (fscanf(gameFile, XML_ROW_TAG, &rowIndex, soldierTypes, &currentColorXML) <= 0) {
 			fclose(gameFile);
 			return XML_ERROR;
 		}
 		for (int j = 0; j < BOARD_COLUMNS_AMOUNT; ++j) {
-			state->board[rowIndex][j] = soldierTypes[j];
+			state->board[i-1][j] = soldierTypes[j];
 		}
 	}
 	fscanf(gameFile, XML_BOARD_END_TAG);

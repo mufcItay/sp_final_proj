@@ -168,6 +168,7 @@ void drawGameBoardWindow(Window* src) {
 	//Draw window
 	if(src->reDrawNeeded)
 	{
+		setBoard(src, data->gameState->board);
 		SDL_SetRenderDrawColor(data->windowRenderer, BOARD_WINDOW_BGCOLOR_RED, BOARD_WINDOW_BGCOLOR_GREEN, BOARD_WINDOW_BGCOLOR_BLUE, BOARD_WINDOW_BGCOLOR_ALPHA);
 		SDL_RenderClear(data->windowRenderer);
 	}
@@ -210,7 +211,7 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 			if(isEventWindowRelated(data->soldierButtons[i][j], event) == SDL_TRUE){
 				// handle soldier buttons
 				cmd = data->soldierButtons[i][j]->handleEventWindow(data->soldierButtons[i][j],event);
-				if (cmd->data != NOP_COMMAND_DATA) {
+				if (cmd != NULL && cmd->data != NOP_COMMAND_DATA) {
 					return cmd;
 				}
 			}

@@ -27,7 +27,7 @@
 #define SOLDIER_TYPE_BLACK_KING 'K'
 #define SOLDIER_TYPE_BLACK_KNIGHT 'N'
 #define SOLDIER_TYPE_BLACK_BISHOP 'B'
-#define SOLDIER_TYPE_EMPTY ' '
+#define SOLDIER_TYPE_EMPTY '_'
 
 
 typedef struct gamesettings_t {

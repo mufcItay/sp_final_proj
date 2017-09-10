@@ -27,4 +27,9 @@ void updateImage(Window* src, char* newImagePath);
 
 void setEnabledSimpleButton(Window* src,SDL_bool enabled);
 
+/*
+ * the function sets re draw state of the view and each of it's inner components
+ */
+void setButtonInnerReDraw(Window* src, SDL_bool reDraw);
+
 #endif

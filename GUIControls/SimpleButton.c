@@ -33,6 +33,7 @@ Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SD
 	res->isClosed = SDL_FALSE;
 	res->destroyWindow = destroySimpleButton;
 	res->drawWindow = drawSimpleButton;
+	res->setInnerWidgetsReDraw = setButtonInnerReDraw;
 	res->handleEventWindow = handler;
 	res->data = data;
 	data->isEnabled = SDL_TRUE;
@@ -123,4 +124,8 @@ void updateImage(Window* src, char* newImagePath){
 	int newImageLen = strlen(newImagePath) +1;
 	button->imagePath= (char*) malloc(sizeof(char) * newImageLen);
 	strcpy(button->imagePath, newImagePath);
+}
+
+void setButtonInnerReDraw(Window* src, SDL_bool reDraw) {
+	src->reDrawNeeded = reDraw;
 }

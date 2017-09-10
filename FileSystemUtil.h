@@ -39,6 +39,7 @@
 #define XML_FILE_TYPE ".xml"
 #define SLOT_PATH_FORMAT "%s%d%s"
 #define FIRST_SLOT_NAME 1
+#define XML_BLANK_SOLDIER_TYPE '_'
 
 
 int getNumberOfSavedGames();

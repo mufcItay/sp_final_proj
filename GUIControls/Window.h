@@ -18,10 +18,21 @@ struct window_t {
 	void (*setInnerWidgetsReDraw)(Window* , SDL_bool);
 };
 
+/*
+ * The function frees all resources held by the window
+ */
 void destroyWindow(Window* src);
 
+
+/*
+ * The function initialized window's members
+ */
 void initWindow(Window* src);
 
+
+/*
+ * The function decides if an event relates to the window
+ */
 SDL_bool isEventWindowRelated(Window* src, SDL_Event* event);
 
 #endif

@@ -41,12 +41,35 @@
 #define FIRST_SLOT_NAME 1
 #define XML_BLANK_SOLDIER_TYPE '_'
 
-
+/*
+ * The function gets the number of saved games to load as slots
+ */
 int getNumberOfSavedGames();
+
+/*
+ * The function saves the settings and game state to given path. the format is an XML
+ */
 int saveGame(GameSettings* settings, GameState* state, char* path);
+
+/*
+ * The function loads the settings and game state from given path. the format is an XML
+ */
 int loadGame(GameSettings* settings, GameState* state, char* path);
+
+/*
+ * The function parses xml to insert difficulty of game to game settings object
+ */
 int updateDifficulty(GameSettings* settings, FILE* gameFile);
+
+/*
+ * The function re arranges saved games so only last 5 files will be in saved games directory,
+ *  and their name will be ordered chronoloigically
+ */
 int reArrageSavedGames();
+
+/*
+ * The function writes setting's game difficulty to XML game file
+ */
 int writeDifficultyToXML(GameSettings* settings, FILE* gameFile);
 
 

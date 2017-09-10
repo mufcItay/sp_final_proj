@@ -9,9 +9,11 @@
 int getNumberOfSavedGames() {
 	DIR *directory;
 	struct dirent *file;
+	// open directory
 	directory = opendir(SAVED_GAMES_DIRECTORY_PATH);
 	int numberOfFiles = 0;
 	if (directory != NULL) {
+		// count files
 		file = readdir(directory);
 		while (file != NULL) {
 			numberOfFiles++;
@@ -30,6 +32,7 @@ int reArrageSavedGames() {
 	if(numOfSavedGames > MAX_SLOTS) {
 		return XML_ERROR;
 	}
+	// no need to re arrange if no slots are available
 	if(numOfSavedGames == 0) {
 		return XML_OK;
 	}
@@ -63,10 +66,12 @@ int reArrageSavedGames() {
 }
 
 int saveGame(GameSettings* settings, GameState* state, char* path) {
+	// open file
 	FILE* gameFile = fopen(path, "w");
 	if (gameFile == NULL) {
 		return XML_ERROR;
 	}
+	// start writing tags
 	if (fprintf(gameFile, XML_TITLE_TAG) <= 0) {
 		fclose(gameFile);
 		return XML_ERROR;
@@ -98,12 +103,15 @@ int saveGame(GameSettings* settings, GameState* state, char* path) {
 		fclose(gameFile);
 		return XML_ERROR;
 	}
+	// write the board
 	for (int i = BOARD_ROWS_AMOUNT; i > 0; i--) {
+		// create a char[] for each line in board
 		char row[BOARD_COLUMNS_AMOUNT + 1];
 		for (int j = 0; j < BOARD_COLUMNS_AMOUNT; ++j) {
 			row[j] = state->board[i-1][j];
 		}
 		row[BOARD_COLUMNS_AMOUNT] = '\0';
+		// write the whole line to file
 		if (fprintf(gameFile, XML_ROW_TAG, i, row, i) <= 0) {
 			fclose(gameFile);
 			return XML_ERROR;
@@ -122,10 +130,12 @@ int saveGame(GameSettings* settings, GameState* state, char* path) {
 }
 
 int loadGame(GameSettings* settings, GameState* state, char* path) {
+	// open the xml file
 	FILE* gameFile = fopen(path, "r");
 	if (gameFile == NULL) {
 		return XML_ERROR;
 	}
+	// read tags
 	fscanf(gameFile, XML_TITLE_TAG);
 	fscanf(gameFile, XML_GAME_TAG);
 	int currentTurnXML = COLOR_UNDEFINED;
@@ -151,8 +161,10 @@ int loadGame(GameSettings* settings, GameState* state, char* path) {
 	}
 	settings->color = (settings->color == XML_COLOR_BLACK) ? BLACK : WHITE;
 	fscanf(gameFile, XML_BOARD_TAG);
+	// parse board tag
 	for (int i = BOARD_ROWS_AMOUNT; i > 0; i--) {
 		int rowIndex = -1;
+		// read line by line and fill the board
 		char soldierTypes[BOARD_COLUMNS_AMOUNT];
 		if (fscanf(gameFile, XML_ROW_TAG, &rowIndex, soldierTypes, &currentColorXML) <= 0) {
 			fclose(gameFile);

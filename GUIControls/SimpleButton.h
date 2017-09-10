@@ -4,6 +4,9 @@
 #include "Window.h" //A button is a widget also
 #include "Commands.h" //A button is a widget also
 
+/*
+ * struct that holds button's members
+ */
 typedef struct simplebutton_t SimpleButton;
 struct simplebutton_t{
 	SDL_Texture* buttonTexture;
@@ -12,19 +15,40 @@ struct simplebutton_t{
 	SDL_bool isEnabled;
 };
 
-//You need a create function:
+/*
+ * The function creates the button.
+ * holdingWindow - the window which has the window as a member
+ * handler - the event handler of the window
+ * image - the image of the button
+ * windowRender - the component the draws the window
+ * location - the location of the window
+ */
 Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SDL_Rect* location,
 		char* image , Command* (*handler)(Window* , SDL_Event* ));
 
-//You need this function in order to destroy all data Associate with a button:
+/*
+ * The function frees all resources of the button
+ */
 void destroySimpleButton(Window*);
 
+/*
+ * The function draws the button
+ */
 void drawSimpleButton(Window* src);
 
+/*
+ * The function sets a new image to the button. completes updatign the image of the button
+ */
 SDL_bool setNewImage(Window* src);
 
+/*
+ * The function updates the button image to a new one according to newImagePath
+ */
 void updateImage(Window* src, char* newImagePath);
 
+/*
+ * The function sets the re draw state of each of the window's sub components
+ */
 void setEnabledSimpleButton(Window* src,SDL_bool enabled);
 
 /*

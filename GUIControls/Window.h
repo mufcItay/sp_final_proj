@@ -16,6 +16,7 @@ struct window_t {
 	Command* (*handleEventWindow)(Window* , SDL_Event* );
 	void (*destroyWindow)(Window* );
 	void (*setInnerWidgetsReDraw)(Window* , SDL_bool);
+	ErrorCode (*handleError)(Window* ,ErrorCode);
 };
 
 /*
@@ -28,7 +29,6 @@ void destroyWindow(Window* src);
  * The function initialized window's members
  */
 void initWindow(Window* src);
-
 
 /*
  * The function decides if an event relates to the window

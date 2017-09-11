@@ -11,19 +11,19 @@ int main(int argc, char* argv[]) {
 	UIController controller;
 	GameSettings* gameSettings = createGameSettings();
 	if (gameSettings == NULL) {
-		return ERROR;
+		return MEMORY_ERROR;
 	}
 	GameState* gameState = createGameState();
 	if (gameState == NULL) {
-		return ERROR;
+		return MEMORY_ERROR;
 	}
 	// set GUI or CMD controller according to command line args
 	setGUIController(&controller);
 	void* ui = controller.init(gameSettings, gameState);
-	while (1) {
+	while (ui != NULL) {
 		// handle user input
 		int ret = controller.handleInput(ui,gameSettings, gameState);
-		if (ret == ERROR || ret == CONTROLLER_END) {
+		if (ret != OK) {
 			break;
 		}
 		// draw UI

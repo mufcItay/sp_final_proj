@@ -114,7 +114,8 @@ Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettin
 	data->colorButtons = difficultyWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
-	data->selectedColor = gameSettings->color;
+	// selected color is zero based
+	data->selectedColor = gameSettings->color - 1;
 	res->data = (void*) data;
 	res->destroyWindow = destroyColorSelectionView;
 	res->drawWindow = drawColorSelectionView;
@@ -123,7 +124,7 @@ Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettin
 	res->setInnerWidgetsReDraw = setColorSelectionInnerReDraw;
 	initWindow(res);
 	// update view to default selection
-	updateSelectedColor(COLOR_UNSELECTED, gameSettings->color, data);
+	updateSelectedColor(COLOR_UNSELECTED, data->selectedColor, data);
 	return res;
 }
 

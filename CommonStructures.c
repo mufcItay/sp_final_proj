@@ -1,5 +1,7 @@
 #include "CommonStructures.h"
 #include "Commands.h"
+#include <string.h>
+#include <stdio.h>
 
 
 GameState* createGameState(){
@@ -28,8 +30,6 @@ void setDefaultSettings(GameSettings* settings) {
 	settings->color=  DEFAULT_USER_COLOR;
 }
 
-
-
 void destroyGameState(GameState* gameState) {
 	for (int i = 0; i < BOARD_ROWS_AMOUNT; ++i) {
 		free(gameState->board[i]);
@@ -41,6 +41,28 @@ void destroyGameState(GameState* gameState) {
 
 void destroyGameSettings(GameSettings* gameSettings) {
 	free(gameSettings);
+}
+
+ErrorCode setInitialGameState(GameState* state) {
+	if(state == NULL || state->board == NULL) {
+		return NULL_POINTER_ERROR;
+	}
+	// free old board resources
+	for (int i = 0; i < BOARD_ROWS_AMOUNT; ++i) {
+		if(state->board[i] == NULL) {
+			return NULL_POINTER_ERROR;
+		}
+		free(state->board[i]);
+	}
+	free(state->board);
+
+	state->board = createInitialBoard();
+	if(state->board == NULL) {
+		return MEMORY_ERROR;
+	}
+	state->turn = WHITE;
+	// TODO: init undo history
+	return OK;
 }
 
 char** createInitialBoard()
@@ -68,4 +90,14 @@ char** createInitialBoard()
 	board[7][0]=SOLDIER_TYPE_WHITE_ROCK; board[7][1]=SOLDIER_TYPE_WHITE_KNIGHT;board[7][2]=SOLDIER_TYPE_WHITE_BISHOP;board[7][3]=SOLDIER_TYPE_WHITE_QUEEN; board[7][4]=SOLDIER_TYPE_WHITE_KING;board[7][5]=SOLDIER_TYPE_WHITE_BISHOP;board[7][6]=SOLDIER_TYPE_WHITE_KNIGHT;board[7][7]=SOLDIER_TYPE_WHITE_ROCK;
 
 	return board;
+}
+
+
+void printErrorMessage(const char* message) {
+	int prefixLen = strlen(ERROR_MESSAGE_PREFIX);
+	int messageLen = strlen(message);
+	char* fullMessage = malloc(prefixLen + messageLen + 1);
+	sprintf(fullMessage,"%s%s",ERROR_MESSAGE_PREFIX,message);
+	printf(fullMessage);
+	free(fullMessage);
 }

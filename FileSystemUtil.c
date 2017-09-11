@@ -11,6 +11,9 @@ int getNumberOfSavedGames() {
 	struct dirent *file;
 	// open directory
 	directory = opendir(SAVED_GAMES_DIRECTORY_PATH);
+	if(directory == NULL) {
+		return SLOTS_LOAD_ERROR;
+	}
 	int numberOfFiles = 0;
 	if (directory != NULL) {
 		// count files
@@ -22,19 +25,25 @@ int getNumberOfSavedGames() {
 		closedir(directory);
 	} else {
 		perror("Couldn't open the directory");
+		return SLOTS_LOAD_ERROR;
 	}
 	// 2 files are redundant
-	return numberOfFiles - REDUNDANT_FILES_AMOUNT;
+	numberOfFiles -= REDUNDANT_FILES_AMOUNT;
+	if(numberOfFiles > MAX_SLOTS) {
+		printErrorMessage("Too many slots in saved games directory");
+		return SLOTS_LOAD_ERROR;
+	}
+	return numberOfFiles;
 }
 
-int reArrageSavedGames() {
+ErrorCode reArrageSavedGames() {
 	int numOfSavedGames = getNumberOfSavedGames();
-	if(numOfSavedGames > MAX_SLOTS) {
-		return XML_ERROR;
+	if(numOfSavedGames > MAX_SLOTS || numOfSavedGames == SLOTS_LOAD_ERROR) {
+		return SAVE_ERROR;
 	}
 	// no need to re arrange if no slots are available
 	if(numOfSavedGames == 0) {
-		return XML_OK;
+		return OK;
 	}
 
 	if (numOfSavedGames == MAX_SLOTS) {
@@ -44,7 +53,7 @@ int reArrageSavedGames() {
 		sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,MAX_SLOTS,XML_FILE_TYPE);
 		int ret = remove(path);
 		if (ret != 0) {
-			return XML_ERROR;
+			return SAVE_ERROR;
 		}
 		numOfSavedGames--;
 	}
@@ -59,49 +68,49 @@ int reArrageSavedGames() {
 		sprintf(newName,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,slotIndex + 1 ,XML_FILE_TYPE);
 		int ret = rename(oldName,newName);
 		if (ret != 0) {
-			return XML_ERROR;
+			return SAVE_ERROR;
 		}
 	}
-	return XML_OK;
+	return OK;
 }
 
-int saveGame(GameSettings* settings, GameState* state, char* path) {
+ErrorCode saveGame(GameSettings* settings, GameState* state, char* path) {
 	// open file
 	FILE* gameFile = fopen(path, "w");
 	if (gameFile == NULL) {
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	// start writing tags
 	if (fprintf(gameFile, XML_TITLE_TAG) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	if (fprintf(gameFile, XML_GAME_TAG) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	int currentTurnXML = (state->turn == BLACK) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
 	if (fprintf(gameFile, XML_TURN_TAG, currentTurnXML) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	int currentModeXML = (settings->mode == MULTI_PLAYER) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
 	if (fprintf(gameFile, XML_MODE_TAG, currentModeXML) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	if (writeDifficultyToXML(settings, gameFile) == DIFFICULTY_UNDEFINED) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	int currentColorXML = (settings->color == BLACK) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
 	if (fprintf(gameFile, XML_COLOR_TAG, currentColorXML) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	if (fprintf(gameFile, XML_BOARD_TAG) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	// write the board
 	for (int i = BOARD_ROWS_AMOUNT; i > 0; i--) {
@@ -114,26 +123,26 @@ int saveGame(GameSettings* settings, GameState* state, char* path) {
 		// write the whole line to file
 		if (fprintf(gameFile, XML_ROW_TAG, i, row, i) <= 0) {
 			fclose(gameFile);
-			return XML_ERROR;
+			return SAVE_ERROR;
 		}
 	}
 	if (fprintf(gameFile, XML_BOARD_END_TAG) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	if (fprintf(gameFile, XML_GAME_END_TAG) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return SAVE_ERROR;
 	}
 	fclose(gameFile);
-	return XML_OK;
+	return OK;
 }
 
-int loadGame(GameSettings* settings, GameState* state, char* path) {
+ErrorCode loadGame(GameSettings* settings, GameState* state, char* path) {
 	// open the xml file
 	FILE* gameFile = fopen(path, "r");
 	if (gameFile == NULL) {
-		return XML_ERROR;
+		return LOAD_ERROR;
 	}
 	// read tags
 	fscanf(gameFile, XML_TITLE_TAG);
@@ -141,23 +150,23 @@ int loadGame(GameSettings* settings, GameState* state, char* path) {
 	int currentTurnXML = COLOR_UNDEFINED;
 	if (fscanf(gameFile, XML_TURN_TAG, &currentTurnXML) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return LOAD_ERROR;
 	}
 	state->turn = currentTurnXML == XML_COLOR_WHITE ? WHITE : BLACK;
 	int currentModeXML = MODE_UNDEFINED;
 	if (fscanf(gameFile, XML_MODE_TAG, &currentModeXML) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return LOAD_ERROR;
 	}
 	settings->mode = (currentModeXML == XML_MODE_MULTIPLAYER) ? MULTI_PLAYER : SINGLE_PLAYER;
 	if (updateDifficulty(settings, gameFile) == DIFFICULTY_UNDEFINED) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return LOAD_ERROR;
 	}
 	int currentColorXML = COLOR_UNDEFINED;
 	if (fscanf(gameFile, XML_COLOR_TAG, &currentColorXML) <= 0) {
 		fclose(gameFile);
-		return XML_ERROR;
+		return LOAD_ERROR;
 	}
 	settings->color = (settings->color == XML_COLOR_BLACK) ? BLACK : WHITE;
 	fscanf(gameFile, XML_BOARD_TAG);
@@ -168,7 +177,7 @@ int loadGame(GameSettings* settings, GameState* state, char* path) {
 		char soldierTypes[BOARD_COLUMNS_AMOUNT];
 		if (fscanf(gameFile, XML_ROW_TAG, &rowIndex, soldierTypes, &currentColorXML) <= 0) {
 			fclose(gameFile);
-			return XML_ERROR;
+			return LOAD_ERROR;
 		}
 		for (int j = 0; j < BOARD_COLUMNS_AMOUNT; ++j) {
 			state->board[i-1][j] = soldierTypes[j];
@@ -177,7 +186,7 @@ int loadGame(GameSettings* settings, GameState* state, char* path) {
 	fscanf(gameFile, XML_BOARD_END_TAG);
 	fscanf(gameFile, XML_GAME_END_TAG);
 	fclose(gameFile);
-	return XML_OK;
+	return OK;
 }
 
 int writeDifficultyToXML(GameSettings* settings, FILE* gameFile) {

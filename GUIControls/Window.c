@@ -3,14 +3,15 @@
 #include <stdlib.h>
 
 void destroyWindow(Window* src){
-	if(!src){
+	if(src == NULL){
 		return;
 	}
 	src->destroyWindow(src);
 }
 
+
 void initWindow(Window* src){
-	if(!src){
+	if(src == NULL){
 		return;
 	}
 	src->reDrawNeeded = SDL_TRUE;

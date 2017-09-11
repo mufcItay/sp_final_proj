@@ -246,7 +246,8 @@ Command* restartButtonHandler(Window* src, SDL_Event* event) {
 	GameBoardData* gameBoard = (GameBoardData*) src->holdingWindow->data;
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		cmd = createResetCommand();
-		setBoard(src,gameBoard->gameState->board);
+		src->holdingWindow->reDrawNeeded = SDL_TRUE;
+		src->holdingWindow->setInnerWidgetsReDraw(src->holdingWindow,SDL_TRUE);
 	}
 	return cmd;
 }

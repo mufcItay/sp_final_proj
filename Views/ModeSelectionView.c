@@ -88,7 +88,8 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	data->modeButtons = modeWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
-	data->selectedMode = gameSettings->mode;
+	// selected mode is zero based
+	data->selectedMode = gameSettings->mode -1;
 	res->data = (void*) data;
 	res->destroyWindow = destroyModeSelectionView;
 	res->drawWindow = drawModeSelectionView;
@@ -97,7 +98,7 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	res->setInnerWidgetsReDraw = setModeSelectionInnerReDraw;
 	initWindow(res);
 	// set default mode selection
-	updateSelectedMode(MODE_UNSELECTED, gameSettings->mode,data);
+	updateSelectedMode(MODE_UNSELECTED, data->selectedMode,data);
 	return res;
 
 }

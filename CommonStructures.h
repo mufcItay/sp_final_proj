@@ -2,11 +2,25 @@
 #define COMMONSTRUCTURES_H_
 #include "SDL2\SDL.h"
 
-// Error codes
-#define ERROR 1
-#define OK 0
+// Error codes enum
+typedef enum errorcodes_t {
+	SLOTS_LOAD_ERROR = -1,
+	OK = 0,
+	MEMORY_ERROR,
+	SAVE_ERROR,
+	LOAD_ERROR,
+	GENERAL_ERROR,
+	NULL_POINTER_ERROR,
+	CONTROLLER_END,
+	IMAGE_ERROR
+} ErrorCode;
+
 
 #define BMP_FILE_TYPE ".bmp"
+#define ERROR_MESSAGE_PREFIX "ERROR: "
+
+#define MAX_SLOTS 5
+
 
 // default settings values
 #define DEFAULT_GAME_MODE 1
@@ -73,7 +87,17 @@ void destroyGameSettings(GameSettings* gameSettings);
 char** createInitialBoard();
 
 /*
- * The function sets defualt values to GameSettings structure
+ * The function sets default values to GameSettings structure
  */
 void setDefaultSettings(GameSettings* settings);
+
+/*
+ * the function sets the game state to initial values (inital board, player turn and undo history).
+ */
+ErrorCode setInitialGameState(GameState* state);
+
+/*
+ * the function prints to console given error message.
+ */
+void printErrorMessage(const char* message);
 #endif

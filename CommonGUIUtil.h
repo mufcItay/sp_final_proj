@@ -3,11 +3,6 @@
 #include "SDL2\SDL_video.h"
 #include "Commands.h"
 
-// Controller consts
-#define CONTROLLER_ERROR 0
-#define CONTROLLER_OK 1
-#define CONTROLLER_END 2
-
 // redraw states
 #define REDRAW_NEEDED 1
 #define REDRAW_NOT_NEEDED 0
@@ -72,7 +67,7 @@
 #define LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX 1
 
 #define LOAD_GAME_WINDOW_BUTTONS_AMOUNT 7
-#define LOAD_GAME_WINDOW_SLOTS_AMOUNT 5
+#define LOAD_GAME_WINDOW_SLOTS_AMOUNT MAX_SLOTS
 #define LOAD_GAME_WINDOW_NAVIGATIONS_AMOUNT 2
 
 #define LOAD_GAME_WINDOW_BGCOLOR_RED 100

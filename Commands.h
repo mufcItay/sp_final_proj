@@ -8,8 +8,8 @@
  * enum to indicate game mode
  */
 typedef enum gamemode_t {
-	SINGLE_PLAYER,
-	MULTI_PLAYER,
+	SINGLE_PLAYER = 1,
+	MULTI_PLAYER = 2,
 	MODE_UNDEFINED
 } GameMode;
 
@@ -17,11 +17,11 @@ typedef enum gamemode_t {
  * enum to indicate difficulty level
  */
 typedef enum difficultylevel_t {
-	NOOB,
-	EASY,
-	MODERATE,
-	HARD,
-	EXPERT,
+	NOOB =1,
+	EASY = 2,
+	MODERATE = 3,
+	HARD =4,
+	EXPERT =5,
 	DIFFICULTY_UNDEFINED
 } DifficultyLevel;
 
@@ -29,8 +29,8 @@ typedef enum difficultylevel_t {
  * enum to indicate user color
  */
 typedef enum usercoloer_t {
-	WHITE,
 	BLACK,
+	WHITE,
 	COLOR_UNDEFINED
 } UserColor;
 
@@ -72,20 +72,20 @@ Command* createNOPCommand();
  * the handlers will relate to the command and react accordingly,
  * by changing game state and/or game settings
  */
-int handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleQuitCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleResetCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleStartCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleUndoCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleGetMovesCommand(Command* cmd, GameSettings* settings, GameState* state);
-int handleNOPCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleQuitCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleResetCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleStartCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleUndoCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleGetMovesCommand(Command* cmd, GameSettings* settings, GameState* state);
+ErrorCode handleNOPCommand(Command* cmd, GameSettings* settings, GameState* state);
 
 /*
  * Destoyer function for each command. the destroyers will free resources for each of the commands

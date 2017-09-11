@@ -77,8 +77,13 @@ Command* exitButtonHandler(Window* src, SDL_Event* event);
 void setCurrentView(Window* src, enum WindowView view);
 
 /*
- * the fucntion sets the re draw state of each of the view's inner components
+ * the function sets the re draw state of each of the view's inner components
  */
 void setMainWindowInnerReDraw(Window* src, SDL_bool reDraw);
 
+/*
+ * the function handles errors happened during handle event in some inner gui component.
+ * the return value is the new error code after trying to solve the error.
+ */
+ErrorCode handleMainWindowError(Window* src, ErrorCode err);
 #endif

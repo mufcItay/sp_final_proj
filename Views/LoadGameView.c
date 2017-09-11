@@ -37,6 +37,7 @@ Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 	if (holdingWindow == NULL) {
 		return NULL ;
 	}
+	LoadGameView* view = (LoadGameView*) (holdingWindow->data);
 	// allocate memory
 	Window** slotButtons = calloc(LOAD_GAME_WINDOW_SLOTS_AMOUNT,sizeof(Window*));
 	if (slotButtons == NULL ) {
@@ -44,14 +45,17 @@ Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 	}
 	// get from file system the number of saved games
 	int availableSlots = getNumberOfSavedGames();
-	LoadGameView* view = (LoadGameView*) (holdingWindow->data);
+	if(availableSlots == SLOTS_LOAD_ERROR) {
+		view->slotsAmount = 0;
+		return slotButtons;
+	}
 	if(availableSlots > LOAD_GAME_WINDOW_SLOTS_AMOUNT) {
 		availableSlots = LOAD_GAME_WINDOW_SLOTS_AMOUNT;
 	}
+	view->slotsAmount = availableSlots;
 	if(availableSlots == 0) {
 		return slotButtons;
 	}
-	view->slotsAmount = availableSlots;
 
 	//crate the buttons of slots
 	for (int i = 0; i < availableSlots; ++i) {
@@ -119,8 +123,7 @@ Window* createLoadGameView(Window* holdingWindow, GameSettings* gameSettings, Ga
 		free(slotsWidgets);
 		free(menuButtons);
 		//We first destroy the renderer
-		SDL_DestroyRenderer(renderer); //NULL safe
-		destroyWindow(holdingWindow); //NULL safe
+		SDL_DestroyRenderer(renderer);
 		return NULL ;
 	}
 	// set data members

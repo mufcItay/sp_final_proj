@@ -13,9 +13,13 @@ void destroyCommand(Command* src){
 Command* createGameModeCommand(GameMode mode){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	GameModeCommand* data = (GameModeCommand*) malloc(sizeof(GameModeCommand));
 	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	data->mode = mode;
@@ -28,9 +32,13 @@ Command* createGameModeCommand(GameMode mode){
 Command* createDifficultyCommand(DifficultyLevel difficulty){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	DifficultyCommand* data = (DifficultyCommand*) malloc(sizeof(DifficultyCommand));
 	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	data->difficulty= difficulty;
@@ -43,9 +51,13 @@ Command* createDifficultyCommand(DifficultyLevel difficulty){
 Command* createQuitCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	QuitCommand* data = (QuitCommand*) malloc(sizeof(QuitCommand));
 	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	cmd->destroyCommand = destroyQuitCommand;
@@ -57,9 +69,12 @@ Command* createQuitCommand(){
 Command* createResetCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	ResetCommand* data = (ResetCommand*) malloc(sizeof(ResetCommand));
-	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	cmd->destroyCommand = destroyResetCommand;
@@ -71,9 +86,13 @@ Command* createResetCommand(){
 Command* createUserColorCommand(UserColor color){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
-	UserColorCommand* data = (UserColorCommand*) malloc(sizeof(UserColorCommand));
 	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(cmd == NULL) {
+		return NULL;
+	}
+	UserColorCommand* data = (UserColorCommand*) malloc(sizeof(UserColorCommand));
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	data->color = color;
@@ -86,9 +105,13 @@ Command* createUserColorCommand(UserColor color){
 Command* createLoadCommand(char* path){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	LoadCommand* data = (LoadCommand*) malloc(sizeof(LoadCommand));
 	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	data->path = path;
@@ -104,9 +127,12 @@ Command* createLoadCommand(char* path){
 Command* createDefaultCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	DefaultCommand* data = (DefaultCommand*) malloc(sizeof(DefaultCommand));
-	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	cmd->destroyCommand = destroyDefaultCommand;
@@ -118,9 +144,12 @@ Command* createDefaultCommand(){
 Command* createPrintSettingsCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	PrintSettingsCommand* data = (PrintSettingsCommand*) malloc(sizeof(PrintSettingsCommand));
-	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	cmd->destroyCommand = destroyPrintSettingsCommand;
@@ -132,9 +161,12 @@ Command* createPrintSettingsCommand(){
 Command* createMoveCommand(SDL_Point origin, SDL_Point destination){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	MoveCommand* data = (MoveCommand*) malloc(sizeof(MoveCommand));
-	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	data->originPoint.x = origin.x;
@@ -150,9 +182,12 @@ Command* createMoveCommand(SDL_Point origin, SDL_Point destination){
 Command* createStartCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	StartCommand* data = (StartCommand*) malloc(sizeof(StartCommand));
-	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	cmd->destroyCommand = destroyStartCommand;
@@ -164,12 +199,16 @@ Command* createStartCommand(){
 Command* createSaveCommand(char* path){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
-	SaveCommand* data = (SaveCommand*) malloc(sizeof(SaveCommand));
-	data->path = path;
-	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(cmd == NULL) {
 		return NULL;
 	}
+	SaveCommand* data = (SaveCommand*) malloc(sizeof(SaveCommand));
+	if(data == NULL) {
+		free(cmd);
+		return NULL;
+	}
+
+	data->path = path;
 	cmd->destroyCommand = destroySaveCommand;
 	cmd->handleCommand = handleSaveCommand;
 	cmd->data = data;
@@ -179,9 +218,13 @@ Command* createSaveCommand(char* path){
 Command* createUndoCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	UndoCommand* data = (UndoCommand*) malloc(sizeof(UndoCommand));
 	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	cmd->destroyCommand = destroyUndoCommand;
@@ -193,9 +236,13 @@ Command* createUndoCommand(){
 Command* createGetMovesCommand(SDL_Point origin){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
+	if(cmd == NULL) {
+		return NULL;
+	}
 	GetMovesCommand* data = (GetMovesCommand*) malloc(sizeof(GetMovesCommand));
 	// handle error
-	if(cmd == NULL || data == NULL) {
+	if(data == NULL) {
+		free(cmd);
 		return NULL;
 	}
 	data->originPoint.x = origin.x;
@@ -208,73 +255,86 @@ Command* createGetMovesCommand(SDL_Point origin){
 Command* createNOPCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
-	cmd->data = NOP_COMMAND_DATA;
-	// handle error
 	if(cmd == NULL) {
 		return NULL;
 	}
+	cmd->data = NOP_COMMAND_DATA;
 	cmd->destroyCommand = destroyGeneralCommand;
 	cmd->handleCommand = handleNOPCommand;
 	return cmd;
 }
 
-int handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state){
+ErrorCode handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
-		return ERROR;
+		return NULL_POINTER_ERROR;
 	}
 	GameModeCommand* modeCmd = (GameModeCommand*) cmd->data;
 	settings->mode = modeCmd->mode;
+	if(modeCmd->mode == MULTI_PLAYER) {
+		ErrorCode err = setInitialGameState(state);
+		return err;
+	}
 	return OK;
 }
 
-int handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state)
+ErrorCode handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state)
 {
 	if(cmd == NULL || settings == NULL || state == NULL) {
-		return ERROR;
+		return NULL_POINTER_ERROR;
 	}
 	DifficultyCommand* difficultyCmd = (DifficultyCommand*) cmd->data;
 	settings->difficulty = difficultyCmd->difficulty;
 	return OK;
 }
 
-int handleQuitCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+ErrorCode handleQuitCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
 
-int handleResetCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+ErrorCode handleResetCommand(Command* cmd, GameSettings* settings, GameState* state) {
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		return NULL_POINTER_ERROR;
+	}
 
-int handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state)
+	ErrorCode err = setInitialGameState(state);
+	return err;
+}
+
+ErrorCode handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state)
 {
 	if(cmd == NULL || settings == NULL || state == NULL) {
-		return ERROR;
+		return NULL_POINTER_ERROR;
 	}
 	UserColorCommand* colorCmd = (UserColorCommand*) cmd->data;
 	settings->color= colorCmd->color;
 	return OK;
 }
 
-int handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state) {
+ErrorCode handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state) {
 	if(cmd == NULL || settings == NULL || state == NULL) {
-		return ERROR;
+		return NULL_POINTER_ERROR;
 	}
 
 	LoadCommand* loadCmd = (LoadCommand*) cmd->data;
 	int ret = loadGame(settings,state,loadCmd->path);
+	if(ret == LOAD_ERROR) {
+		printErrorMessage("loading the game from XML has failed");
+	}
 	return ret;
 }
 
-int handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state){
+ErrorCode handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
-		return ERROR;
+		return NULL_POINTER_ERROR;
 	}
 
 	setDefaultSettings(settings);
 	return OK;
 }
 
-int handlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+ErrorCode handlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
 
-int handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){
+ErrorCode handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
-		return ERROR;
+		return NULL_POINTER_ERROR;
 	}
 	// if move invalid get out. supposed to check it here or in the UI? cause error message happens in UI
 	MoveCommand* moveCmd = (MoveCommand*) cmd->data;
@@ -294,20 +354,26 @@ int handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){
 	return OK;
 }
 
-int handleStartCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+ErrorCode handleStartCommand(Command* cmd, GameSettings* settings, GameState* state){
+	ErrorCode err = setInitialGameState(state);
+	return err;
+}
 
-int handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
+ErrorCode handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
-		return ERROR;
+		return NULL_POINTER_ERROR;
 	}
 	SaveCommand* saveCmd = (SaveCommand*) cmd->data;
 	int ret = saveGame(settings,state,saveCmd->path);
+	if(ret == SAVE_ERROR) {
+		printErrorMessage("saving the game to XML has failed");
+	}
 	return ret;
 }
 
-int handleUndoCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int handleGetMovesCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-int handleNOPCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+ErrorCode handleUndoCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+ErrorCode handleGetMovesCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
+ErrorCode handleNOPCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
 
 void destroyGeneralCommand(Command* cmd){
 	if (cmd == NULL ) {

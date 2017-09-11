@@ -92,7 +92,8 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	data->difficultyButtons = difficultyWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
-	data->selectedDifficulty = gameSettings->difficulty;
+	// selected difficulty is zero based
+	data->selectedDifficulty = gameSettings->difficulty - 1;
 	res->data = (void*) data;
 	res->destroyWindow = destroyDifficultySelectionView;
 	res->drawWindow = drawDifficultySelectionView;
@@ -101,7 +102,7 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	res->setInnerWidgetsReDraw = setDifficultySelectionInnerReDraw;
 	initWindow(res);
 	// update to default difficulty selection
-	updateSelectedDifficulty(DIFFICULTY_UNSELECTED, gameSettings->difficulty,data);
+	updateSelectedDifficulty(DIFFICULTY_UNSELECTED, data->selectedDifficulty,data);
 	return res;
 
 }

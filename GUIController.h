@@ -17,7 +17,7 @@ void* GUIInit();
 /*
  * The function is responsible for handling user input, returning error code
  */
-int GUIHandleInput(void* src, GameSettings* settings, GameState* state);
+ErrorCode GUIHandleInput(void* src, GameSettings* settings, GameState* state);
 
 /*
  * the function draws the GUI according to programs current state

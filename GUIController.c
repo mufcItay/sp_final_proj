@@ -17,11 +17,11 @@ void setGUIController(UIController* controller) {
 void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) { //SDL2 INIT
 		printf("ERROR: unable to init SDL: %s\n", SDL_GetError());
-		return CONTROLLER_ERROR;
+		return NULL;
 	}
 
 	if(gameSettings == NULL || gameState == NULL) {
-		return CONTROLLER_ERROR;
+		return NULL;
 	}
 
 	// create main window of the GUI
@@ -29,13 +29,13 @@ void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
 	initWindow(window);
 	if (window == NULL ) {
 		SDL_Quit();
-		return CONTROLLER_ERROR;
+		return NULL;
 	}
 
 	return window;
 }
 
-int GUIHandleInput(void* src, GameSettings* settings, GameState* state){
+ErrorCode GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	Window* window = (Window*) src;
 	SDL_Event event;
 	// wait for a user event
@@ -46,7 +46,14 @@ int GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	}
 	// handle the event by calling it's unique handler
 	Command* cmd = window->handleEventWindow(window,&event);
-	cmd->handleCommand(cmd, settings,state);
+	if(cmd == NULL){
+		return NULL_POINTER_ERROR;
+	}
+	ErrorCode ret = cmd->handleCommand(cmd, settings,state);
+	if(ret != OK) {
+		ErrorCode handledError = window->handleError(window, ret);
+		return handledError;
+	}
 	// check if re draw needed. if so then draw
 	if(window->isClosed == SDL_TRUE)
 	{

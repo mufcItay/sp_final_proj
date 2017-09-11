@@ -294,7 +294,7 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
 	if(data->isGameSaved == SDL_TRUE) {
 		return SDL_FALSE;
 	}
-	MBoxButton selectedButton = getUserSaveGameDescision();
+	MBoxSaveGameButton selectedButton = getUserSaveGameDescision();
 	switch(selectedButton) {
 		case BUTTON_YES:
 			reArrageSavedGames();
@@ -310,7 +310,7 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
 		case BUTTON_CANCEL:
 			return SDL_TRUE;
 		case BUTTON_NO:
-		case NO_SELECTION:
+		case PAWN_NO_SELECTION:
 			break;
 	}
 	return SDL_FALSE;

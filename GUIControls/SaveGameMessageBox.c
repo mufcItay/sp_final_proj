@@ -1,6 +1,6 @@
 #include "SaveGameMessageBox.h"
 
-MBoxButton getUserSaveGameDescision() {
+MBoxSaveGameButton getUserSaveGameDescision() {
 	const SDL_MessageBoxButtonData buttons[] = {
 		{ 0, BUTTON_YES, YES_BUTTON_CAPTION },
 		{ 0, BUTTON_NO, NO_BUTTON_CAPTION },
@@ -8,26 +8,26 @@ MBoxButton getUserSaveGameDescision() {
 	};
 	const SDL_MessageBoxColorScheme colorScheme = {
 		{
-			MBOX_BG_COLOR,
-			MBOX_TEXT_COLOR,
-			MBOX_BUTTON_BORDER_COLOR,
-			MBOX_BUTTON_BG_COLOR,
-			MBOX_BUTTON_BG_COLOR_SELECTED
+			MBOX_SAVE_BG_COLOR,
+			MBOX_SAVE_TEXT_COLOR,
+			MBOX_SAVE_BUTTON_BORDER_COLOR,
+			MBOX_SAVE_BUTTON_BG_COLOR,
+			MBOX_SAVE_BUTTON_BG_COLOR_SELECTED
 		}
 	};
 	const SDL_MessageBoxData messageboxdata = {
 		SDL_MESSAGEBOX_INFORMATION,
 		NULL, /* .window */
-		MBOX_TITLE, /* .title */
-		MBOX_MESSAGE, /* .message */
+		MBOX_SAVE_TITLE, /* .title */
+		MBOX_SAVE_MESSAGE, /* .message */
 		SDL_arraysize(buttons), /* .numbuttons */
 		buttons, /* .buttons */
 		&colorScheme /* .colorScheme */
 	};
 	int buttonid;
 	if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
-		printErrorMessage(MBOX_ERROR_MESSAGE);
-		return NO_SELECTION;
+		printErrorMessage(MBOX_SAVE_ERROR_MESSAGE);
+		return SAVE_NO_SELECTION;
 	}
 
 	return buttonid;

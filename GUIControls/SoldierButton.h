@@ -16,6 +16,7 @@ struct soldierbutton_t{
 	int rowIndex;
 	int columnIndex;
 	SDL_bool isSelected;
+	SDL_bool isHighlighted;
 };
 
 /*

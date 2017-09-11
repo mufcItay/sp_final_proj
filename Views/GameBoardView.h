@@ -6,6 +6,7 @@
 #include "SoldierButton.h"
 #include "Window.h"
 #include "CommonStructures.h"
+#include "CommonGUIUtil.h"
 #include "Commands.h"
 
 
@@ -29,6 +30,7 @@ struct gameBoard_t {
 	SDL_Renderer* windowRenderer;
 	Window*** soldierButtons;
 	Window** menuButtons;
+	Window* statusButton;
 	Window* selectedSoldier;
 	GameSettings* gameSettings;
 	GameState* gameState;
@@ -116,4 +118,10 @@ void setBoard(Window* gameBoardWindow, char** boardToSet);
  * The function checked by showing a messagebox if save is wanted by user when the user switches from GameBoard view.
  */
 SDL_bool checkIfSaveGameNeeded(GameBoardData* data);
+
+/*
+ * The function checked by showing a messagebox if save is wanted by user when the user switches from GameBoard view.
+ */
+void setStatusImage(GameBoardData* data, GameBoardStatuses status);
+
 #endif

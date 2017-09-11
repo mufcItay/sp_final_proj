@@ -100,13 +100,16 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	// create Windows of the view
 	Window*** widgets = createBoardSoldierButtons(res, renderer);
 	Window** menuButtons = createBoardMenuButtons(res, renderer);
+	SDL_Rect statusR = { .x = BOARD_STATUS_BUTTON_X_POS , .y = BOARD_STATUS_BUTTON_Y_POS, .h = BOARD_STATUS_BUTTON_HEIGHT, .w = BOARD_STATUS_BUTTON_WIDTH};
+	Window* statusWindow = createSimpleButton(res,renderer,&statusR,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH,NULL);
 	// handle windows creation errors
 	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| widgets == NULL || menuButtons == NULL) {
+			|| widgets == NULL || menuButtons == NULL|| statusWindow == NULL) {
 		free(res);
 		free(data);
 		free(widgets);
 		free(menuButtons);
+		destroyWindow(statusWindow);
 		//We first destroy the renderer
 		SDL_DestroyRenderer(renderer); //NULL safe
 		destroyWindow(holdingWindow); //NULL safe
@@ -118,6 +121,7 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	data->menuButtons = menuButtons;
 	data->isGameSaved = SDL_FALSE;
 	data->selectedSoldier = NULL;
+	data->statusButton = statusWindow;
 	res->destroyWindow = destroyGameBoardWindow;
 	res->drawWindow = drawGameBoardWindow;
 	res->handleEventWindow = handleEventGameBoardWindow;
@@ -156,6 +160,8 @@ void destroyGameBoardWindow(Window* src) {
 	for (int i = 0; i < BOARD_WINDOW_BUTTONS_AMOUNT; ++i) {
 		destroyWindow(data->menuButtons[i]);
 	}
+
+	destroyWindow(data->statusButton);
 	free(data->soldierButtons);
 	free(data->menuButtons);
 	SDL_DestroyRenderer(data->windowRenderer);
@@ -175,6 +181,8 @@ void drawGameBoardWindow(Window* src) {
 		SDL_SetRenderDrawColor(data->windowRenderer, BOARD_WINDOW_BGCOLOR_RED, BOARD_WINDOW_BGCOLOR_GREEN, BOARD_WINDOW_BGCOLOR_BLUE, BOARD_WINDOW_BGCOLOR_ALPHA);
 		SDL_RenderClear(data->windowRenderer);
 	}
+	src->reDrawNeeded |= data->statusButton->reDrawNeeded;
+	data->statusButton->drawWindow(data->statusButton);
 	for (int i = 0; i< BOARD_WINDOW_ROWS_AMOUNT; ++i) {
 		for (int j= 0; j< BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
 			// draw soldier buttons
@@ -257,11 +265,11 @@ Command* restartButtonHandler(Window* src, SDL_Event* event) {
 }
 Command* undoButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
-
 	SimpleButton* data = (SimpleButton*) src->data;
+
 	if(data->isEnabled == SDL_FALSE)
 	{
 		return cmd;
@@ -275,7 +283,7 @@ Command* undoButtonHandler(Window* src, SDL_Event* event) {
 
 Command* exitBoardButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		return NULL;
 	}
 	GameBoardData* data = (GameBoardData*) src->holdingWindow->data;
 	Command* cmd = createNOPCommand();
@@ -310,7 +318,7 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
 		case BUTTON_CANCEL:
 			return SDL_TRUE;
 		case BUTTON_NO:
-		case PAWN_NO_SELECTION:
+		case SAVE_NO_SELECTION:
 			break;
 	}
 	return SDL_FALSE;
@@ -389,4 +397,37 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	cmd = createMoveCommand(origin,destination);
 	gameBoard->isGameSaved = SDL_FALSE;
 	return cmd;
+}
+
+void setStatusImage(GameBoardData* data, GameBoardStatuses status) {
+	Window* statusBut = (Window*) data->statusButton;
+	switch(status) {
+		case NEUTRAL:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH);
+			break;
+		case TIE:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH);
+			break;
+		case CHECK:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH);
+			break;
+		case CHECKMATE:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH);
+			break;
+		case PAWN_PROMOTION:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH);
+			break;
+		case BISHOP_PROMOTION:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH);
+			break;
+		case ROCK_PROMOTION:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH);
+			break;
+		case QUEEN_PROMOTION:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH);
+			break;
+		case KNIGHT_PROMOTION:
+			updateImage(statusBut,BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH);
+			break;
+	}
 }

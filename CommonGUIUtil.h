@@ -33,6 +33,11 @@
 #define BOARD_WINDOW_BUTTON_WIDTH 120
 #define BOARD_WINDOW_BUTTON_SPACING 15
 
+#define BOARD_STATUS_BUTTON_Y_POS ((BOARD_ROWS_AMOUNT) * SOLDIER_BUTTON_IMAGE_HEIGHT)
+#define BOARD_STATUS_BUTTON_X_POS 50
+#define BOARD_STATUS_BUTTON_HEIGHT 100
+#define BOARD_STATUS_BUTTON_WIDTH 600
+
 #define BOARD_WINDOW_RESTART_BUTTON_INDEX 0
 #define BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX 1
 #define BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX 2
@@ -158,8 +163,8 @@
 
 #define SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH 34
 
-#define SOLDIER_BUTTON_SELECTED 'y'
-#define SOLDIER_BUTTON_NOT_SELECTED 'n'
+#define SOLDIER_BUTTON_HIGHLIGHTED 's'
+#define SOLDIER_BUTTON_NOT_HIGHLIGHTED 'n'
 
 //saved games paths
 #define SAVED_GAMES_DIRECTORY_PATH "./SavedGames/"
@@ -176,6 +181,16 @@
 #define BOARD_WINDOW_UNDO_BUTTON_PIC_PATH "./pics/BoardView/undo.bmp"
 #define BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH "./pics/BoardView/mainmenu.bmp"
 #define BOARD_WINDOW_EXIT_BUTTON_PIC_PATH "./pics/BoardView/exitboard.bmp"
+
+#define BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH "./pics/BoardView/statuses/neutral.bmp"
+#define BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH "./pics/BoardView/statuses/tie.bmp"
+#define BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH "./pics/BoardView/statuses/check.bmp"
+#define BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH "./pics/BoardView/statuses/checkmate.bmp"
+#define BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compp.bmp"
+#define BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compk.bmp"
+#define BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compq.bmp"
+#define BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compb.bmp"
+#define BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compr.bmp"
 
 
 #define LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH "./pics/loadGameView/%d%c.bmp"
@@ -208,6 +223,19 @@
 
 #define BMP_FILE_TYPE ".bmp"
 #define DISABLED_BUTTON_CHAR 'd'
+
+// enum for all the messages of board view
+typedef enum gameboardstatuses_t {
+	NEUTRAL,
+	TIE,
+	CHECK,
+	CHECKMATE,
+	PAWN_PROMOTION,
+	QUEEN_PROMOTION,
+	BISHOP_PROMOTION,
+	ROCK_PROMOTION,
+	KNIGHT_PROMOTION
+} GameBoardStatuses;
 
 /*
  * The function makes deep copy of a rectangle

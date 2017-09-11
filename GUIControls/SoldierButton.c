@@ -26,6 +26,7 @@ Window* createSoldierButton(Window* holdingWindow, SDL_Renderer* windowRenderer,
 	data->windowRenderer = windowRenderer;
 	data->soldierBGColor = ((row%2 + col%2)%2) ? SOLDIER_COLOR_WHITE: SOLDIER_COLOR_BLACK;
 	data->isSelected = SDL_FALSE;
+	data->isHighlighted = SDL_FALSE;
 	data->soldierType = type;
 	res->destroyWindow = destroySoldierButton;
 	res->drawWindow = drawSoldierButton;
@@ -42,6 +43,7 @@ void updateSoldierData(Window* src, char newType)
 	SoldierButton* soldier = (SoldierButton*) (src->data);
 	src->reDrawNeeded = SDL_TRUE;
 	soldier->isSelected = SDL_FALSE;
+	soldier->isHighlighted = SDL_FALSE;
 	soldier->soldierType = newType;
 }
 
@@ -92,6 +94,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 
 	// get moves command
 	if(event->type == SDL_MOUSEBUTTONUP  && event->button.button == SDL_BUTTON_RIGHT){
+		// get the moved and use isHighlighted
 		// show possible moves
 		SDL_Point origin = {.x =castData->rowIndex , .y = castData->columnIndex};
 		cmd = createGetMovesCommand(origin);
@@ -141,7 +144,7 @@ char* getImagePath(SoldierButton* src)
 	char soldierColorChar;
 	char soldierTypeChar;
 	char backgroundColorChar = src->soldierBGColor;
-	char isSelectedChar = SOLDIER_BUTTON_NOT_SELECTED;//(src->isSelected == SDL_TRUE) ? SOLDIER_BUTTON_SELECTED:SOLDIER_BUTTON_NOT_SELECTED;
+	char isHighlightedChar = SOLDIER_BUTTON_NOT_HIGHLIGHTED;//(src->isHighlighted == SDL_TRUE) ? SOLDIER_BUTTON_HIGHLIGHTED:SOLDIER_BUTTON_NOT_HIGHLIGHTED;
 	if(src->soldierType == SOLDIER_TYPE_EMPTY)
 	{
 		soldierColorChar = SOLDIER_COLOR_EMPTY;
@@ -154,7 +157,7 @@ char* getImagePath(SoldierButton* src)
 	}
 	// allocate memory for path string
 	char* imageName = malloc(sizeof(char) +  sizeof(char) * SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH);
-    sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isSelectedChar);
+    sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isHighlightedChar);
 	return imageName;
 }
 

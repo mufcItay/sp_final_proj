@@ -7,6 +7,7 @@
 #include "CommonStructures.h"
 #include "Commands.h"
 #include "FileSystemUtil.h"
+#include "SaveGameMessageBox.h"
 
 Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
@@ -115,6 +116,7 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	data->windowRenderer = renderer;
 	data->soldierButtons = widgets;
 	data->menuButtons = menuButtons;
+	data->isGameSaved = SDL_FALSE;
 	data->selectedSoldier = NULL;
 	res->destroyWindow = destroyGameBoardWindow;
 	res->drawWindow = drawGameBoardWindow;
@@ -128,6 +130,7 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 void setBoard(Window* gameBoardWindow, char** boardToSet)
 {
 	GameBoardData* gameBoard = (GameBoardData*) gameBoardWindow->data;
+	gameBoard->isGameSaved = SDL_FALSE;
 	Window*** soldierButtons = gameBoard->soldierButtons;
 	for (int i = 0; i < BOARD_WINDOW_ROWS_AMOUNT; ++i) {
 		for (int j = 0; j < BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
@@ -234,6 +237,8 @@ Command* saveButtonHandler(Window* src, SDL_Event* event) {
 		char* path = (char*) malloc(pathLen * sizeof(char));
 		sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,FIRST_SLOT_NAME,XML_FILE_TYPE);
 		cmd = createSaveCommand(path);
+		GameBoardData* data = (GameBoardData*) src->holdingWindow->data;
+		data->isGameSaved = SDL_TRUE;
 	}
 	return cmd;
 }
@@ -243,7 +248,6 @@ Command* restartButtonHandler(Window* src, SDL_Event* event) {
 	}
 	Command* cmd = createNOPCommand();
 
-	GameBoardData* gameBoard = (GameBoardData*) src->holdingWindow->data;
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		cmd = createResetCommand();
 		src->holdingWindow->reDrawNeeded = SDL_TRUE;
@@ -273,12 +277,43 @@ Command* exitBoardButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
 		return NULL; //Better to return an error value
 	}
+	GameBoardData* data = (GameBoardData*) src->holdingWindow->data;
 	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
+		SDL_bool isCancel = checkIfSaveGameNeeded(data);
+		if(isCancel == SDL_TRUE) {
+			return cmd;
+		}
 		src->holdingWindow->isClosed = SDL_TRUE;
 		cmd = createQuitCommand();
 	}
 	return cmd;
+}
+
+SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
+	if(data->isGameSaved == SDL_TRUE) {
+		return SDL_FALSE;
+	}
+	MBoxButton selectedButton = getUserSaveGameDescision();
+	switch(selectedButton) {
+		case BUTTON_YES:
+			reArrageSavedGames();
+			int pathLen = strlen(SAVED_GAMES_DIRECTORY_PATH) + sizeof(char) + strlen(XML_FILE_TYPE) + 1;
+			char* path = (char*) malloc(pathLen * sizeof(char));
+			sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,FIRST_SLOT_NAME,XML_FILE_TYPE);
+			Command* saveCmd = createSaveCommand(path);
+			ErrorCode err =handleSaveCommand(saveCmd,data->gameSettings,data->gameState);
+			if(err != OK) {
+				printErrorMessage("couldn't save the game before exiting game");
+			}
+			break;
+		case BUTTON_CANCEL:
+			return SDL_TRUE;
+		case BUTTON_NO:
+		case NO_SELECTION:
+			break;
+	}
+	return SDL_FALSE;
 }
 
 Command* mainMenuButtonHandler(Window* src, SDL_Event* event){
@@ -286,7 +321,12 @@ Command* mainMenuButtonHandler(Window* src, SDL_Event* event){
 		return NULL; //Better to return an error value
 	}
 	Command* cmd = createNOPCommand();
+	GameBoardData* data = (GameBoardData*) src->holdingWindow->data;
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
+		SDL_bool isCancel = checkIfSaveGameNeeded(data);
+		if(isCancel == SDL_TRUE) {
+			return cmd;
+		}
 		setCurrentView(src->holdingWindow->holdingWindow, MAIN_VIEW);
 	}
 	return cmd;
@@ -347,5 +387,6 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	SDL_Point origin = {.x = soldierToMove->rowIndex, .y = soldierToMove->columnIndex};
 	SDL_Point destination = {.x = destinationSoldier->rowIndex, .y = destinationSoldier->columnIndex};
 	cmd = createMoveCommand(origin,destination);
+	gameBoard->isGameSaved = SDL_FALSE;
 	return cmd;
 }

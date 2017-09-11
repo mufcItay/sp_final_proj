@@ -32,6 +32,7 @@ struct gameBoard_t {
 	Window* selectedSoldier;
 	GameSettings* gameSettings;
 	GameState* gameState;
+	SDL_bool isGameSaved;
 };
 
 /*
@@ -111,4 +112,8 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier);
  */
 void setBoard(Window* gameBoardWindow, char** boardToSet);
 
+/*
+ * The function checked by showing a messagebox if save is wanted by user when the user switches from GameBoard view.
+ */
+SDL_bool checkIfSaveGameNeeded(GameBoardData* data);
 #endif

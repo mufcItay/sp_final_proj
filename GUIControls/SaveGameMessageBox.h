@@ -15,8 +15,10 @@ typedef enum mboxbutton_t {
 #define NO_BUTTON_CAPTION "No"
 #define YES_BUTTON_CAPTION "Yes"
 #define CANCEL_BUTTON_CAPTION "Cancel"
-#define MBOX_MESSAGE "Are you sure you don't want to save?"
+#define MBOX_MESSAGE "Do you you want to save before switching from game screen?"
 #define MBOX_TITLE "SAVE?"
+#define MBOX_ERROR_MESSAGE "Error showing message box"
+
 #define MBOX_BG_COLOR { 255,   0,   0 }
 #define MBOX_TEXT_COLOR { 0,   255,   0 }
 #define MBOX_BUTTON_BORDER_COLOR { 0,   0,   255 }

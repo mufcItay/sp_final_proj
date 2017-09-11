@@ -94,5 +94,15 @@ char* getSlotImagePath(int slot);
  */
 Window** updateSlotButtons(Window* holdingWindow);
 
+/*
+ * The function destroys the menu buttons of load view
+ */
+void destroyLoadMenuButtons(Window** menuButtons);
+
+/*
+ * The function destroys the slot buttons of the view
+ */
+void destroyLoadSlotButtons(LoadGameView* view, Window** slotButtons);
+
 #endif
 

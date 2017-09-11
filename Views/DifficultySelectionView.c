@@ -27,10 +27,7 @@ Window** createDifficultyButtons(Window* holdingWindow, SDL_Renderer* renderer)
 		}
 		// handle creation error
 		if (difficultyButtons[i] == NULL) {
-			for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
-					destroyWindow(difficultyButtons[i]); //NULL SAFE
-			}
-			free(difficultyButtons);
+			destroyDifficultyButtons(holdingWindow->data);
 			return NULL;
 		}
 		initWindow(difficultyButtons[i]);
@@ -53,9 +50,7 @@ Window** createDifficultyNavigationButtons(Window* holdingWindow, SDL_Renderer* 
 	initWindow(navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX]);
 	// handle buttons creation error
 	if (navigationButtons[DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL || navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX] == NULL ) {
-		destroyWindow(navigationButtons[DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(navigationButtons[DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_INDEX]); //NULL SAFE
-		free(navigationButtons);
+		destroyNavigationDifficultyButtons(holdingWindow->data);
 		return NULL ;
 	}
 
@@ -77,17 +72,6 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	Window** difficultyWidgets = createDifficultyButtons(res, renderer);
 	Window** navigationButtons = createDifficultyNavigationButtons(res, renderer);
 	// handle creation error
-	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| difficultyWidgets == NULL || navigationButtons == NULL) {
-		free(res);
-		free(data);
-		free(difficultyWidgets);
-		free(navigationButtons);
-		//We first destroy the renderer
-		SDL_DestroyRenderer(renderer); //NULL safe
-		destroyWindow(holdingWindow); //NULL safe
-		return NULL ;
-	}
 	// set members
 	data->difficultyButtons = difficultyWidgets;
 	data->windowRenderer = renderer;
@@ -95,6 +79,11 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	// selected difficulty is zero based
 	data->selectedDifficulty = gameSettings->difficulty - 1;
 	res->data = (void*) data;
+	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
+			|| difficultyWidgets == NULL || navigationButtons == NULL) {
+		destroyDifficultySelectionView(res);
+		return NULL ;
+	}
 	res->destroyWindow = destroyDifficultySelectionView;
 	res->drawWindow = drawDifficultySelectionView;
 	res->handleEventWindow = handleEventDifficultySelectionView;
@@ -106,19 +95,28 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	return res;
 
 }
+
+void destroyDifficultyButtons(DifficultySelectionView* data) {
+	for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
+		destroyWindow(data->difficultyButtons[i]);
+	}
+	free(data->difficultyButtons);
+}
+
+void destroyNavigationDifficultyButtons(DifficultySelectionView* data) {
+	for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
+		destroyWindow(data->navigationButtons[i]);
+	}
+	free(data->navigationButtons);
+}
+
 void destroyDifficultySelectionView(Window* src) {
 	if (src == NULL ) {
 		return;
 	}
 	DifficultySelectionView* data = (DifficultySelectionView*) src->data;
-	for (int i = 0; i< DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
-		destroyWindow(data->difficultyButtons[i]);
-	}
-	for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
-		destroyWindow(data->navigationButtons[i]);
-	}
-	free(data->difficultyButtons);
-	free(data->navigationButtons);
+	destroyDifficultyButtons(data);
+	destroyNavigationDifficultyButtons(data);
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
 	free(src);

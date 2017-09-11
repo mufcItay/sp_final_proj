@@ -84,4 +84,14 @@ void setModeSelectionInnerReDraw(Window* src, SDL_bool reDraw);
  * the function gets the path of the image that is relevant to given mode and isSelected state.
  */
 char* getModeImagePath(int mode, SDL_bool isSelected);
+
+/*
+ * The function frees resources of mode buttons
+ */
+void destroyModeButtons(ModeSelectionView* data);
+
+/*
+ * The function frees resources of mode view navigation buttons
+ */
+void destroyModeNavigationButtons(ModeSelectionView* data);
 #endif

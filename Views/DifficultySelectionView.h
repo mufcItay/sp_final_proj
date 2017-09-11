@@ -87,6 +87,17 @@ void setDifficultySelectionInnerReDraw(Window* src, SDL_bool reDraw);
  * the function gets the path of the image that is relevant to given difficulty and isSelected state.
  */
 char* getDifficultyImagePath(int difficulty);
+
+/*
+ * The function destroys the difficulty buttons of the view
+ */
+void destroyDifficultyButtons(DifficultySelectionView* data);
+
+/*
+ * The function destroys the navigation buttons of the view
+ */
+void destroyNavigationDifficultyButtons(DifficultySelectionView* data);
+
 #endif
 
 

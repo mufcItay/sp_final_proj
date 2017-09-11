@@ -32,6 +32,13 @@ Window** updateSlotButtons(Window* holdingWindow) {
 	return ret;
 }
 
+void destroyLoadSlotButtons(LoadGameView* view, Window** slotButtons) {
+	for (int i = 0; i < view->slotsAmount; ++i) {
+		destroyWindow(slotButtons[i]); //NULL SAFE
+	}
+	free(slotButtons);
+}
+
 Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
 	if (holdingWindow == NULL) {
@@ -66,14 +73,18 @@ Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 		}
 		// if a creation error occurred clean exit
 		if (slotButtons[i] == NULL) {
-			for (int i = 0; i < view->slotsAmount; ++i) {
-					destroyWindow(slotButtons[i]); //NULL SAFE
-			}
-			free(slotButtons);
+			destroyLoadSlotButtons(view, slotButtons);
+			return NULL;
 		}
 		initWindow(slotButtons[i]);
 	}
 	return slotButtons;
+}
+
+void destroyLoadMenuButtons(Window** menuButtons) {
+	destroyWindow(menuButtons[LOAD_GAME_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
+	destroyWindow(menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX]); //NULL SAFE
+	free(menuButtons);
 }
 
 Window** createLoadGameMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
@@ -92,9 +103,7 @@ Window** createLoadGameMenuButtons(Window* holdingWindow, SDL_Renderer* renderer
 	setEnabledSimpleButton(menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX], SDL_FALSE);
 	// handle creation error of buttons
 	if (menuButtons[LOAD_GAME_WINDOW_BACK_BUTTON_INDEX] == NULL || menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX] == NULL ) {
-		destroyWindow(menuButtons[LOAD_GAME_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX]); //NULL SAFE
-		free(menuButtons);
+		destroyLoadMenuButtons(menuButtons);
 		return NULL ;
 	}
 
@@ -115,23 +124,18 @@ Window* createLoadGameView(Window* holdingWindow, GameSettings* gameSettings, Ga
 	SDL_Renderer* renderer = main->windowRenderer;
 	Window** slotsWidgets = createSlotButtons(res, renderer);
 	Window** menuButtons = createLoadGameMenuButtons(res, renderer);
-	// hand error in button allocation
-	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| slotsWidgets == NULL || menuButtons == NULL) {
-		free(res);
-		free(data);
-		free(slotsWidgets);
-		free(menuButtons);
-		//We first destroy the renderer
-		SDL_DestroyRenderer(renderer);
-		return NULL ;
-	}
 	// set data members
 	data->slotButtons = slotsWidgets;
 	data->windowRenderer = renderer;
 	data->menuButtons = menuButtons;
 	data->selectedSlot = SLOT_UNSELECTED;
 	data->lastView = UNINITIALIZED_VIEW;
+	// hand error in button allocation
+	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
+			|| slotsWidgets == NULL || menuButtons == NULL) {
+		destroyLoadGameView(res);
+		return NULL ;
+	}
 	res->destroyWindow = destroyLoadGameView;
 	res->drawWindow = drawLoadGameView;
 	res->handleEventWindow = handleEventLoadGameView;
@@ -146,14 +150,8 @@ void destroyLoadGameView(Window* src) {
 		return;
 	}
 	LoadGameView* data = (LoadGameView*) src->data;
-	for (int i = 0; i< data->slotsAmount; ++i) {
-		destroyWindow(data->slotButtons[i]);
-	}
-	for (int i = 0; i < LOAD_GAME_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
-		destroyWindow(data->menuButtons[i]);
-	}
-	free(data->slotButtons);
-	free(data->menuButtons);
+	destroyLoadMenuButtons(data->menuButtons);
+	destroyLoadSlotButtons(data,data->slotButtons);
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
 	free(src);

@@ -26,10 +26,8 @@ Window** createModeButtons(Window* holdingWindow, SDL_Renderer* renderer)
 			modeButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &modeButtonR,imagePath ,modeButtonHandler);
 		}
 		if (modeButtons[i] == NULL) {
-			for (int i = 0; i < MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
-					destroyWindow(modeButtons[i]); //NULL SAFE
-			}
-			free(modeButtons);
+			destroyModeButtons(holdingWindow->data);
+			return NULL;
 		}
 		initWindow(modeButtons[i]);
 	}
@@ -51,9 +49,7 @@ Window** createModeNavigationButtons(Window* holdingWindow, SDL_Renderer* render
 	initWindow(navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX]);
 	// handle navigation buttons creation error
 	if (navigationButtons[MODE_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL || navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX] == NULL ) {
-		destroyWindow(navigationButtons[MODE_SELECTION_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX]); //NULL SAFE
-		free(navigationButtons);
+		destroyModeNavigationButtons(holdingWindow->data);
 		return NULL ;
 	}
 	return navigationButtons;
@@ -72,18 +68,6 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	SDL_Renderer* renderer = main->windowRenderer;
 	Window** modeWidgets = createModeButtons(res, renderer);
 	Window** navigationButtons = createModeNavigationButtons(res, renderer);
-	// handle buttons creation errors
-	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| modeWidgets == NULL || navigationButtons == NULL) {
-		free(res);
-		free(data);
-		free(modeWidgets);
-		free(navigationButtons);
-		//We first destroy the renderer
-		SDL_DestroyRenderer(renderer); //NULL safe
-		destroyWindow(holdingWindow); //NULL safe
-		return NULL ;
-	}
 	// set members
 	data->modeButtons = modeWidgets;
 	data->windowRenderer = renderer;
@@ -91,6 +75,12 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	// selected mode is zero based
 	data->selectedMode = gameSettings->mode -1;
 	res->data = (void*) data;
+	// handle buttons creation errors
+	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
+			|| modeWidgets == NULL || navigationButtons == NULL) {
+		destroyModeSelectionView(res);
+		return NULL ;
+	}
 	res->destroyWindow = destroyModeSelectionView;
 	res->drawWindow = drawModeSelectionView;
 	res->handleEventWindow = handleEventModeSelectionView;
@@ -102,19 +92,28 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	return res;
 
 }
+
+void destroyModeButtons(ModeSelectionView* data) {
+	for (int i = 0; i < MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
+		destroyWindow(data->modeButtons[i]);
+	}
+	free(data->modeButtons);
+}
+
+void destroyModeNavigationButtons(ModeSelectionView* data) {
+	for (int i = 0; i < MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
+		destroyWindow(data->navigationButtons[i]);
+	}
+	free(data->navigationButtons);
+}
+
 void destroyModeSelectionView(Window* src) {
 	if (src == NULL ) {
 		return;
 	}
 	ModeSelectionView* data = (ModeSelectionView*) src->data;
-	for (int i = 0; i< MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
-		destroyWindow(data->modeButtons[i]);
-	}
-	for (int i = 0; i < MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
-		destroyWindow(data->navigationButtons[i]);
-	}
-	free(data->modeButtons);
-	free(data->navigationButtons);
+	destroyModeButtons(data);
+	destroyModeNavigationButtons(data);
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
 	free(src);

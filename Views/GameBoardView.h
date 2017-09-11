@@ -124,4 +124,13 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data);
  */
 void setStatusImage(GameBoardData* data, GameBoardStatuses status);
 
+/*
+ * The function frees memory resources of soldier buttons in the view
+ */
+void destroySoldierButtonMatrix(Window*** matrix);
+
+/*
+ * The function destroys the menu buttons
+ */
+void destroyMenuButtons(Window** menuButtons);
 #endif

@@ -87,4 +87,15 @@ void setColorSelectionInnerReDraw(Window* src, SDL_bool reDraw);
  * the function gets the path of the image that is relevant to given color and isSelected state.
  */
 char* getColorImagePath(int color, SDL_bool isSelected);
+
+/*
+ * The function destroys navigation buttons of the view
+ */
+void destroyNavigationButtonsColorView(Window** navigationButtons);
+
+/*
+ * The function destroys the color buttons of the view
+ */
+void destroyColorButtons(Window** colorButtons);
+
 #endif

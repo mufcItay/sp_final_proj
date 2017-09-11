@@ -29,17 +29,38 @@ Window** createMainWindowWidgets(Window* window,SDL_Renderer* renderer) {
 	widgets[EXIT_BUTTON_INDEX] = createSimpleButton(window,renderer, &exitR, EXIT_PIC_PATH,exitButtonHandler);
 	//handle errors
 	if (widgets[NEW_GAME_BUTTON_INDEX] == NULL || widgets[LOAD_GAME_BUTTON_INDEX] == NULL || widgets[EXIT_BUTTON_INDEX] == NULL ) {
-		destroyWindow(widgets[NEW_GAME_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(widgets[LOAD_GAME_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(widgets[EXIT_BUTTON_INDEX]); //NULL SAFE
+		for (int i = 0; i < MAIN_NUMBER_OF_BUTTONS; i++) {
+			destroyWindow(widgets[i]);
+		}
 		free(widgets);
 		return NULL;
 	}
-	initWindow(widgets[NEW_GAME_BUTTON_INDEX]);
-	initWindow(widgets[LOAD_GAME_BUTTON_INDEX]);
-	initWindow(widgets[EXIT_BUTTON_INDEX]);
+	for (int i = 0; i < MAIN_NUMBER_OF_BUTTONS; i++) {
+		initWindow(widgets[i]);
+	}
 	return widgets;
 }
+
+void initializeViews(MainWindow* data, Window* res) {
+	// init and set views
+	data->boardViewWindow = (Window*) createBoardWindow(res, data->gameSettings,
+			data->gameState);
+	initWindow(data->boardViewWindow);
+	data->difficultySelectionViewWindow =
+			(Window*) createDifficultySelectionView(res, data->gameSettings,
+					data->gameState);
+	initWindow(data->difficultySelectionViewWindow);
+	data->colorSelectionViewWindow = (Window*) createColorSelectionView(res,
+			data->gameSettings, data->gameState);
+	initWindow(data->colorSelectionViewWindow);
+	data->modeSelectionViewWindow = (Window*) createModeSelectionView(res,
+			data->gameSettings, data->gameState);
+	initWindow(data->modeSelectionViewWindow);
+	data->loadGameViewWindow = (Window*) createLoadGameView(res,
+			data->gameSettings, data->gameState);
+	initWindow(data->loadGameViewWindow);
+}
+
 Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
 	Window* res = malloc(sizeof(Window));
@@ -62,15 +83,6 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 			SDL_RENDERER_ACCELERATED);
 	// create buttons of the view
 	Window** widgets = createMainWindowWidgets(res,renderer);
-	// handle creation errors
-	if (window == NULL || renderer == NULL || widgets == NULL ) {
-		free(res);
-		free(data);
-		free(widgets);
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
-		return NULL;
-	}
 	// set data members
 	data->numOfWidgets = MAIN_NUMBER_OF_BUTTONS;
 	data->window = window;
@@ -80,21 +92,17 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	data->viewWindow = res;
 	initWindow(res);
 	res->data = (void*) data;
+	// handle creation errors
+	if (window == NULL || renderer == NULL || widgets == NULL ) {
+		destroyMainWindow(res);
+		return NULL;
+	}
 	// init and set views
-	data->boardViewWindow = (Window*) createBoardWindow(res, data->gameSettings, data->gameState);
-	initWindow(data->boardViewWindow);
-	data->difficultySelectionViewWindow = (Window*) createDifficultySelectionView(res, data->gameSettings, data->gameState);
-	initWindow(data->difficultySelectionViewWindow);
-	data->colorSelectionViewWindow = (Window*) createColorSelectionView(res, data->gameSettings, data->gameState);
-	initWindow(data->colorSelectionViewWindow);
-	data->modeSelectionViewWindow = (Window*) createModeSelectionView(res, data->gameSettings, data->gameState);
-	initWindow(data->modeSelectionViewWindow);
-	data->loadGameViewWindow = (Window*) createLoadGameView(res, data->gameSettings, data->gameState);
-	initWindow(data->loadGameViewWindow);
+	initializeViews(data, res);
 	// handle errors
 	if (data->boardViewWindow == NULL || data->difficultySelectionViewWindow== NULL || data->modeSelectionViewWindow== NULL ||
 			data->colorSelectionViewWindow == NULL || data->loadGameViewWindow== NULL) {
-		SDL_Quit();
+		destroyMainWindow(res);
 		return NULL;
 	}
 	res->destroyWindow = destroyMainWindow;
@@ -106,20 +114,23 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	return res;
 }
 
-void destroyMainWindow(Window* src) {
-	if (src == NULL ) {
-		return;
-	}
-	MainWindow* data = (MainWindow*) src->data;
-	int i = 0;
-	for (; i < data->numOfWidgets; i++) {
-		destroyWindow(data->mainMenuWidgets[i]);
-	}
+void destroyViews(MainWindow* data) {
 	destroyWindow(data->boardViewWindow);
 	destroyWindow(data->difficultySelectionViewWindow);
 	destroyWindow(data->modeSelectionViewWindow);
 	destroyWindow(data->colorSelectionViewWindow);
 	destroyWindow(data->loadGameViewWindow);
+}
+
+void destroyMainWindow(Window* src) {
+	if (src == NULL ) {
+		return;
+	}
+	MainWindow* data = (MainWindow*) src->data;
+	for (int i = 0; i < data->numOfWidgets; i++) {
+		destroyWindow(data->mainMenuWidgets[i]);
+	}
+	destroyViews(data);
 	free(src->location);
 	free(data->mainMenuWidgets);
 	SDL_DestroyRenderer(data->windowRenderer);

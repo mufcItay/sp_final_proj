@@ -7,6 +7,13 @@
 #include "CommonStructures.h"
 #include "Commands.h"
 
+void destroyColorButtons(Window** colorButtons) {
+	for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
+		destroyWindow(colorButtons[i]);
+	}
+	free(colorButtons);
+}
+
 Window** createColorButtons(Window* holdingWindow, SDL_Renderer* renderer) {
 	if (holdingWindow == NULL) {
 		return NULL;
@@ -32,14 +39,18 @@ Window** createColorButtons(Window* holdingWindow, SDL_Renderer* renderer) {
 		}
 		// if button creation failed destroy all buttons
 		if (colorButtons[i] == NULL || imagePath == NULL) {
-			for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
-				destroyWindow(colorButtons[i]);
-			}
-			free(colorButtons);
+			destroyColorButtons(colorButtons);
+			return NULL;
 		}
 		initWindow(colorButtons[i]);
 	}
 	return colorButtons;
+}
+
+void destroyNavigationButtonsColorView(Window** navigationButtons) {
+	destroyWindow(navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX]);
+	destroyWindow(navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX]);
+	free(navigationButtons);
 }
 
 Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* renderer) {
@@ -56,7 +67,7 @@ Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* rende
 			COLOR_SELECTION_NAVIGTION_PANE_Y_POS, .h =
 			COLOR_SELECTION_WINDOW_BUTTON_HEIGHT, .w =
 			COLOR_SELECTION_WINDOW_BUTTON_WIDTH };
-	// catually create the navigation buttons of the view
+	// acatually create the navigation buttons of the view
 	navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX] =
 			createSimpleButton(holdingWindow, renderer, &backR,
 					COLOR_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH,
@@ -71,9 +82,7 @@ Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* rende
 	if (navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL
 			|| navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX]
 					== NULL) {
-		destroyWindow(navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX]); //NULL SAFE
-		free(navigationButtons);
+		destroyNavigationButtonsColorView(navigationButtons);
 		return NULL;
 	}
 
@@ -96,27 +105,21 @@ Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettin
 			COLOR_SELECTION_WINDOW_HEIGHT, .w = COLOR_SELECTION_WINDOW_WIDTH };
 	res->location = &difficultiesR;
 	SDL_Renderer* renderer = main->windowRenderer;
-	Window** difficultyWidgets = createColorButtons(res, renderer);
+	Window** colorWidgets = createColorButtons(res, renderer);
 	Window** navigationButtons = createColorNavigationButtons(res, renderer);
 	// if some allocation or button creation failed, free all memory resources
-	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| difficultyWidgets == NULL || navigationButtons == NULL) {
-		free(res);
-		free(data);
-		free(difficultyWidgets);
-		free(navigationButtons);
-		//We first destroy the renderer
-		SDL_DestroyRenderer(renderer); //NULL safe
-		destroyWindow(holdingWindow); //NULL safe
-		return NULL;
-	}
 	// set data and window members
-	data->colorButtons = difficultyWidgets;
+	data->colorButtons = colorWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
 	// selected color is zero based
 	data->selectedColor = gameSettings->color - 1;
 	res->data = (void*) data;
+	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
+			|| colorWidgets == NULL || navigationButtons == NULL) {
+		destroyColorSelectionView(res);
+		return NULL;
+	}
 	res->destroyWindow = destroyColorSelectionView;
 	res->drawWindow = drawColorSelectionView;
 	res->handleEventWindow = handleEventColorSelectionView;
@@ -134,14 +137,8 @@ void destroyColorSelectionView(Window* src) {
 	}
 	//free buttons
 	ColorSelectionView* data = (ColorSelectionView*) src->data;
-	for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
-		destroyWindow(data->colorButtons[i]);
-	}
-	for (int i = 0; i < COLOR_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
-		destroyWindow(data->navigationButtons[i]);
-	}
-	free(data->colorButtons);
-	free(data->navigationButtons);
+	destroyNavigationButtonsColorView(data->navigationButtons);
+	destroyColorButtons(data->colorButtons);
 	// free window resources
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);

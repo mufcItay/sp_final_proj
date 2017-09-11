@@ -86,4 +86,15 @@ void setMainWindowInnerReDraw(Window* src, SDL_bool reDraw);
  * the return value is the new error code after trying to solve the error.
  */
 ErrorCode handleMainWindowError(Window* src, ErrorCode err);
+
+/*
+ * The function destroys the viwes of Main Window
+ */
+void destroyViews(MainWindow* data);
+
+/*
+ * The function initialized ands sets to data the view of Main WIndow
+ */
+void initializeViews(MainWindow* data, Window* res);
+
 #endif

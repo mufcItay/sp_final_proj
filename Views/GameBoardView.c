@@ -34,18 +34,29 @@ Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* rendere
 		for (int j = 0; j < BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
 			soldierButtonsMatrix[i][j] = (Window*) createSoldierButton(holdingWindow, renderer, i, j, boardToSet[i][j]);
 			if (soldierButtonsMatrix[i][j] == NULL) {
-				for (int i = 0; i < BOARD_WINDOW_ROWS_AMOUNT; ++i) {
-					for (int j = 0; j < BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
-						destroyWindow(soldierButtonsMatrix[i][j]); //NULL SAFE
-					}
-				}
-				free(soldierButtonsMatrix);
+				destroySoldierButtonMatrix(soldierButtonsMatrix);
 				return NULL;
 			}
 			initWindow(soldierButtonsMatrix[i][j]);
 		}
 	}
 	return soldierButtonsMatrix;
+}
+
+void destroySoldierButtonMatrix(Window*** matrix) {
+	for (int i = 0; i < BOARD_WINDOW_ROWS_AMOUNT; ++i) {
+		for (int j = 0; j < BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
+			destroyWindow(matrix[i][j]);
+		}
+	}
+	free(matrix);
+}
+
+void destroyMenuButtons(Window** menuButtons) {
+	for (int i = 0; i < BOARD_WINDOW_BUTTONS_AMOUNT; ++i) {
+		destroyWindow(menuButtons[i]);
+	}
+	free(menuButtons);
 }
 
 Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
@@ -72,13 +83,7 @@ Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 	// if an error occurred, free memory
 	if (menuButtons[BOARD_WINDOW_RESTART_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX] == NULL ||
 			menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] == NULL) {
-		destroyWindow(menuButtons[BOARD_WINDOW_RESTART_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(menuButtons[BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX]); //NULL SAFE
-		destroyWindow(menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX]); //NULL SAFE
-		free(menuButtons);
+		destroyMenuButtons(menuButtons);
 		return NULL ;
 	}
 
@@ -105,14 +110,14 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	// handle windows creation errors
 	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
 			|| widgets == NULL || menuButtons == NULL|| statusWindow == NULL) {
+		//We first destroy the renderer
+		SDL_DestroyRenderer(renderer);
+		destroyWindow(statusWindow);
+		destroyWindow(holdingWindow);
+		destroySoldierButtonMatrix(widgets);
+		destroyMenuButtons(menuButtons);
 		free(res);
 		free(data);
-		free(widgets);
-		free(menuButtons);
-		destroyWindow(statusWindow);
-		//We first destroy the renderer
-		SDL_DestroyRenderer(renderer); //NULL safe
-		destroyWindow(holdingWindow); //NULL safe
 		return NULL ;
 	}
 	data->soldierButtons = widgets;
@@ -152,18 +157,9 @@ void destroyGameBoardWindow(Window* src) {
 		return;
 	}
 	GameBoardData* data = (GameBoardData*) src->data;
-	for (int i = 0; i< BOARD_WINDOW_ROWS_AMOUNT; ++i) {
-			for (int j= 0; j< BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
-				destroyWindow(data->soldierButtons[i][j]); //NULL SAFE
-			}
-	}
-	for (int i = 0; i < BOARD_WINDOW_BUTTONS_AMOUNT; ++i) {
-		destroyWindow(data->menuButtons[i]);
-	}
-
+	destroySoldierButtonMatrix(data->soldierButtons);
+	destroyMenuButtons(data->menuButtons);
 	destroyWindow(data->statusButton);
-	free(data->soldierButtons);
-	free(data->menuButtons);
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
 	free(src);
@@ -191,7 +187,7 @@ void drawGameBoardWindow(Window* src) {
 		}
 	}
 	for (int i = 0; i < BOARD_WINDOW_BUTTONS_AMOUNT; ++i) {
-		// draw menuu buttons
+		// draw menu buttons
 		src->reDrawNeeded |= data->menuButtons[i]->reDrawNeeded;
 		data->menuButtons[i]->drawWindow(data->menuButtons[i]);
 	}

@@ -45,7 +45,7 @@ void destroyColorSelectionView(Window* src);
 /*
  * draw function of the buttons of view
  */
-void drawColorSelectionView(Window* src);
+ErrorCode drawColorSelectionView(Window* src);
 
 
 /*

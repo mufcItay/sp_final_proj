@@ -138,10 +138,11 @@ void destroyMainWindow(Window* src) {
 	free(data);
 	free(src);
 }
-void drawMainWindow(Window* src) {
+ErrorCode drawMainWindow(Window* src) {
 	if (src == NULL ) {
-		return;
+		return NULL_POINTER_ERROR;
 	}
+	ErrorCode err = OK;
 	MainWindow* data = (MainWindow*) src->data;
 	// draw according to current view
 	switch(data->view)
@@ -149,12 +150,12 @@ void drawMainWindow(Window* src) {
 		case MAIN_VIEW:
 			if(src->reDrawNeeded)
 			{
-				SDL_SetRenderDrawColor(data->windowRenderer, MAIN_WINDOW_BGCOLOR_RED, MAIN_WINDOW_BGCOLOR_GREEN, MAIN_WINDOW_BGCOLOR_BLUE, MAIN_WINDOW_BGCOLOR_ALPHA);
-				SDL_RenderClear(data->windowRenderer);
+				err|= SDL_SetRenderDrawColor(data->windowRenderer, MAIN_WINDOW_BGCOLOR_RED, MAIN_WINDOW_BGCOLOR_GREEN, MAIN_WINDOW_BGCOLOR_BLUE, MAIN_WINDOW_BGCOLOR_ALPHA);
+				err|= SDL_RenderClear(data->windowRenderer);
 			}
 			for (int i = 0; i < data->numOfWidgets; i++) {
 				src->reDrawNeeded |= (data->mainMenuWidgets[i])->reDrawNeeded;
-				(data->mainMenuWidgets[i])->drawWindow(data->mainMenuWidgets[i]);
+				err|= (data->mainMenuWidgets[i])->drawWindow(data->mainMenuWidgets[i]);
 			}
 			if(src->reDrawNeeded)
 			{
@@ -164,27 +165,28 @@ void drawMainWindow(Window* src) {
 			break;
 		case BOARD_VIEW:
 			src->reDrawNeeded |= data->boardViewWindow->reDrawNeeded;
-			data->boardViewWindow->drawWindow(data->boardViewWindow);
+			err|= data->boardViewWindow->drawWindow(data->boardViewWindow);
 			break;
 		case DIFFICULTY_SELECTION_VIEW:
 			src->reDrawNeeded |= data->difficultySelectionViewWindow->reDrawNeeded;
-			data->difficultySelectionViewWindow->drawWindow(data->difficultySelectionViewWindow);
+			err|= data->difficultySelectionViewWindow->drawWindow(data->difficultySelectionViewWindow);
 			break;
 		case COLOR_SELECTION_VIEW:
 			src->reDrawNeeded |= data->colorSelectionViewWindow->reDrawNeeded;
-			data->colorSelectionViewWindow->drawWindow(data->colorSelectionViewWindow);
+			err|= data->colorSelectionViewWindow->drawWindow(data->colorSelectionViewWindow);
 			break;
 		case MODE_SELECTION_VIEW:
 			src->reDrawNeeded |= data->modeSelectionViewWindow->reDrawNeeded;
-			data->modeSelectionViewWindow->drawWindow(data->modeSelectionViewWindow);
+			err|= data->modeSelectionViewWindow->drawWindow(data->modeSelectionViewWindow);
 			break;
 		case LOAD_GAME_VIEW:
 			src->reDrawNeeded |= data->loadGameViewWindow->reDrawNeeded;
-			data->loadGameViewWindow->drawWindow(data->loadGameViewWindow);
+			err|= data->loadGameViewWindow->drawWindow(data->loadGameViewWindow);
 			break;
 		case UNINITIALIZED_VIEW:
-			return;
+			return GENERAL_ERROR;
 	}
+	return err;
 }
 
 Command* handleEventMainWindow(Window* src, SDL_Event* event){

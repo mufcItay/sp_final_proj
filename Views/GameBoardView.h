@@ -55,7 +55,7 @@ void destroyGameBoardWindow(Window* src);
 /*
  * draw function of the buttons of view
  */
-void drawGameBoardWindow(Window* src);
+ErrorCode drawGameBoardWindow(Window* src);
 
 /*
  * handler for view GUI events

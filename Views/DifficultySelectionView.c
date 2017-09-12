@@ -122,31 +122,45 @@ void destroyDifficultySelectionView(Window* src) {
 	free(src);
 }
 
-void drawDifficultySelectionView(Window* src) {
+ErrorCode drawDifficultySelectionView(Window* src) {
 	if (src == NULL ) {
-		return;
+		return NULL_POINTER_ERROR;
 	}
+	ErrorCode err = OK;
 	DifficultySelectionView* data = (DifficultySelectionView*) src->data;
 	if(src->reDrawNeeded)
 	{
-		SDL_SetRenderDrawColor(data->windowRenderer, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_RED, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_GREEN, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_BLUE, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_ALPHA);
-		SDL_RenderClear(data->windowRenderer);
+		err |= SDL_SetRenderDrawColor(data->windowRenderer, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_RED, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_GREEN, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_BLUE, DIFFICULTY_SELECTION_WINDOW_BGCOLOR_ALPHA);
+		err |= SDL_RenderClear(data->windowRenderer);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	for (int i = 0; i< DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
 		// draw difficulties
 		src->reDrawNeeded |= data->difficultyButtons[i]->reDrawNeeded;
-		data->difficultyButtons[i]->drawWindow(data->difficultyButtons[i]);
+		err |= data->difficultyButtons[i]->drawWindow(data->difficultyButtons[i]);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
 		// draw navigation buttons
 		src->reDrawNeeded |= data->navigationButtons[i]->reDrawNeeded;
-		data->navigationButtons[i]->drawWindow(data->navigationButtons[i]);
+		err |= data->navigationButtons[i]->drawWindow(data->navigationButtons[i]);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	if(src->reDrawNeeded)
 	{
 		SDL_RenderPresent(data->windowRenderer);
 	}
 	src->reDrawNeeded = SDL_FALSE;
+	return err;
 }
 
 Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event){

@@ -42,7 +42,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event);
 /*
  * The function draws the soldier button
  */
-void drawSoldierButton(Window* src);
+ErrorCode drawSoldierButton(Window* src);
 
 /*
  * the function returns the path to the image of the soldier button

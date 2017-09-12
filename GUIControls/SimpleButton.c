@@ -8,6 +8,7 @@
 Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SDL_Rect* location,
 		char* image, Command* (*handler)(Window* , SDL_Event* )) {
 	if (windowRender == NULL || location == NULL || image == NULL ) {
+		printErrorMessage("encountered invalid null pointer");
 		return NULL ;
 	}
 	//Allocate memory
@@ -20,6 +21,7 @@ Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SD
 	// handle errors
 	if (res == NULL || data == NULL || loadingSurface == NULL
 			|| buttonTexture == NULL) {
+		printErrorMessage("SimpleButton create function encountered memory error");
 		free(res);
 		free(data);
 		SDL_FreeSurface(loadingSurface); //It is safe to pass NULL
@@ -48,6 +50,7 @@ Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SD
 //You need this function in order to destroy all data Associate with a button:
 void destroySimpleButton(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage("encountered invalid null pointer");
 		return;
 	}
 	SimpleButton* castData = (SimpleButton*) src->data;
@@ -60,6 +63,7 @@ void destroySimpleButton(Window* src) {
 
 void setEnabledSimpleButton(Window* src,SDL_bool enabled) {
 	if (src == NULL ) {
+		printErrorMessage("encountered invalid null pointer");
 		return;
 	}
 
@@ -70,17 +74,23 @@ void setEnabledSimpleButton(Window* src,SDL_bool enabled) {
 	}
 }
 
-void drawSimpleButton(Window* src) {
+ErrorCode drawSimpleButton(Window* src) {
 	if (src == NULL ) {
-		return;
+		printErrorMessage("encountered invalid null pointer");
+		return NULL_POINTER_ERROR;
 	}
+	ErrorCode err = OK;
 	SimpleButton* castData = (SimpleButton*) src->data;
 	if(src->reDrawNeeded == SDL_TRUE)
 	{
-		setNewImage(src);
-		SDL_RenderCopy(castData->windowRenderer, castData->buttonTexture, NULL,
+		if(setNewImage(src) == SDL_FALSE) {
+			return MEMORY_ERROR;
+		}
+		err |= SDL_RenderCopy(castData->windowRenderer, castData->buttonTexture, NULL,
 			src->location);
 	}
+
+	return err;
 }
 
 
@@ -92,6 +102,9 @@ SDL_bool setNewImage(Window* src)
 	if(data->isEnabled == SDL_FALSE) {
 		// set image accoridng to selected state
 		imagePath = (char*) malloc(sizeof(char) * strlen(data->imagePath) +sizeof(char) +sizeof(char));// + backslash 0 + new disabled char
+		if(imagePath == NULL) {
+			return SDL_FALSE;
+		}
 		for (int i = 0; i < strlen(data->imagePath); ++i) {
 			char* currentStr = data->imagePath + i;
 			if(strcmp(currentStr,BMP_FILE_TYPE) == 0) {

@@ -22,7 +22,7 @@ ErrorCode GUIHandleInput(void* src, GameSettings* settings, GameState* state);
 /*
  * the function draws the GUI according to programs current state
  */
-void GUIDraw(void* src);
+ErrorCode GUIDraw(void* src);
 
 /*
  * The function frees all resources held by the GUI controller

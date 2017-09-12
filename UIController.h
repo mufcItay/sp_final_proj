@@ -9,7 +9,7 @@
 typedef struct uicontroller_t UIController;
 struct uicontroller_t {
 	void* (*init)(GameSettings* ,GameState* );
-	void (*draw) (void* );
+	ErrorCode (*draw) (void* );
 	ErrorCode (*handleInput)(void* ,GameSettings* ,GameState*);
 	void (*destroyController)(void* );
 };

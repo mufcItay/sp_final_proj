@@ -48,7 +48,7 @@ void destroyLoadGameView(Window* src);
 /*
  * draw function of the buttons of view
  */
-void drawLoadGameView(Window* src);
+ErrorCode drawLoadGameView(Window* src);
 
 /*
  * handler for view GUI events

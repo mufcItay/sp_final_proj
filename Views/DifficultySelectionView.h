@@ -45,7 +45,7 @@ void destroyDifficultySelectionView(Window* src);
 /*
  * draw function of the buttons of view
  */
-void drawDifficultySelectionView(Window* src);
+ErrorCode drawDifficultySelectionView(Window* src);
 
 /*
  * handler for view GUI events

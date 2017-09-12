@@ -50,7 +50,7 @@ void destroyMainWindow(Window* src);
 /*
  * The function draws the view
  */
-void drawMainWindow(Window* src);
+ErrorCode drawMainWindow(Window* src);
 /*
  * The function handles events relating to the view
  */

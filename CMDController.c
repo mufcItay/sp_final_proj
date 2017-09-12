@@ -19,7 +19,9 @@ int CMDHandleInput(void* src, GameSettings* settings, GameState* state){
 	return OK;
 }
 
-void CMDDraw(void* src){
+ErrorCode CMDDraw(void* src){
+	ErrorCode err = OK;
+	return err;
 	//
 }
 

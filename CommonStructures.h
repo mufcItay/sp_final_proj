@@ -4,7 +4,8 @@
 
 // Error codes enum
 typedef enum errorcodes_t {
-	SLOTS_LOAD_ERROR = -1,
+	SLOTS_LOAD_ERROR = -2,
+	SDL_ERROR = -1,
 	OK = 0,
 	MEMORY_ERROR,
 	SAVE_ERROR,

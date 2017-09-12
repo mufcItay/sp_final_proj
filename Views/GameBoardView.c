@@ -165,36 +165,50 @@ void destroyGameBoardWindow(Window* src) {
 	free(src);
 }
 
-void drawGameBoardWindow(Window* src) {
+ErrorCode drawGameBoardWindow(Window* src) {
 	if (src == NULL ) {
-		return;
+		return NULL_POINTER_ERROR;
 	}
+	ErrorCode err = OK;
 	GameBoardData* data = (GameBoardData*) src->data;
 	//Draw window
 	if(src->reDrawNeeded)
 	{
 		setBoard(src, data->gameState->board);
-		SDL_SetRenderDrawColor(data->windowRenderer, BOARD_WINDOW_BGCOLOR_RED, BOARD_WINDOW_BGCOLOR_GREEN, BOARD_WINDOW_BGCOLOR_BLUE, BOARD_WINDOW_BGCOLOR_ALPHA);
-		SDL_RenderClear(data->windowRenderer);
+		err |= SDL_SetRenderDrawColor(data->windowRenderer, BOARD_WINDOW_BGCOLOR_RED, BOARD_WINDOW_BGCOLOR_GREEN, BOARD_WINDOW_BGCOLOR_BLUE, BOARD_WINDOW_BGCOLOR_ALPHA);
+		err |= SDL_RenderClear(data->windowRenderer);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	src->reDrawNeeded |= data->statusButton->reDrawNeeded;
-	data->statusButton->drawWindow(data->statusButton);
+	err |= data->statusButton->drawWindow(data->statusButton);
 	for (int i = 0; i< BOARD_WINDOW_ROWS_AMOUNT; ++i) {
 		for (int j= 0; j< BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
 			// draw soldier buttons
 			src->reDrawNeeded |= data->soldierButtons[i][j]->reDrawNeeded;
-			(data->soldierButtons[i][j])->drawWindow(data->soldierButtons[i][j]);
+			err |= (data->soldierButtons[i][j])->drawWindow(data->soldierButtons[i][j]);
+			if(err != OK) {
+				err = SDL_ERROR;
+				return err;
+			}
 		}
 	}
 	for (int i = 0; i < BOARD_WINDOW_BUTTONS_AMOUNT; ++i) {
 		// draw menu buttons
 		src->reDrawNeeded |= data->menuButtons[i]->reDrawNeeded;
-		data->menuButtons[i]->drawWindow(data->menuButtons[i]);
+		err |= data->menuButtons[i]->drawWindow(data->menuButtons[i]);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	if(src->reDrawNeeded){
 		SDL_RenderPresent(data->windowRenderer);
 	}
 	src->reDrawNeeded = SDL_FALSE;
+	return err;
 }
 
 Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){

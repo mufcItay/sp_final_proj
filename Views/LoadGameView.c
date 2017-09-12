@@ -157,31 +157,45 @@ void destroyLoadGameView(Window* src) {
 	free(src);
 }
 
-void drawLoadGameView(Window* src) {
+ErrorCode drawLoadGameView(Window* src) {
 	if (src == NULL ) {
-		return;
+		return NULL_POINTER_ERROR;
 	}
+	ErrorCode err = OK;
 	LoadGameView* data = (LoadGameView*) src->data;
 	if(src->reDrawNeeded)
 	{
-		SDL_SetRenderDrawColor(data->windowRenderer, LOAD_GAME_WINDOW_BGCOLOR_RED, LOAD_GAME_WINDOW_BGCOLOR_GREEN, LOAD_GAME_WINDOW_BGCOLOR_BLUE, LOAD_GAME_WINDOW_BGCOLOR_ALPHA);
-		SDL_RenderClear(data->windowRenderer);
+		err |= SDL_SetRenderDrawColor(data->windowRenderer, LOAD_GAME_WINDOW_BGCOLOR_RED, LOAD_GAME_WINDOW_BGCOLOR_GREEN, LOAD_GAME_WINDOW_BGCOLOR_BLUE, LOAD_GAME_WINDOW_BGCOLOR_ALPHA);
+		err |= SDL_RenderClear(data->windowRenderer);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	for (int i = 0; i< data->slotsAmount; ++i) {
 		// draw slots
 		src->reDrawNeeded |= data->slotButtons[i]->reDrawNeeded;
-		data->slotButtons[i]->drawWindow(data->slotButtons[i]);
+		err |= data->slotButtons[i]->drawWindow(data->slotButtons[i]);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	for (int i = 0; i < LOAD_GAME_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
 		// draw menu buttons
 		src->reDrawNeeded |= data->menuButtons[i]->reDrawNeeded;
-		data->menuButtons[i]->drawWindow(data->menuButtons[i]);
+		err |= data->menuButtons[i]->drawWindow(data->menuButtons[i]);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	if(src->reDrawNeeded)
 	{
 		SDL_RenderPresent(data->windowRenderer);
 	}
 	src->reDrawNeeded = SDL_FALSE;
+	return err;
 }
 
 Command* handleEventLoadGameView(Window* src, SDL_Event* event){

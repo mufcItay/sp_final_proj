@@ -34,7 +34,7 @@ void destroySimpleButton(Window*);
 /*
  * The function draws the button
  */
-void drawSimpleButton(Window* src);
+ErrorCode drawSimpleButton(Window* src);
 
 /*
  * The function sets a new image to the button. completes updatign the image of the button

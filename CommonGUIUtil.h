@@ -7,6 +7,11 @@
 #define REDRAW_NEEDED 1
 #define REDRAW_NOT_NEEDED 0
 
+// SDL error codes
+#define SDL_ERROR -1
+#define SDL_OK 0
+
+
 // MAIN_GUI CONSTS
 #define INVALID_LOCATION -1
 #define MAIN_BUTTON_X_POS 75

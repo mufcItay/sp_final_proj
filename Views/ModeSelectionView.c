@@ -119,31 +119,44 @@ void destroyModeSelectionView(Window* src) {
 	free(src);
 }
 
-void drawModeSelectionView(Window* src) {
+ErrorCode drawModeSelectionView(Window* src) {
 	if (src == NULL ) {
-		return;
+		return NULL_POINTER_ERROR;
 	}
+	ErrorCode err = OK;
 	ModeSelectionView* data = (ModeSelectionView*) src->data;
 	if(src->reDrawNeeded)
 	{
-		SDL_SetRenderDrawColor(data->windowRenderer, MODE_SELECTION_WINDOW_BGCOLOR_RED, MODE_SELECTION_WINDOW_BGCOLOR_GREEN, MODE_SELECTION_WINDOW_BGCOLOR_BLUE, MODE_SELECTION_WINDOW_BGCOLOR_ALPHA);
-		SDL_RenderClear(data->windowRenderer);
+		err |= SDL_SetRenderDrawColor(data->windowRenderer, MODE_SELECTION_WINDOW_BGCOLOR_RED, MODE_SELECTION_WINDOW_BGCOLOR_GREEN, MODE_SELECTION_WINDOW_BGCOLOR_BLUE, MODE_SELECTION_WINDOW_BGCOLOR_ALPHA);
+		err |= SDL_RenderClear(data->windowRenderer);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	for (int i = 0; i< MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
 		// draw mode selection buttons
 		src->reDrawNeeded |= data->modeButtons[i]->reDrawNeeded;
-		data->modeButtons[i]->drawWindow(data->modeButtons[i]);
+		err |= data->modeButtons[i]->drawWindow(data->modeButtons[i]);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	for (int i = 0; i < MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
 		// draw navigation buttons
 		src->reDrawNeeded |= data->navigationButtons[i]->reDrawNeeded;
-		data->navigationButtons[i]->drawWindow(data->navigationButtons[i]);
+		err |= data->navigationButtons[i]->drawWindow(data->navigationButtons[i]);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
-	if(src->reDrawNeeded)
-	{
+	if(src->reDrawNeeded) {
 		SDL_RenderPresent(data->windowRenderer);
 	}
 	src->reDrawNeeded = SDL_FALSE;
+	return err;
 }
 
 Command* handleEventModeSelectionView(Window* src, SDL_Event* event){

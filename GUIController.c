@@ -65,10 +65,11 @@ ErrorCode GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	return OK;
 }
 
-void GUIDraw(void* src){
+ErrorCode GUIDraw(void* src){
 	Window* window = (Window*) src;
 	// always draw the main window
-	window->drawWindow(window);
+	ErrorCode ret = window->drawWindow(window);
+	return ret;
 }
 
 void GUIDestroyController(void* src) {

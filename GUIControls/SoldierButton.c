@@ -53,6 +53,9 @@ SDL_bool setImageData(Window* src)
 	SoldierButton* data = (SoldierButton*) (src->data);
 	// get current image path
 	char* imagePath = getImagePath(data);
+	if(imagePath == NULL) {
+		return SDL_FALSE;
+	}
 	// set the surface and texture to be able to draw the soldier image
 	SDL_Surface* loadingSurface = SDL_LoadBMP(imagePath); //We use the surface as a temp var;
 	SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(data->windowRenderer,
@@ -123,19 +126,23 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 	return cmd;
 }
 
-void drawSoldierButton(Window* src) {
+ErrorCode drawSoldierButton(Window* src) {
 	if (src == NULL ) {
-		return;
+		return NULL_POINTER_ERROR;
 	}
 
+	ErrorCode err = OK;
 	SoldierButton* castData = (SoldierButton*) src->data;
 	//if the image has changed
 	if(src->reDrawNeeded == SDL_TRUE)
 	{
-		setImageData(src);
-		SDL_RenderCopy(castData->windowRenderer, castData->buttonTexture, NULL,
+		if(setImageData(src) == SDL_FALSE) {
+			return MEMORY_ERROR;
+		}
+		err |= SDL_RenderCopy(castData->windowRenderer, castData->buttonTexture, NULL,
 			src->location);
 	}
+	return err;
 }
 
 
@@ -157,7 +164,10 @@ char* getImagePath(SoldierButton* src)
 	}
 	// allocate memory for path string
 	char* imageName = malloc(sizeof(char) +  sizeof(char) * SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH);
-    sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isHighlightedChar);
+	if(imageName == NULL) {
+		return NULL;
+	}
+	sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isHighlightedChar);
 	return imageName;
 }
 

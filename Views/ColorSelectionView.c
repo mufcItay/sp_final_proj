@@ -145,28 +145,39 @@ void destroyColorSelectionView(Window* src) {
 	free(src);
 }
 
-void drawColorSelectionView(Window* src) {
+ErrorCode drawColorSelectionView(Window* src) {
 	if (src == NULL) {
-		return;
+		return NULL_POINTER_ERROR;
 	}
+	ErrorCode err = OK;
 	ColorSelectionView* data = (ColorSelectionView*) src->data;
 	if (src->reDrawNeeded) {
 		// set the render color for re draw
-		SDL_SetRenderDrawColor(data->windowRenderer,
+		err |= SDL_SetRenderDrawColor(data->windowRenderer,
 				COLOR_SELECTION_WINDOW_BGCOLOR_RED,
 				COLOR_SELECTION_WINDOW_BGCOLOR_GREEN,
 				COLOR_SELECTION_WINDOW_BGCOLOR_BLUE,
 				COLOR_SELECTION_WINDOW_BGCOLOR_ALPHA);
-		SDL_RenderClear(data->windowRenderer);
+		err |= SDL_RenderClear(data->windowRenderer);
+		if(err != OK) {
+			err = SDL_ERROR;
+			return err;
+		}
 	}
 	// draw buttons
 	for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
 		src->reDrawNeeded |= data->colorButtons[i]->reDrawNeeded;
-		data->colorButtons[i]->drawWindow(data->colorButtons[i]);
+		err |= data->colorButtons[i]->drawWindow(data->colorButtons[i]);
+		if(err!= OK) {
+			return err;
+		}
 	}
 	for (int i = 0; i < COLOR_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
 		src->reDrawNeeded |= data->navigationButtons[i]->reDrawNeeded;
-		data->navigationButtons[i]->drawWindow(data->navigationButtons[i]);
+		err |= data->navigationButtons[i]->drawWindow(data->navigationButtons[i]);
+		if(err!= OK) {
+			return err;
+		}
 	}
 	// actual render
 	if (src->reDrawNeeded) {
@@ -174,6 +185,7 @@ void drawColorSelectionView(Window* src) {
 	}
 	// return to no re draw needed state
 	src->reDrawNeeded = SDL_FALSE;
+	return err;
 }
 
 Command* handleEventColorSelectionView(Window* src, SDL_Event* event) {

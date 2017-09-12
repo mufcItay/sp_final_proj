@@ -21,7 +21,7 @@ int CMDHandleInput(void* src, GameSettings* settings, GameState* state);
 /*
  * the function draws the command line according to program's current state
  */
-void CMDDraw(void* src);
+ErrorCode CMDDraw(void* src);
 
 /*
  * The function frees all resources held by the command line controller

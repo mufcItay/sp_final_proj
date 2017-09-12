@@ -27,7 +27,11 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 		// draw UI
-		controller.draw(ui);
+		ErrorCode err = controller.draw(ui);
+		if(err != OK) {
+			printErrorMessage("drawing GUI has encountered a problem");
+			break;
+		}
 	}
 	// free all resources
 	controller.destroyController(ui);

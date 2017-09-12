@@ -12,7 +12,7 @@ struct window_t {
 	SDL_bool reDrawNeeded;
 	Window* holdingWindow;
 	void (*initWindow)(Window* );
-	void (*drawWindow)(Window* );
+	ErrorCode (*drawWindow)(Window* );
 	Command* (*handleEventWindow)(Window* , SDL_Event* );
 	void (*destroyWindow)(Window* );
 	void (*setInnerWidgetsReDraw)(Window* , SDL_bool);

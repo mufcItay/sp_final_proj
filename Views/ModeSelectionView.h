@@ -44,7 +44,7 @@ void destroyModeSelectionView(Window* src);
 /*
  * draw function of the buttons of view
  */
-void drawModeSelectionView(Window* src);
+ErrorCode drawModeSelectionView(Window* src);
 
 /*
  * handler for view GUI events

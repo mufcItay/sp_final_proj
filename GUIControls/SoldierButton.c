@@ -120,6 +120,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 		cmd = moveSelectedSoldierTo(gameBoard,src);
 		gameBoard->selectedSoldier = NULL;
 		castData->isSelected = SDL_FALSE;
+
 		return cmd;
 	}
 

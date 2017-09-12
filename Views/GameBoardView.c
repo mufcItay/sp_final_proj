@@ -138,6 +138,7 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 
 void setBoard(Window* gameBoardWindow, char** boardToSet)
 {
+	gameBoardWindow->reDrawNeeded = SDL_TRUE;
 	GameBoardData* gameBoard = (GameBoardData*) gameBoardWindow->data;
 	gameBoard->isGameSaved = SDL_FALSE;
 	Window*** soldierButtons = gameBoard->soldierButtons;
@@ -204,6 +205,7 @@ ErrorCode drawGameBoardWindow(Window* src) {
 			return err;
 		}
 	}
+
 	if(src->reDrawNeeded){
 		SDL_RenderPresent(data->windowRenderer);
 	}
@@ -237,6 +239,11 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 				}
 			}
 		}
+	}
+
+	ErrorCode err = drawSelectedSoldier(src,event);
+	if(err != OK) {
+		return NULL;
 	}
 
 	cmd = createNOPCommand();
@@ -378,6 +385,29 @@ void setGameBoardInnerReDraw(Window* src, SDL_bool reDraw){
 	}
 }
 
+ErrorCode drawSelectedSoldier(Window* gameWindow,SDL_Event* event) {
+	if(gameWindow== NULL || event == NULL) {
+		return NULL_POINTER_ERROR;
+	}
+	ErrorCode err = OK;
+	GameBoardData* game = (GameBoardData*) gameWindow->data;
+	if(game->selectedSoldier == NULL) {
+		return err;
+	}
+
+	SoldierButton* selectedSoldier = (SoldierButton*) game->selectedSoldier->data;
+	if(event->type == SDL_MOUSEMOTION) {
+		setGameBoardInnerReDraw(gameWindow, SDL_TRUE);
+		SDL_MouseMotionEvent* mmE = (SDL_MouseMotionEvent*) event;
+		drawGameBoardWindow(gameWindow);
+		SDL_Rect selectedSolR = {.x= (mmE->x - SOLDIER_BUTTON_IMAGE_WIDTH/2), .y = (mmE->y - SOLDIER_BUTTON_IMAGE_HEIGHT/2), .h = SOLDIER_BUTTON_IMAGE_HEIGHT, .w = SOLDIER_BUTTON_IMAGE_WIDTH};
+		err |= SDL_RenderCopy(game->windowRenderer, selectedSoldier->buttonTexture, NULL,
+			&selectedSolR);
+		SDL_RenderPresent(game->windowRenderer);
+	}
+	return err;
+}
+
 Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	if(gameBoard->selectedSoldier == NULL){
 		return NULL;
@@ -406,6 +436,9 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	SDL_Point destination = {.x = destinationSoldier->rowIndex, .y = destinationSoldier->columnIndex};
 	cmd = createMoveCommand(origin,destination);
 	gameBoard->isGameSaved = SDL_FALSE;
+
+	//gui update
+	setGameBoardInnerReDraw(toSoldier->holdingWindow, SDL_TRUE);
 	return cmd;
 }
 

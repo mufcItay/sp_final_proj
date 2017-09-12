@@ -133,4 +133,10 @@ void destroySoldierButtonMatrix(Window*** matrix);
  * The function destroys the menu buttons
  */
 void destroyMenuButtons(Window** menuButtons);
+
+/*
+ * draw selected soldier for live drag and drop.
+ */
+ErrorCode drawSelectedSoldier(Window* gameWindow,SDL_Event* event);
+
 #endif

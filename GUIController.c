@@ -40,6 +40,7 @@ ErrorCode GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	SDL_Event event;
 	// wait for a user event
 	SDL_WaitEvent(&event);
+
 	// if we need to close gui..
 	if((event.type == SDL_WINDOWEVENT) && (event.window.event == SDL_WINDOWEVENT_CLOSE)){
 		return CONTROLLER_END;

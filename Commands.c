@@ -14,11 +14,13 @@ Command* createGameModeCommand(GameMode mode){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	GameModeCommand* data = (GameModeCommand*) malloc(sizeof(GameModeCommand));
 	// handle error
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -33,11 +35,13 @@ Command* createDifficultyCommand(DifficultyLevel difficulty){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	DifficultyCommand* data = (DifficultyCommand*) malloc(sizeof(DifficultyCommand));
 	// handle error
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -52,11 +56,13 @@ Command* createQuitCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	QuitCommand* data = (QuitCommand*) malloc(sizeof(QuitCommand));
 	// handle error
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -70,10 +76,12 @@ Command* createResetCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	ResetCommand* data = (ResetCommand*) malloc(sizeof(ResetCommand));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -88,10 +96,12 @@ Command* createUserColorCommand(UserColor color){
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	// handle error
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	UserColorCommand* data = (UserColorCommand*) malloc(sizeof(UserColorCommand));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -106,11 +116,13 @@ Command* createLoadCommand(char* path){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	LoadCommand* data = (LoadCommand*) malloc(sizeof(LoadCommand));
 	// handle error
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -128,10 +140,12 @@ Command* createDefaultCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	DefaultCommand* data = (DefaultCommand*) malloc(sizeof(DefaultCommand));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -145,10 +159,12 @@ Command* createPrintSettingsCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	PrintSettingsCommand* data = (PrintSettingsCommand*) malloc(sizeof(PrintSettingsCommand));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -162,10 +178,12 @@ Command* createMoveCommand(SDL_Point origin, SDL_Point destination){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	MoveCommand* data = (MoveCommand*) malloc(sizeof(MoveCommand));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -183,10 +201,12 @@ Command* createStartCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	StartCommand* data = (StartCommand*) malloc(sizeof(StartCommand));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -200,10 +220,12 @@ Command* createSaveCommand(char* path){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	SaveCommand* data = (SaveCommand*) malloc(sizeof(SaveCommand));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -219,11 +241,13 @@ Command* createUndoCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	UndoCommand* data = (UndoCommand*) malloc(sizeof(UndoCommand));
 	// handle error
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -237,11 +261,13 @@ Command* createGetMovesCommand(SDL_Point origin){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	GetMovesCommand* data = (GetMovesCommand*) malloc(sizeof(GetMovesCommand));
 	// handle error
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(cmd);
 		return NULL;
 	}
@@ -256,6 +282,7 @@ Command* createNOPCommand(){
 	// allocate memory
 	Command* cmd = (Command*) malloc(sizeof(Command));
 	if(cmd == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	cmd->data = NOP_COMMAND_DATA;
@@ -266,6 +293,7 @@ Command* createNOPCommand(){
 
 ErrorCode handleGameModeCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	GameModeCommand* modeCmd = (GameModeCommand*) cmd->data;
@@ -280,6 +308,7 @@ ErrorCode handleGameModeCommand(Command* cmd, GameSettings* settings, GameState*
 ErrorCode handleDifficultyCommand(Command* cmd, GameSettings* settings, GameState* state)
 {
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	DifficultyCommand* difficultyCmd = (DifficultyCommand*) cmd->data;
@@ -291,6 +320,7 @@ ErrorCode handleQuitCommand(Command* cmd, GameSettings* settings, GameState* sta
 
 ErrorCode handleResetCommand(Command* cmd, GameSettings* settings, GameState* state) {
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 
@@ -301,6 +331,7 @@ ErrorCode handleResetCommand(Command* cmd, GameSettings* settings, GameState* st
 ErrorCode handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state)
 {
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	UserColorCommand* colorCmd = (UserColorCommand*) cmd->data;
@@ -310,19 +341,21 @@ ErrorCode handleUserColorCommand(Command* cmd, GameSettings* settings, GameState
 
 ErrorCode handleLoadCommand(Command* cmd, GameSettings* settings, GameState* state) {
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 
 	LoadCommand* loadCmd = (LoadCommand*) cmd->data;
 	int ret = loadGame(settings,state,loadCmd->path);
 	if(ret == LOAD_ERROR) {
-		printErrorMessage("loading the game from XML has failed");
+		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 	}
 	return ret;
 }
 
 ErrorCode handleDefaultCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 
@@ -334,6 +367,7 @@ ErrorCode handlePrintSettingsCommand(Command* cmd, GameSettings* settings, GameS
 
 ErrorCode handleMoveCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	// if move invalid get out. supposed to check it here or in the UI? cause error message happens in UI
@@ -355,18 +389,25 @@ ErrorCode handleMoveCommand(Command* cmd, GameSettings* settings, GameState* sta
 }
 
 ErrorCode handleStartCommand(Command* cmd, GameSettings* settings, GameState* state){
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL_POINTER_ERROR;
+	}
+
+
 	ErrorCode err = setInitialGameState(state);
 	return err;
 }
 
 ErrorCode handleSaveCommand(Command* cmd, GameSettings* settings, GameState* state){
 	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	SaveCommand* saveCmd = (SaveCommand*) cmd->data;
 	int ret = saveGame(settings,state,saveCmd->path);
 	if(ret == SAVE_ERROR) {
-		printErrorMessage("saving the game to XML has failed");
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 	}
 	return ret;
 }
@@ -377,6 +418,7 @@ ErrorCode handleNOPCommand(Command* cmd, GameSettings* settings, GameState* stat
 
 void destroyGeneralCommand(Command* cmd){
 	if (cmd == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	if(cmd->data != NULL) {

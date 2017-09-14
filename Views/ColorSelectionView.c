@@ -16,10 +16,12 @@ void destroyColorButtons(Window** colorButtons) {
 
 Window** createColorButtons(Window* holdingWindow, SDL_Renderer* renderer) {
 	if (holdingWindow == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Window** colorButtons = calloc(COLOR_SELECTION_WINDOW_COLORS_AMOUNT, sizeof(Window*));
 	if (colorButtons == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// init the buttons in the screeen
@@ -39,6 +41,7 @@ Window** createColorButtons(Window* holdingWindow, SDL_Renderer* renderer) {
 		}
 		// if button creation failed destroy all buttons
 		if (colorButtons[i] == NULL || imagePath == NULL) {
+			printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 			destroyColorButtons(colorButtons);
 			return NULL;
 		}
@@ -56,6 +59,7 @@ void destroyNavigationButtonsColorView(Window** navigationButtons) {
 Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* renderer) {
 	Window** navigationButtons = calloc(COLOR_SELECTION_WINDOW_NAVIGATIONS_AMOUNT, sizeof(Window*));
 	if (navigationButtons == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// create button rectangle positions
@@ -82,6 +86,7 @@ Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* rende
 	if (navigationButtons[COLOR_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL
 			|| navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX]
 					== NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		destroyNavigationButtonsColorView(navigationButtons);
 		return NULL;
 	}
@@ -92,10 +97,12 @@ Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* rende
 Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
 	Window* res = malloc(sizeof(Window));
 	if(res == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	ColorSelectionView* data = malloc(sizeof(ColorSelectionView));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	data->gameState = gameState;
@@ -117,6 +124,7 @@ Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettin
 	res->data = (void*) data;
 	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
 			|| colorWidgets == NULL || navigationButtons == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		destroyColorSelectionView(res);
 		return NULL;
 	}
@@ -127,12 +135,15 @@ Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettin
 	res->setInnerWidgetsReDraw = setColorSelectionInnerReDraw;
 	initWindow(res);
 	// update view to default selection
-	updateSelectedColor(COLOR_UNSELECTED, data->selectedColor, data);
+	if(updateSelectedColor(COLOR_UNSELECTED, data->selectedColor, data) == SDL_FALSE) {
+		return NULL;
+	}
 	return res;
 }
 
 void destroyColorSelectionView(Window* src) {
 	if (src == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	//free buttons
@@ -147,6 +158,7 @@ void destroyColorSelectionView(Window* src) {
 
 ErrorCode drawColorSelectionView(Window* src) {
 	if (src == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode err = OK;
@@ -160,6 +172,7 @@ ErrorCode drawColorSelectionView(Window* src) {
 				COLOR_SELECTION_WINDOW_BGCOLOR_ALPHA);
 		err |= SDL_RenderClear(data->windowRenderer);
 		if(err != OK) {
+			printErrorMessage(SDL_ERROR_MESSAGE);
 			err = SDL_ERROR;
 			return err;
 		}
@@ -190,6 +203,7 @@ ErrorCode drawColorSelectionView(Window* src) {
 
 Command* handleEventColorSelectionView(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	// the command to return is waiting
@@ -229,7 +243,8 @@ Command* handleEventColorSelectionView(Window* src, SDL_Event* event) {
 }
 Command* startButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 	SimpleButton* data = (SimpleButton*) src->data;
@@ -249,7 +264,8 @@ Command* startButtonHandler(Window* src, SDL_Event* event) {
 Command* backColorButtonHandler(Window* src, SDL_Event* event) {
 	Command* cmd = createNOPCommand();
 	if (src == NULL || event == NULL) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	if (event->type
 			== SDL_MOUSEBUTTONUP&& event->button.button == SDL_BUTTON_LEFT) {
@@ -263,7 +279,8 @@ Command* backColorButtonHandler(Window* src, SDL_Event* event) {
 Command* colorButtonHandler(Window* src, SDL_Event* event) {
 	Command* cmd = createNOPCommand();
 	if (src == NULL || event == NULL) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	if (event->type
 			== SDL_MOUSEBUTTONUP&& event->button.button == SDL_BUTTON_LEFT) {
@@ -276,13 +293,20 @@ SDL_bool updateSelectedColor(int lastSelectedColor, int currentlySelectedColor,C
 	Window* selectedColorWindow = (Window*) view->colorButtons[currentlySelectedColor];
 	char* imagePath = getColorImagePath(currentlySelectedColor, SDL_TRUE);
 	// update image for selected Color
-	updateImage(selectedColorWindow, imagePath);
+	SDL_bool err = updateImage(selectedColorWindow, imagePath);
+	setEnabledSimpleButton(view->navigationButtons[COLOR_SELECTION_WINDOW_START_BUTTON_INDEX],SDL_TRUE);
+	if(err == SDL_FALSE) {
+		return SDL_FALSE;
+	}
 	// if we switch between selections
 	if (lastSelectedColor != COLOR_UNSELECTED) {
 		// update last selected button
 		imagePath = getColorImagePath(lastSelectedColor, SDL_FALSE);
 		Window* lastSelected = (Window*) view->colorButtons[lastSelectedColor];
-		updateImage(lastSelected, imagePath);
+		err = updateImage(lastSelected, imagePath);
+		if(err == SDL_FALSE) {
+			return SDL_FALSE;
+		}
 		if (lastSelectedColor == currentlySelectedColor) {
 			view->selectedColor = COLOR_UNSELECTED;
 			setEnabledSimpleButton(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_FALSE);
@@ -309,6 +333,7 @@ char* getColorImagePath(int difficulty, SDL_bool isSelected) {
 
 void setColorSelectionInnerReDraw(Window* src, SDL_bool reDraw) {
 	if (src == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	ColorSelectionView* data = (ColorSelectionView*) src->data;

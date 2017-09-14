@@ -11,20 +11,23 @@
 Window** createDifficultyButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
 	if (holdingWindow == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL ;
 	}
 	// allocate memory
 	Window** difficultyButtons = calloc(DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT,sizeof(Window*));
 	if (difficultyButtons == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// create the difficulty selection buttons
 	for (int i = 0; i < DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
 		SDL_Rect difficultyButtonR = {.x = 0, .y = DIFFICULTY_SELECTION_WINDOW_BUTTON_HEIGHT * i + DIFFICULTY_SELECTION_WINDOW_BUTTON_SPACING *i, .h = DIFFICULTY_SELECTION_WINDOW_BUTTON_HEIGHT, .w = DIFFICULTY_SELECTION_WINDOW_BUTTON_WIDTH};
 		char* imagePath = getDifficultyImagePath(i);
-		if(imagePath != NULL){
-			difficultyButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &difficultyButtonR,imagePath ,difficultyButtonHandler);
+		if(imagePath == NULL){
+			return NULL;
 		}
+		difficultyButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &difficultyButtonR,imagePath ,difficultyButtonHandler);
 		// handle creation error
 		if (difficultyButtons[i] == NULL) {
 			destroyDifficultyButtons(holdingWindow->data);
@@ -39,6 +42,7 @@ Window** createDifficultyNavigationButtons(Window* holdingWindow, SDL_Renderer* 
 	// allocate memory
 	Window** navigationButtons = calloc(DIFFICULTY_SELECTION_WINDOW_NAVIGATIONS_AMOUNT,sizeof(Window*));
 	if (navigationButtons == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// create rectangles and buttons for difficulty selection
@@ -81,6 +85,7 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	res->data = (void*) data;
 	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
 			|| difficultyWidgets == NULL || navigationButtons == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		destroyDifficultySelectionView(res);
 		return NULL ;
 	}
@@ -91,7 +96,9 @@ Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameS
 	res->setInnerWidgetsReDraw = setDifficultySelectionInnerReDraw;
 	initWindow(res);
 	// update to default difficulty selection
-	updateSelectedDifficulty(DIFFICULTY_UNSELECTED, data->selectedDifficulty,data);
+	if(updateSelectedDifficulty(DIFFICULTY_UNSELECTED, data->selectedDifficulty,data) == SDL_FALSE) {
+		return NULL;
+	}
 	return res;
 
 }
@@ -112,6 +119,7 @@ void destroyNavigationDifficultyButtons(DifficultySelectionView* data) {
 
 void destroyDifficultySelectionView(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	DifficultySelectionView* data = (DifficultySelectionView*) src->data;
@@ -124,6 +132,7 @@ void destroyDifficultySelectionView(Window* src) {
 
 ErrorCode drawDifficultySelectionView(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode err = OK;
@@ -165,6 +174,7 @@ ErrorCode drawDifficultySelectionView(Window* src) {
 
 Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event){
 	if(src == NULL || event==NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd = createNOPCommand();
@@ -196,6 +206,7 @@ Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event){
 }
 Command* nextDifficultiesButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL; //Better to return an error value
 	}
 	Command* cmd = createNOPCommand();
@@ -212,7 +223,8 @@ Command* nextDifficultiesButtonHandler(Window* src, SDL_Event* event){
 
 Command* backDifficultiesButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 
@@ -224,7 +236,8 @@ Command* backDifficultiesButtonHandler(Window* src, SDL_Event* event){
 
 Command* difficultyButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 
@@ -240,11 +253,18 @@ SDL_bool updateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelec
 	char* imageName = malloc(DIFFICULTY_SELECTION_WINDOW_DIFF__PIC_PATH_LENGTH);
 	if(imageName == NULL)
 	{
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return SDL_FALSE;
 	}
 	// update image of selected difficulty
-	sprintf(imageName, DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH, currentlySelectedDifficulty,DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_SELECTED);
-	updateImage(selectedDiff, imageName);
+	if(sprintf(imageName, DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH, currentlySelectedDifficulty,DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_SELECTED) <= 0) {
+		printErrorMessage(STRING_ERROR_MESSAGE);
+		return SDL_FALSE;
+	}
+	SDL_bool err =updateImage(selectedDiff, imageName);
+	if(err == SDL_FALSE) {
+		return SDL_FALSE;
+	}
 	free(imageName);
 
 	// change enabled state to enabled cause some difficulty has been selected
@@ -255,11 +275,18 @@ SDL_bool updateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelec
 		imageName = malloc(DIFFICULTY_SELECTION_WINDOW_DIFF__PIC_PATH_LENGTH);
 		if(imageName == NULL)
 		{
+			printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 			return SDL_FALSE;
 		}
 		Window* lastSelected = (Window*) view->difficultyButtons[lastSelectedDifficulty];
-		sprintf(imageName, DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH, lastSelectedDifficulty,DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_NOT_SELECTED);
-		updateImage(lastSelected, imageName);
+		if(sprintf(imageName, DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH, lastSelectedDifficulty,DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_NOT_SELECTED) <=0) {
+			printErrorMessage(STRING_ERROR_MESSAGE);
+			return SDL_FALSE;
+		}
+		SDL_bool err = updateImage(lastSelected, imageName);
+		if(err == SDL_FALSE) {
+			return SDL_FALSE;
+		}
 		free(imageName);
 		if(lastSelectedDifficulty == currentlySelectedDifficulty)
 		{
@@ -277,9 +304,13 @@ char* getDifficultyImagePath(int difficulty) {
 	char* imageName = malloc(DIFFICULTY_SELECTION_WINDOW_DIFF__PIC_PATH_LENGTH);
 	if(imageName == NULL)
 	{
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
-	sprintf(imageName, DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH, difficulty,DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_NOT_SELECTED);
+	if(sprintf(imageName, DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH, difficulty,DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_NOT_SELECTED) <= 0) {
+		printErrorMessage(STRING_ERROR_MESSAGE);
+		return NULL;
+	}
 	return imageName;
 }
 

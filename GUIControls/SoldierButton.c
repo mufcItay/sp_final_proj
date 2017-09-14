@@ -11,6 +11,7 @@ Window* createSoldierButton(Window* holdingWindow, SDL_Renderer* windowRenderer,
 	SoldierButton* data = (SoldierButton*) malloc(sizeof(SoldierButton));
 	// hnadle memory error
 	if (res == NULL || data == NULL || windowRenderer == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(res);
 		free(data);
 		//We first destroy the renderer
@@ -62,8 +63,8 @@ SDL_bool setImageData(Window* src)
 			loadingSurface);
 	data->buttonTexture = buttonTexture;
 	// handle errors
-	if (data == NULL || loadingSurface == NULL
-			|| buttonTexture == NULL) {
+	if (data == NULL || loadingSurface == NULL || buttonTexture == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(data);
 		SDL_FreeSurface(loadingSurface); //It is safe to pass NULL
 		SDL_DestroyTexture(buttonTexture); ////It is safe to pass NULL
@@ -77,6 +78,7 @@ SDL_bool setImageData(Window* src)
 
 void destroySoldierButton(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	SoldierButton* castData = (SoldierButton*) src->data;
@@ -89,7 +91,8 @@ void destroySoldierButton(Window* src) {
 
 Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 	SoldierButton* castData = (SoldierButton*) src->data;
@@ -129,6 +132,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 
 ErrorCode drawSoldierButton(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 
@@ -166,9 +170,13 @@ char* getImagePath(SoldierButton* src)
 	// allocate memory for path string
 	char* imageName = malloc(sizeof(char) +  sizeof(char) * SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH);
 	if(imageName == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
-	sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isHighlightedChar);
+	if(sprintf(imageName , SOLDIER_PICS_PATTERN, backgroundColorChar, soldierColorChar, soldierTypeChar, isHighlightedChar) <= 0)  {
+		printErrorMessage(STRING_ERROR_MESSAGE);
+		return NULL;
+	}
 	return imageName;
 }
 

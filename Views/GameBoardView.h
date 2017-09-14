@@ -122,7 +122,7 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data);
 /*
  * The function checked by showing a messagebox if save is wanted by user when the user switches from GameBoard view.
  */
-void setStatusImage(GameBoardData* data, GameBoardStatuses status);
+SDL_bool setStatusImage(GameBoardData* data, GameBoardStatuses status);
 
 /*
  * The function frees memory resources of soldier buttons in the view

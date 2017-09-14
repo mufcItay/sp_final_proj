@@ -11,6 +11,7 @@
 
 Window** updateSlotButtons(Window* holdingWindow) {
 	if (holdingWindow == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL ;
 	}
 
@@ -29,6 +30,7 @@ Window** updateSlotButtons(Window* holdingWindow) {
 	}
 	data->selectedSlot = SLOT_UNSELECTED;
 	data->slotButtons = ret;
+	setEnabledSimpleButton(data->menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX],SDL_FALSE);
 	return ret;
 }
 
@@ -42,12 +44,14 @@ void destroyLoadSlotButtons(LoadGameView* view, Window** slotButtons) {
 Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
 	if (holdingWindow == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL ;
 	}
 	LoadGameView* view = (LoadGameView*) (holdingWindow->data);
 	// allocate memory
 	Window** slotButtons = calloc(LOAD_GAME_WINDOW_SLOTS_AMOUNT,sizeof(Window*));
 	if (slotButtons == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// get from file system the number of saved games
@@ -90,6 +94,7 @@ void destroyLoadMenuButtons(Window** menuButtons) {
 Window** createLoadGameMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 	Window** menuButtons = calloc(LOAD_GAME_WINDOW_NAVIGATIONS_AMOUNT,sizeof(Window*));
 	if (menuButtons == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// create rectangles and buttons of navigation
@@ -103,6 +108,7 @@ Window** createLoadGameMenuButtons(Window* holdingWindow, SDL_Renderer* renderer
 	setEnabledSimpleButton(menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX], SDL_FALSE);
 	// handle creation error of buttons
 	if (menuButtons[LOAD_GAME_WINDOW_BACK_BUTTON_INDEX] == NULL || menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX] == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		destroyLoadMenuButtons(menuButtons);
 		return NULL ;
 	}
@@ -124,6 +130,13 @@ Window* createLoadGameView(Window* holdingWindow, GameSettings* gameSettings, Ga
 	SDL_Renderer* renderer = main->windowRenderer;
 	Window** slotsWidgets = createSlotButtons(res, renderer);
 	Window** menuButtons = createLoadGameMenuButtons(res, renderer);
+	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
+			|| slotsWidgets == NULL || menuButtons == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+		destroyLoadGameView(res);
+		return NULL ;
+	}
+	res->destroyWindow = destroyLoadGameView;
 	// set data members
 	data->slotButtons = slotsWidgets;
 	data->windowRenderer = renderer;
@@ -131,12 +144,6 @@ Window* createLoadGameView(Window* holdingWindow, GameSettings* gameSettings, Ga
 	data->selectedSlot = SLOT_UNSELECTED;
 	data->lastView = UNINITIALIZED_VIEW;
 	// hand error in button allocation
-	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| slotsWidgets == NULL || menuButtons == NULL) {
-		destroyLoadGameView(res);
-		return NULL ;
-	}
-	res->destroyWindow = destroyLoadGameView;
 	res->drawWindow = drawLoadGameView;
 	res->handleEventWindow = handleEventLoadGameView;
 	res->holdingWindow = holdingWindow;
@@ -147,6 +154,7 @@ Window* createLoadGameView(Window* holdingWindow, GameSettings* gameSettings, Ga
 
 void destroyLoadGameView(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	LoadGameView* data = (LoadGameView*) src->data;
@@ -159,6 +167,7 @@ void destroyLoadGameView(Window* src) {
 
 ErrorCode drawLoadGameView(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode err = OK;
@@ -200,6 +209,7 @@ ErrorCode drawLoadGameView(Window* src) {
 
 Command* handleEventLoadGameView(Window* src, SDL_Event* event){
 	if(src == NULL || event==NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd;
@@ -209,8 +219,6 @@ Command* handleEventLoadGameView(Window* src, SDL_Event* event){
 			// hnadle slot button events
 			data->slotButtons[i]->handleEventWindow(data->slotButtons[i],event);
 			if(getUpdatedImagePathForSlot(data->selectedSlot,i,data) == SDL_FALSE) {
-				// exit the program properly TODO: CHECK!!!
-				src->holdingWindow->holdingWindow->isClosed = SDL_TRUE;
 				return NULL;
 			}
 		}
@@ -229,7 +237,8 @@ Command* handleEventLoadGameView(Window* src, SDL_Event* event){
 }
 Command* loadSlotButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 	SimpleButton* data = (SimpleButton*) src->data;
@@ -241,7 +250,14 @@ Command* loadSlotButtonHandler(Window* src, SDL_Event* event){
 		LoadGameView* loadGameViewData = (LoadGameView*) src->holdingWindow->data;
 		int pathLen = strlen(SAVED_GAMES_DIRECTORY_PATH) + sizeof(char) + strlen(XML_FILE_TYPE) + 1;
 		char* path = (char*) malloc(pathLen * sizeof(char));
-		sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH, loadGameViewData->selectedSlot + 1,XML_FILE_TYPE);
+		if(path == NULL) {
+			printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+			return NULL;
+		}
+		if(sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH, loadGameViewData->selectedSlot + 1,XML_FILE_TYPE) <= 0) {
+			printErrorMessage(STRING_ERROR_MESSAGE);
+			return NULL;
+		}
 		cmd = createLoadCommand(path);
 		setCurrentView(src->holdingWindow->holdingWindow, BOARD_VIEW);
 	}
@@ -250,7 +266,8 @@ Command* loadSlotButtonHandler(Window* src, SDL_Event* event){
 
 Command* backLoadGameButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	LoadGameView* view = (LoadGameView*) (src->holdingWindow->data);
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
@@ -262,7 +279,8 @@ Command* backLoadGameButtonHandler(Window* src, SDL_Event* event){
 
 Command* slotButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 	}
@@ -277,11 +295,18 @@ SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedS
 	char* imageName = malloc(LOAD_GAME_WINDOW_SLOT__PIC_PATH_LENGTH);
 	if(imageName == NULL)
 	{
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return SDL_FALSE;
 	}
 	// update image
-	sprintf(imageName, LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH, currentlySelectedSlot,LOAD_GAME_WINDOW_PIC_PATH_SLOT_SELECTED);
-	updateImage(selectedSlot, imageName);
+	if(sprintf(imageName, LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH, currentlySelectedSlot,LOAD_GAME_WINDOW_PIC_PATH_SLOT_SELECTED) <= 0) {
+		printErrorMessage(STRING_ERROR_MESSAGE);
+		return SDL_FALSE;
+	}
+	SDL_bool err = updateImage(selectedSlot, imageName);
+	if(err == SDL_FALSE) {
+		return SDL_FALSE;
+	}
 	free(imageName);
 
 	setEnabledSimpleButton(view->menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX], SDL_TRUE);
@@ -291,12 +316,19 @@ SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedS
 		imageName = malloc(DIFFICULTY_SELECTION_WINDOW_DIFF__PIC_PATH_LENGTH);
 		if(imageName == NULL)
 		{
+			printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 			return SDL_FALSE;
 		}
 		Window* lastSelected = (Window*) view->slotButtons[lastSelectedSlot];
 		// udpate image of last selected slot
-		sprintf(imageName, LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH, lastSelectedSlot,LOAD_GAME_WINDOW_PIC_PATH_SLOT_NOT_SELECTED);
-		updateImage(lastSelected, imageName);
+		if(sprintf(imageName, LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH, lastSelectedSlot,LOAD_GAME_WINDOW_PIC_PATH_SLOT_NOT_SELECTED) <= 0) {
+			printErrorMessage(STRING_ERROR_MESSAGE);
+			return SDL_FALSE;
+		}
+		SDL_bool err = updateImage(lastSelected, imageName);
+		if(err == SDL_FALSE) {
+			return err;
+		}
 		free(imageName);
 		if(lastSelectedSlot == currentlySelectedSlot)
 		{
@@ -314,15 +346,20 @@ char* getSlotImagePath(int slot) {
 	char* imageName = malloc(LOAD_GAME_WINDOW_SLOT__PIC_PATH_LENGTH);
 	if(imageName == NULL)
 	{
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
-	sprintf(imageName, LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH, slot,LOAD_GAME_WINDOW_PIC_PATH_SLOT_NOT_SELECTED);
+	if (sprintf(imageName, LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH, slot,LOAD_GAME_WINDOW_PIC_PATH_SLOT_NOT_SELECTED) <= 0 ) {
+		printErrorMessage(STRING_ERROR_MESSAGE);
+		return NULL;
+	}
 	return imageName;
 }
 
 
 void setLoadGameInnerReDraw(Window* src, SDL_bool reDraw) {
 	if(src == NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	LoadGameView* data = (LoadGameView*) src->data;

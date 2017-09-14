@@ -7,9 +7,13 @@
 GameState* createGameState(){
 	GameState* state = (GameState*) malloc(sizeof(char**) + sizeof(int) + sizeof(void**));
 	if(state == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	state->board = createInitialBoard();
+	if(state->board == NULL) {
+		return NULL;
+	}
 	state->turn = WHITE;
 	return state;
 
@@ -18,6 +22,7 @@ GameState* createGameState(){
 GameSettings* createGameSettings(){
 	GameSettings* settings = (GameSettings*) malloc(sizeof(GameSettings));
 	if(settings == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	setDefaultSettings(settings);
@@ -45,11 +50,13 @@ void destroyGameSettings(GameSettings* gameSettings) {
 
 ErrorCode setInitialGameState(GameState* state) {
 	if(state == NULL || state->board == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	// free old board resources
 	for (int i = 0; i < BOARD_ROWS_AMOUNT; ++i) {
 		if(state->board[i] == NULL) {
+			printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 			return NULL_POINTER_ERROR;
 		}
 		free(state->board[i]);
@@ -70,12 +77,14 @@ char** createInitialBoard()
 	// allocate memory
 	char ** board = malloc(sizeof(char*) * BOARD_ROWS_AMOUNT);
 	if(board == NULL){
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	for(int i =0; i< BOARD_ROWS_AMOUNT;++i)
 	{
 		board[i] = (char*) malloc(sizeof(char) * BOARD_COLUMNS_AMOUNT);
 		if(board[i] == NULL){
+			printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 			return NULL;
 		}
 	}
@@ -97,7 +106,13 @@ void printErrorMessage(const char* message) {
 	int prefixLen = strlen(ERROR_MESSAGE_PREFIX);
 	int messageLen = strlen(message);
 	char* fullMessage = malloc(prefixLen + messageLen + 1);
-	sprintf(fullMessage,"%s%s",ERROR_MESSAGE_PREFIX,message);
+	if(fullMessage == NULL) {
+		return;
+	}
+	if(sprintf(fullMessage,"%s%s",ERROR_MESSAGE_PREFIX,message) <= 0 ) {
+		free(fullMessage);
+		return;
+	}
 	printf(fullMessage);
 	free(fullMessage);
 }

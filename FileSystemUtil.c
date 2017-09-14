@@ -12,6 +12,7 @@ int getNumberOfSavedGames() {
 	// open directory
 	directory = opendir(SAVED_GAMES_DIRECTORY_PATH);
 	if(directory == NULL) {
+		printErrorMessage(FILE_SYSTEM_ERROR_MESSAGE);
 		return SLOTS_LOAD_ERROR;
 	}
 	int numberOfFiles = 0;
@@ -24,13 +25,13 @@ int getNumberOfSavedGames() {
 		}
 		closedir(directory);
 	} else {
-		perror("Couldn't open the directory");
+		printErrorMessage(FILE_SYSTEM_ERROR_MESSAGE);
 		return SLOTS_LOAD_ERROR;
 	}
 	// 2 files are redundant
 	numberOfFiles -= REDUNDANT_FILES_AMOUNT;
 	if(numberOfFiles > MAX_SLOTS) {
-		printErrorMessage("Too many slots in saved games directory");
+		printErrorMessage(SAVED_GAMES_DIR_CORRUPTED_ERROR_MESSAGE);
 		return SLOTS_LOAD_ERROR;
 	}
 	return numberOfFiles;
@@ -39,6 +40,7 @@ int getNumberOfSavedGames() {
 ErrorCode reArrageSavedGames() {
 	int numOfSavedGames = getNumberOfSavedGames();
 	if(numOfSavedGames > MAX_SLOTS || numOfSavedGames == SLOTS_LOAD_ERROR) {
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	// no need to re arrange if no slots are available
@@ -53,6 +55,7 @@ ErrorCode reArrageSavedGames() {
 		sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,MAX_SLOTS,XML_FILE_TYPE);
 		int ret = remove(path);
 		if (ret != 0) {
+			printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 			return SAVE_ERROR;
 		}
 		numOfSavedGames--;
@@ -68,6 +71,7 @@ ErrorCode reArrageSavedGames() {
 		sprintf(newName,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,slotIndex + 1 ,XML_FILE_TYPE);
 		int ret = rename(oldName,newName);
 		if (ret != 0) {
+			printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 			return SAVE_ERROR;
 		}
 	}
@@ -78,38 +82,46 @@ ErrorCode saveGame(GameSettings* settings, GameState* state, char* path) {
 	// open file
 	FILE* gameFile = fopen(path, "w");
 	if (gameFile == NULL) {
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	// start writing tags
 	if (fprintf(gameFile, XML_TITLE_TAG) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	if (fprintf(gameFile, XML_GAME_TAG) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	int currentTurnXML = (state->turn == BLACK) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
 	if (fprintf(gameFile, XML_TURN_TAG, currentTurnXML) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	int currentModeXML = (settings->mode == MULTI_PLAYER) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
 	if (fprintf(gameFile, XML_MODE_TAG, currentModeXML) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	if (writeDifficultyToXML(settings, gameFile) == DIFFICULTY_UNDEFINED) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	int currentColorXML = (settings->color == BLACK) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
 	if (fprintf(gameFile, XML_COLOR_TAG, currentColorXML) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	if (fprintf(gameFile, XML_BOARD_TAG) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	// write the board
@@ -123,15 +135,18 @@ ErrorCode saveGame(GameSettings* settings, GameState* state, char* path) {
 		// write the whole line to file
 		if (fprintf(gameFile, XML_ROW_TAG, i, row, i) <= 0) {
 			fclose(gameFile);
+			printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 			return SAVE_ERROR;
 		}
 	}
 	if (fprintf(gameFile, XML_BOARD_END_TAG) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	if (fprintf(gameFile, XML_GAME_END_TAG) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
 	fclose(gameFile);
@@ -142,6 +157,7 @@ ErrorCode loadGame(GameSettings* settings, GameState* state, char* path) {
 	// open the xml file
 	FILE* gameFile = fopen(path, "r");
 	if (gameFile == NULL) {
+		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return LOAD_ERROR;
 	}
 	// read tags
@@ -150,22 +166,26 @@ ErrorCode loadGame(GameSettings* settings, GameState* state, char* path) {
 	int currentTurnXML = COLOR_UNDEFINED;
 	if (fscanf(gameFile, XML_TURN_TAG, &currentTurnXML) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return LOAD_ERROR;
 	}
 	state->turn = currentTurnXML == XML_COLOR_WHITE ? WHITE : BLACK;
 	int currentModeXML = MODE_UNDEFINED;
 	if (fscanf(gameFile, XML_MODE_TAG, &currentModeXML) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return LOAD_ERROR;
 	}
 	settings->mode = (currentModeXML == XML_MODE_MULTIPLAYER) ? MULTI_PLAYER : SINGLE_PLAYER;
 	if (updateDifficulty(settings, gameFile) == DIFFICULTY_UNDEFINED) {
 		fclose(gameFile);
+		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return LOAD_ERROR;
 	}
 	int currentColorXML = COLOR_UNDEFINED;
 	if (fscanf(gameFile, XML_COLOR_TAG, &currentColorXML) <= 0) {
 		fclose(gameFile);
+		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return LOAD_ERROR;
 	}
 	settings->color = (settings->color == XML_COLOR_BLACK) ? BLACK : WHITE;
@@ -177,6 +197,7 @@ ErrorCode loadGame(GameSettings* settings, GameState* state, char* path) {
 		char soldierTypes[BOARD_COLUMNS_AMOUNT];
 		if (fscanf(gameFile, XML_ROW_TAG, &rowIndex, soldierTypes, &currentColorXML) <= 0) {
 			fclose(gameFile);
+			printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 			return LOAD_ERROR;
 		}
 		for (int j = 0; j < BOARD_COLUMNS_AMOUNT; ++j) {
@@ -211,6 +232,7 @@ int writeDifficultyToXML(GameSettings* settings, FILE* gameFile) {
 		return DIFFICULTY_UNDEFINED;
 	}
 	if (fprintf(gameFile, XML_DIFFICULTY_TAG, currentDifficultyXML) <= 0) {
+		printErrorMessage(STRING_ERROR_MESSAGE);
 		return DIFFICULTY_UNDEFINED;
 	}
 
@@ -220,6 +242,7 @@ int writeDifficultyToXML(GameSettings* settings, FILE* gameFile) {
 int updateDifficulty(GameSettings* settings, FILE* gameFile) {
 	int currentDifficultyXML = DIFFICULTY_UNDEFINED;
 	if (fscanf(gameFile, XML_DIFFICULTY_TAG, &currentDifficultyXML) <= 0) {
+		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return DIFFICULTY_UNDEFINED;
 	}
 	switch (currentDifficultyXML) {

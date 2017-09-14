@@ -12,6 +12,7 @@
 Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
 	if (renderer == NULL || holdingWindow == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL ;
 	}
 	GameBoardData* data = (GameBoardData*) (holdingWindow->data);
@@ -19,12 +20,14 @@ Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* rendere
 	// init memory
 	Window*** soldierButtonsMatrix = calloc(BOARD_WINDOW_ROWS_AMOUNT,sizeof(Window*));
 	if (soldierButtonsMatrix == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	for(int i=0; i<BOARD_WINDOW_ROWS_AMOUNT; ++i)
 	{
 		soldierButtonsMatrix[i] = calloc(BOARD_WINDOW_COLUMNS_AMOUNT,sizeof(Window*));
 		if (soldierButtonsMatrix[i] == NULL ) {
+			printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 			return NULL;
 		}
 	}
@@ -62,6 +65,7 @@ void destroyMenuButtons(Window** menuButtons) {
 Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 	Window** menuButtons = calloc(BOARD_WINDOW_BUTTONS_AMOUNT,sizeof(Window*));
 	if (menuButtons == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// init rectangles for menu buttons
@@ -83,6 +87,7 @@ Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 	// if an error occurred, free memory
 	if (menuButtons[BOARD_WINDOW_RESTART_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX] == NULL ||
 			menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		destroyMenuButtons(menuButtons);
 		return NULL ;
 	}
@@ -110,6 +115,7 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	// handle windows creation errors
 	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
 			|| widgets == NULL || menuButtons == NULL|| statusWindow == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		//We first destroy the renderer
 		SDL_DestroyRenderer(renderer);
 		destroyWindow(statusWindow);
@@ -168,6 +174,7 @@ void destroyGameBoardWindow(Window* src) {
 
 ErrorCode drawGameBoardWindow(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode err = OK;
@@ -215,6 +222,7 @@ ErrorCode drawGameBoardWindow(Window* src) {
 
 Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 	if(src == NULL || event==NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd;
@@ -252,7 +260,8 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 
 Command* saveButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
-			return NULL;
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 
@@ -269,6 +278,7 @@ Command* saveButtonHandler(Window* src, SDL_Event* event) {
 }
 Command* restartButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL; //Better to return an error value
 	}
 	Command* cmd = createNOPCommand();
@@ -282,6 +292,7 @@ Command* restartButtonHandler(Window* src, SDL_Event* event) {
 }
 Command* undoButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd = createNOPCommand();
@@ -300,6 +311,7 @@ Command* undoButtonHandler(Window* src, SDL_Event* event) {
 
 Command* exitBoardButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	GameBoardData* data = (GameBoardData*) src->holdingWindow->data;
@@ -329,7 +341,7 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
 			Command* saveCmd = createSaveCommand(path);
 			ErrorCode err =handleSaveCommand(saveCmd,data->gameSettings,data->gameState);
 			if(err != OK) {
-				printErrorMessage("couldn't save the game before exiting game");
+				printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 			}
 			break;
 		case BUTTON_CANCEL:
@@ -343,7 +355,8 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
 
 Command* mainMenuButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 	GameBoardData* data = (GameBoardData*) src->holdingWindow->data;
@@ -399,7 +412,7 @@ ErrorCode drawSelectedSoldier(Window* gameWindow,SDL_Event* event) {
 	if(event->type == SDL_MOUSEMOTION) {
 		setGameBoardInnerReDraw(gameWindow, SDL_TRUE);
 		SDL_MouseMotionEvent* mmE = (SDL_MouseMotionEvent*) event;
-		drawGameBoardWindow(gameWindow);
+		err = drawGameBoardWindow(gameWindow);
 		SDL_Rect selectedSolR = {.x= (mmE->x - SOLDIER_BUTTON_IMAGE_WIDTH/2), .y = (mmE->y - SOLDIER_BUTTON_IMAGE_HEIGHT/2), .h = SOLDIER_BUTTON_IMAGE_HEIGHT, .w = SOLDIER_BUTTON_IMAGE_WIDTH};
 		err |= SDL_RenderCopy(game->windowRenderer, selectedSoldier->buttonTexture, NULL,
 			&selectedSolR);
@@ -417,6 +430,7 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	SoldierButton* destinationSoldier= (SoldierButton*)(toSoldier->data);
 
 	if(soldierToMove == NULL || destinationSoldier == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 //		if(invalid move) continue
@@ -442,35 +456,37 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	return cmd;
 }
 
-void setStatusImage(GameBoardData* data, GameBoardStatuses status) {
+SDL_bool setStatusImage(GameBoardData* data, GameBoardStatuses status) {
 	Window* statusBut = (Window*) data->statusButton;
+	SDL_bool err;
 	switch(status) {
 		case NEUTRAL:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH);
 			break;
 		case TIE:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH);
 			break;
 		case CHECK:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH);
 			break;
 		case CHECKMATE:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH);
 			break;
 		case PAWN_PROMOTION:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH);
 			break;
 		case BISHOP_PROMOTION:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH);
 			break;
 		case ROCK_PROMOTION:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH);
 			break;
 		case QUEEN_PROMOTION:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH);
 			break;
 		case KNIGHT_PROMOTION:
-			updateImage(statusBut,BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH);
+			err = updateImage(statusBut,BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH);
 			break;
 	}
+	return err;
 }

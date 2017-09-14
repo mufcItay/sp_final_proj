@@ -16,7 +16,16 @@ typedef enum errorcodes_t {
 	IMAGE_ERROR
 } ErrorCode;
 
-
+// error messages
+#define MEMORY_ALLOCATION_ERROR_MESSAGE "memory allocation error"
+#define NULL_POINTER_ERROR_MESSAGE "encountered invalid null pointer"
+#define STRING_ERROR_MESSAGE "string manipulation error"
+#define SDL_ERROR_MESSAGE "SDL error"
+#define SAVE_GAME_ERROR_MESSAGE "couldn't save game to XML"
+#define LOAD_GAME_ERROR_MESSAGE "couldn't load game from XML"
+#define FILE_SYSTEM_ERROR_MESSAGE "couldn't access file system"
+#define SAVED_GAMES_DIR_CORRUPTED_ERROR_MESSAGE "Too many slots in saved games directory"
+#define GUI_ERROR_MESSAGE "yhe GUI has failed to be drawn"
 #define BMP_FILE_TYPE ".bmp"
 #define ERROR_MESSAGE_PREFIX "ERROR: "
 

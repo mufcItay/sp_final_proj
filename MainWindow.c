@@ -13,11 +13,13 @@
 
 Window** createMainWindowWidgets(Window* window,SDL_Renderer* renderer) {
 	if (renderer == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	// allocate memory
 	Window** widgets = malloc(sizeof(Window*) * MAIN_NUMBER_OF_BUTTONS);
 	if (widgets == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// create buttons rectangles and actual buttons
@@ -65,10 +67,12 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
 	Window* res = malloc(sizeof(Window));
 	if(res == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	MainWindow* data = malloc(sizeof(MainWindow));
 	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(res);
 		return NULL;
 	}
@@ -93,7 +97,8 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	initWindow(res);
 	res->data = (void*) data;
 	// handle creation errors
-	if (window == NULL || renderer == NULL || widgets == NULL ) {
+	if (window == NULL || renderer == NULL || widgets == NULL || res->location == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		destroyMainWindow(res);
 		return NULL;
 	}
@@ -124,6 +129,7 @@ void destroyViews(MainWindow* data) {
 
 void destroyMainWindow(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	MainWindow* data = (MainWindow*) src->data;
@@ -140,6 +146,7 @@ void destroyMainWindow(Window* src) {
 }
 ErrorCode drawMainWindow(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode err = OK;
@@ -191,6 +198,7 @@ ErrorCode drawMainWindow(Window* src) {
 
 Command* handleEventMainWindow(Window* src, SDL_Event* event){
 	if(src == NULL || event==NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd = createNOPCommand();
@@ -235,6 +243,7 @@ Command* handleEventMainWindow(Window* src, SDL_Event* event){
 Command* newGameButtonHandler(Window* src, SDL_Event* event)
 {
 	if (src == NULL || event == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd = createNOPCommand();
@@ -248,6 +257,7 @@ Command* newGameButtonHandler(Window* src, SDL_Event* event)
 
 Command* loadGameButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd = createNOPCommand();
@@ -258,6 +268,7 @@ Command* loadGameButtonHandler(Window* src, SDL_Event* event) {
 }
 Command* exitButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd = createNOPCommand();

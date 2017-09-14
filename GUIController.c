@@ -16,11 +16,12 @@ void setGUIController(UIController* controller) {
 
 void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) { //SDL2 INIT
-		printf("ERROR: unable to init SDL: %s\n", SDL_GetError());
+		printErrorMessage(SDL_ERROR_MESSAGE);
 		return NULL;
 	}
 
 	if(gameSettings == NULL || gameState == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR);
 		return NULL;
 	}
 
@@ -48,6 +49,7 @@ ErrorCode GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	// handle the event by calling it's unique handler
 	Command* cmd = window->handleEventWindow(window,&event);
 	if(cmd == NULL){
+		printErrorMessage(NULL_POINTER_ERROR);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode ret = cmd->handleCommand(cmd, settings,state);
@@ -70,6 +72,9 @@ ErrorCode GUIDraw(void* src){
 	Window* window = (Window*) src;
 	// always draw the main window
 	ErrorCode ret = window->drawWindow(window);
+	if(ret != OK) {
+		printErrorMessage(GUI_ERROR_MESSAGE);
+	}
 	return ret;
 }
 

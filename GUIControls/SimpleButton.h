@@ -44,7 +44,7 @@ SDL_bool setNewImage(Window* src);
 /*
  * The function updates the button image to a new one according to newImagePath
  */
-void updateImage(Window* src, char* newImagePath);
+SDL_bool updateImage(Window* src, char* newImagePath);
 
 /*
  * The function sets the enabled state of each of the button

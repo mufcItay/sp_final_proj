@@ -4,10 +4,12 @@
 
 SDL_Rect* copyRect(SDL_Rect* src){
 	if(src == NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	SDL_Rect* res = malloc(sizeof(SDL_Rect));
 	if(res==NULL){
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	res->h = src->h;
@@ -20,6 +22,7 @@ SDL_Rect* copyRect(SDL_Rect* src){
 SDL_Rect* createInvlidRect(){
 	SDL_Rect* res = malloc(sizeof(SDL_Rect));
 	if(res==NULL){
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	res->h = INVALID_LOCATION;

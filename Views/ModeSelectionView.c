@@ -11,11 +11,13 @@
 Window** createModeButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
 	if (holdingWindow == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL ;
 	}
 	// allocate memory
 	Window** modeButtons = calloc(MODE_SELECTION_WINDOW_MODES_AMOUNT,sizeof(Window*));
 	if (modeButtons == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	for (int i = 0; i < MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
@@ -38,6 +40,7 @@ Window** createModeNavigationButtons(Window* holdingWindow, SDL_Renderer* render
 	// allocate memory
 	Window** navigationButtons = calloc(MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT,sizeof(Window*));
 	if (navigationButtons == NULL ) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
 	// create rectangles and actual buttons of navigation
@@ -69,6 +72,12 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	Window** modeWidgets = createModeButtons(res, renderer);
 	Window** navigationButtons = createModeNavigationButtons(res, renderer);
 	// set members
+	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
+			|| modeWidgets == NULL || navigationButtons == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+		destroyModeSelectionView(res);
+		return NULL ;
+	}
 	data->modeButtons = modeWidgets;
 	data->windowRenderer = renderer;
 	data->navigationButtons = navigationButtons;
@@ -76,11 +85,6 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	data->selectedMode = gameSettings->mode -1;
 	res->data = (void*) data;
 	// handle buttons creation errors
-	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| modeWidgets == NULL || navigationButtons == NULL) {
-		destroyModeSelectionView(res);
-		return NULL ;
-	}
 	res->destroyWindow = destroyModeSelectionView;
 	res->drawWindow = drawModeSelectionView;
 	res->handleEventWindow = handleEventModeSelectionView;
@@ -109,6 +113,7 @@ void destroyModeNavigationButtons(ModeSelectionView* data) {
 
 void destroyModeSelectionView(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	ModeSelectionView* data = (ModeSelectionView*) src->data;
@@ -121,6 +126,7 @@ void destroyModeSelectionView(Window* src) {
 
 ErrorCode drawModeSelectionView(Window* src) {
 	if (src == NULL ) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode err = OK;
@@ -161,6 +167,7 @@ ErrorCode drawModeSelectionView(Window* src) {
 
 Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 	if(src == NULL || event==NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd;
@@ -170,12 +177,9 @@ Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 			// handle event for selection buttons
 			data->modeButtons[i]->handleEventWindow(data->modeButtons[i],event);
 			if(updateSelectedMode(data->selectedMode,i,data) == SDL_FALSE) {
-				// exit the program properly TODO: CHECK!!!
-				src->holdingWindow->holdingWindow->isClosed = SDL_TRUE;
 				return NULL;
 			}
 			else {
-				// handle error in selection buttons
 				GameMode selectedMode = getMode(data->selectedMode);
 				cmd = createGameModeCommand(selectedMode);
 				return cmd;
@@ -196,7 +200,8 @@ Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 }
 Command* nextModeButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 
 	Command* cmd = createNOPCommand();
@@ -207,6 +212,7 @@ Command* nextModeButtonHandler(Window* src, SDL_Event* event){
 	}
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		if(modeSelectionView->selectedMode == MODE_UNSELECTED) {
+			printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 			return NULL;
 		}
 		enum WindowView nextView = DIFFICULTY_SELECTION_VIEW;
@@ -222,7 +228,8 @@ Command* nextModeButtonHandler(Window* src, SDL_Event* event){
 
 Command* backModeButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
@@ -233,7 +240,8 @@ Command* backModeButtonHandler(Window* src, SDL_Event* event){
 
 Command* modeButtonHandler(Window* src, SDL_Event* event){
 	if (src == NULL || event == NULL ) {
-		return NULL; //Better to return an error value
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL;
 	}
 	Command* cmd = createNOPCommand();
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
@@ -247,14 +255,20 @@ SDL_bool updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, Mod
 	Window* selectedMode = (Window*) view->modeButtons[currentlySelectedMode];
 	// update image of selected mode
 	char* imagePath = getModeImagePath(currentlySelectedMode, SDL_TRUE);
-	updateImage(selectedMode, imagePath);
+	SDL_bool err = updateImage(selectedMode, imagePath);
+	if(err == SDL_FALSE) {
+		return err;
+	}
 	setEnabledSimpleButton(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_TRUE);
 	if(lastSelectedMode != MODE_UNSELECTED)
 	{
 		// update image of last selected mode
 		imagePath = getModeImagePath(lastSelectedMode, SDL_FALSE);
 		Window* lastSelected = (Window*) view->modeButtons[lastSelectedMode];
-		updateImage(lastSelected, imagePath);
+		SDL_bool err = updateImage(lastSelected, imagePath);
+		if(err == SDL_FALSE) {
+			return err;
+		}
 		if(lastSelectedMode == currentlySelectedMode)
 		{
 			view->selectedMode = MODE_UNSELECTED;
@@ -283,6 +297,7 @@ char* getModeImagePath(int mode, SDL_bool isSelected) {
 
 void setModeSelectionInnerReDraw(Window* src, SDL_bool reDraw) {
 	if(src == NULL){
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	ModeSelectionView* data = (ModeSelectionView*) src->data;

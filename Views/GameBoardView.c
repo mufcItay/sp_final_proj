@@ -8,6 +8,7 @@
 #include "Commands.h"
 #include "FileSystemUtil.h"
 #include "SaveGameMessageBox.h"
+#include "InfoMessageBox.h"
 
 Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
@@ -82,8 +83,7 @@ Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 	menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &undoR, BOARD_WINDOW_UNDO_BUTTON_PIC_PATH,undoButtonHandler);
 	menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &mainmenuR, BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH, mainMenuButtonHandler);
 	menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &exitR, BOARD_WINDOW_EXIT_BUTTON_PIC_PATH,exitBoardButtonHandler);
-	//TODO:if undo history is empty !!
-	setEnabledSimpleButton(menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX], SDL_FALSE);
+
 	// if an error occurred, free memory
 	if (menuButtons[BOARD_WINDOW_RESTART_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX] == NULL ||
 			menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] == NULL) {
@@ -183,6 +183,8 @@ ErrorCode drawGameBoardWindow(Window* src) {
 	if(src->reDrawNeeded)
 	{
 		setBoard(src, data->gameState->board);
+		err |= setStatusImage(data);
+		err |= updateUndoState(src,data->gameState);
 		err |= SDL_SetRenderDrawColor(data->windowRenderer, BOARD_WINDOW_BGCOLOR_RED, BOARD_WINDOW_BGCOLOR_GREEN, BOARD_WINDOW_BGCOLOR_BLUE, BOARD_WINDOW_BGCOLOR_ALPHA);
 		err |= SDL_RenderClear(data->windowRenderer);
 		if(err != OK) {
@@ -436,13 +438,7 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 //		if(invalid move) continue
 //		else - removes selection (gameBoard->selectedSoldier = NULL) and re draw
 //	return CreateNOPCommand();
-	// set new position
-	updateSoldierData(toSoldier,soldierToMove->soldierType);
-	// set old position
-	updateSoldierData(gameBoard->selectedSoldier,SOLDIER_TYPE_EMPTY);
 
-	gameBoard->selectedSoldier->reDrawNeeded = SDL_TRUE;
-	toSoldier->reDrawNeeded = SDL_TRUE;
 
 	//if(check or check mate, react GUI'li)
 
@@ -456,37 +452,84 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	return cmd;
 }
 
-SDL_bool setStatusImage(GameBoardData* data, GameBoardStatuses status) {
+ErrorCode setStatusImage(GameBoardData* data) {
+	//GameBoardStatuses status = gtStatusOfGameFromNoam;
+	GameBoardStatuses status = NEUTRAL;
 	Window* statusBut = (Window*) data->statusButton;
-	SDL_bool err;
-	switch(status) {
+	// game status is 8 bit for game status and the rest is pawn promotion bits
+	GameBoardStatuses gameStatus = status & GAME_RESULT_STATUS_BITMASK;
+	GameBoardStatuses promotionStatus = status & PROMOTION_STATUS_BITMASK;
+	ErrorCode err = OK;
+	switch(gameStatus) {
 		case NEUTRAL:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH);
+			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH);
 			break;
 		case TIE:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH);
+			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH);
 			break;
 		case CHECK:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH);
+			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH);
 			break;
 		case CHECKMATE:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH);
+			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH);
 			break;
 		case PAWN_PROMOTION:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH);
-			break;
 		case BISHOP_PROMOTION:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH);
-			break;
 		case ROCK_PROMOTION:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH);
-			break;
 		case QUEEN_PROMOTION:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH);
-			break;
 		case KNIGHT_PROMOTION:
-			err = updateImage(statusBut,BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH);
 			break;
+
+	}
+
+	if(promotionStatus == 0) {
+		return err;
+	}
+	switch (promotionStatus) {
+	case PAWN_PROMOTION:
+		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH);
+		err |= showInfoMessageBox(PAWN_PROMOTION_MESSAGE);
+		break;
+	case BISHOP_PROMOTION:
+		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH);
+		err |= showInfoMessageBox(BISHOP_PROMOTION_MESSAGE);
+		break;
+	case ROCK_PROMOTION:
+		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH);
+		err = showInfoMessageBox(ROCK_PROMOTION_MESSAGE);
+		break;
+	case QUEEN_PROMOTION:
+		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH);
+		err |= showInfoMessageBox(QUEEN_PROMOTION_MESSAGE);
+		break;
+	case KNIGHT_PROMOTION:
+		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH);
+		err |= showInfoMessageBox(KNIGHT_PROMOTION_MESSAGE);
+		break;
+	case NEUTRAL:
+	case TIE:
+	case CHECK:
+	case CHECKMATE:
+		return GENERAL_ERROR;
+		break;
 	}
 	return err;
+}
+
+
+ErrorCode updateUndoState(Window* gameWindow, GameState* state) {
+	if(gameWindow == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL_POINTER_ERROR;
+	}
+	GameBoardData* gameBoardData =  (GameBoardData*) gameWindow->data;
+	//TODO:if undo history is empty !!
+	gameBoardData->menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX]->reDrawNeeded = SDL_TRUE;
+	if(state->moveHistory == NULL) {
+		setEnabledSimpleButton(gameBoardData->menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX], SDL_FALSE);
+	}
+	else {
+		setEnabledSimpleButton(gameBoardData->menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX], SDL_TRUE);
+	}
+	return OK;
 }

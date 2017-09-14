@@ -77,7 +77,7 @@ Command* slotButtonHandler(Window* src, SDL_Event* event);
  * currentlySelectedSlot - the slot that was currently selected by user
  * view - the slot selection view
  */
-SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view);
+ErrorCode getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view);
 
 /*
  * the function sets re draw state of the view and each of it's inner components

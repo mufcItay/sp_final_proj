@@ -92,7 +92,10 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	res->setInnerWidgetsReDraw = setModeSelectionInnerReDraw;
 	initWindow(res);
 	// set default mode selection
-	updateSelectedMode(MODE_UNSELECTED, data->selectedMode,data);
+	ErrorCode err = updateSelectedMode(MODE_UNSELECTED, data->selectedMode,data);
+	if(err != OK) {
+		return NULL;
+	}
 	return res;
 
 }
@@ -176,7 +179,7 @@ Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->modeButtons[i], event) == SDL_TRUE){
 			// handle event for selection buttons
 			data->modeButtons[i]->handleEventWindow(data->modeButtons[i],event);
-			if(updateSelectedMode(data->selectedMode,i,data) == SDL_FALSE) {
+			if(updateSelectedMode(data->selectedMode,i,data) != OK) {
 				return NULL;
 			}
 			else {
@@ -250,13 +253,13 @@ Command* modeButtonHandler(Window* src, SDL_Event* event){
 }
 
 
-SDL_bool updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view) {
+ErrorCode updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view) {
 	// get window of selected mode
 	Window* selectedMode = (Window*) view->modeButtons[currentlySelectedMode];
 	// update image of selected mode
 	char* imagePath = getModeImagePath(currentlySelectedMode, SDL_TRUE);
-	SDL_bool err = updateImage(selectedMode, imagePath);
-	if(err == SDL_FALSE) {
+	ErrorCode err = updateImage(selectedMode, imagePath);
+	if(err != OK) {
 		return err;
 	}
 	setEnabledSimpleButton(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_TRUE);
@@ -265,20 +268,20 @@ SDL_bool updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, Mod
 		// update image of last selected mode
 		imagePath = getModeImagePath(lastSelectedMode, SDL_FALSE);
 		Window* lastSelected = (Window*) view->modeButtons[lastSelectedMode];
-		SDL_bool err = updateImage(lastSelected, imagePath);
-		if(err == SDL_FALSE) {
+		ErrorCode err = updateImage(lastSelected, imagePath);
+		if(err != OK) {
 			return err;
 		}
 		if(lastSelectedMode == currentlySelectedMode)
 		{
 			view->selectedMode = MODE_UNSELECTED;
 			setEnabledSimpleButton(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_FALSE);
-			return SDL_TRUE;
+			return OK;
 		}
 	}
 	view->selectedMode = currentlySelectedMode;
 
-	return SDL_TRUE;
+	return OK;
 }
 
 char* getModeImagePath(int mode, SDL_bool isSelected) {

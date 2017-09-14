@@ -22,6 +22,7 @@ Window* createSoldierButton(Window* holdingWindow, SDL_Renderer* windowRenderer,
 	// set data members
 	res->location = copyRect(&location);
 	res->holdingWindow = holdingWindow;
+	data->buttonTexture = NULL;
 	data->rowIndex = row;
 	data->columnIndex = col;
 	data->windowRenderer = windowRenderer;
@@ -61,6 +62,10 @@ SDL_bool setImageData(Window* src)
 	SDL_Surface* loadingSurface = SDL_LoadBMP(imagePath); //We use the surface as a temp var;
 	SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(data->windowRenderer,
 			loadingSurface);
+	// free old texture
+	if(data->buttonTexture != NULL) {
+		SDL_DestroyTexture(data->buttonTexture);
+	}
 	data->buttonTexture = buttonTexture;
 	// handle errors
 	if (data == NULL || loadingSurface == NULL || buttonTexture == NULL) {

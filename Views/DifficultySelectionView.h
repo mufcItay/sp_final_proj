@@ -76,7 +76,7 @@ Command* difficultyButtonHandler(Window* src, SDL_Event* event);
  * currentlySelectedDifficulty - the difficulty that was currently selected by user
  * view - the difficulty selection view
  */
-SDL_bool updateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelectedDifficulty, DifficultySelectionView* view);
+ErrorCode updateSelectedDifficulty(int lastSelectedDifficulty, int currentlySelectedDifficulty, DifficultySelectionView* view);
 
 /*
  * the function sets re draw state of the view and each of it's inner components

@@ -122,7 +122,7 @@ SDL_bool checkIfSaveGameNeeded(GameBoardData* data);
 /*
  * The function checked by showing a messagebox if save is wanted by user when the user switches from GameBoard view.
  */
-SDL_bool setStatusImage(GameBoardData* data, GameBoardStatuses status);
+ErrorCode setStatusImage(GameBoardData* data);
 
 /*
  * The function frees memory resources of soldier buttons in the view
@@ -138,5 +138,10 @@ void destroyMenuButtons(Window** menuButtons);
  * draw selected soldier for live drag and drop.
  */
 ErrorCode drawSelectedSoldier(Window* gameWindow,SDL_Event* event);
+
+/*
+ * the function updated enabled state of undo button.
+ */
+ErrorCode updateUndoState(Window* gameWindow, GameState* state);
 
 #endif

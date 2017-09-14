@@ -4,7 +4,6 @@
 
 void destroyWindow(Window* src){
 	if(src == NULL){
-		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return;
 	}
 	src->destroyWindow(src);

@@ -218,7 +218,7 @@ Command* handleEventLoadGameView(Window* src, SDL_Event* event){
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->slotButtons[i], event) == SDL_TRUE){
 			// hnadle slot button events
 			data->slotButtons[i]->handleEventWindow(data->slotButtons[i],event);
-			if(getUpdatedImagePathForSlot(data->selectedSlot,i,data) == SDL_FALSE) {
+			if(getUpdatedImagePathForSlot(data->selectedSlot,i,data) != OK) {
 				return NULL;
 			}
 		}
@@ -289,7 +289,7 @@ Command* slotButtonHandler(Window* src, SDL_Event* event){
 }
 
 
-SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view) {
+ErrorCode getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedSlot, LoadGameView* view) {
 	// get selected slot window
 	Window* selectedSlot = (Window*) view->slotButtons[currentlySelectedSlot];
 	char* imageName = malloc(LOAD_GAME_WINDOW_SLOT__PIC_PATH_LENGTH);
@@ -303,9 +303,9 @@ SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedS
 		printErrorMessage(STRING_ERROR_MESSAGE);
 		return SDL_FALSE;
 	}
-	SDL_bool err = updateImage(selectedSlot, imageName);
-	if(err == SDL_FALSE) {
-		return SDL_FALSE;
+	ErrorCode err = updateImage(selectedSlot, imageName);
+	if(err != OK) {
+		return err;
 	}
 	free(imageName);
 
@@ -325,8 +325,8 @@ SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedS
 			printErrorMessage(STRING_ERROR_MESSAGE);
 			return SDL_FALSE;
 		}
-		SDL_bool err = updateImage(lastSelected, imageName);
-		if(err == SDL_FALSE) {
+		ErrorCode err = updateImage(lastSelected, imageName);
+		if(err != OK) {
 			return err;
 		}
 		free(imageName);
@@ -334,12 +334,12 @@ SDL_bool getUpdatedImagePathForSlot(int lastSelectedSlot, int currentlySelectedS
 		{
 			view->selectedSlot = SLOT_UNSELECTED;
 			setEnabledSimpleButton(view->menuButtons[LOAD_GAME_WINDOW_LOAD_BUTTON_INDEX], SDL_FALSE);
-			return SDL_TRUE;
+			return OK;
 		}
 	}
 	view->selectedSlot = currentlySelectedSlot;
 
-	return SDL_TRUE;
+	return OK;
 }
 
 char* getSlotImagePath(int slot) {

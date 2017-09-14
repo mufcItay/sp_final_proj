@@ -21,7 +21,7 @@ void* GUIInit(GameSettings* gameSettings ,GameState* gameState) {
 	}
 
 	if(gameSettings == NULL || gameState == NULL) {
-		printErrorMessage(NULL_POINTER_ERROR);
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 

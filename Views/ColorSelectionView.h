@@ -76,7 +76,7 @@ Command* colorButtonHandler(Window* src, SDL_Event* event);
  * currentlySelectedColor - the color that was currently selected by user
  * view - the color selection view
  */
-SDL_bool updateSelectedColor(int lastSelectedColor, int currentlySelectedColor, ColorSelectionView* view);
+ErrorCode updateSelectedColor(int lastSelectedColor, int currentlySelectedColor, ColorSelectionView* view);
 
 /*
  * the function sets re draw state of the view and each of it's inner components

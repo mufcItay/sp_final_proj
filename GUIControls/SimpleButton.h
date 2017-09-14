@@ -39,12 +39,12 @@ ErrorCode drawSimpleButton(Window* src);
 /*
  * The function sets a new image to the button. completes updatign the image of the button
  */
-SDL_bool setNewImage(Window* src);
+ErrorCode setNewImage(Window* src);
 
 /*
  * The function updates the button image to a new one according to newImagePath
  */
-SDL_bool updateImage(Window* src, char* newImagePath);
+ErrorCode updateImage(Window* src, char* newImagePath);
 
 /*
  * The function sets the enabled state of each of the button

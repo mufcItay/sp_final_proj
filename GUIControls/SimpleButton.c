@@ -47,8 +47,8 @@ Window* createSimpleButton(Window* holdingWindow, SDL_Renderer* windowRender, SD
 	res->data = data;
 	data->isEnabled = SDL_TRUE;
 	initWindow(res);
-	SDL_bool err = updateImage(res,image);
-	if(err == SDL_FALSE) {
+	ErrorCode err = updateImage(res,image);
+	if(err != OK) {
 		return NULL;
 	}
 	return res;
@@ -89,7 +89,7 @@ ErrorCode drawSimpleButton(Window* src) {
 	SimpleButton* castData = (SimpleButton*) src->data;
 	if(src->reDrawNeeded == SDL_TRUE)
 	{
-		if(setNewImage(src) == SDL_FALSE) {
+		if(setNewImage(src) != OK) {
 			return MEMORY_ERROR;
 		}
 		err |= SDL_RenderCopy(castData->windowRenderer, castData->buttonTexture, NULL,
@@ -100,7 +100,7 @@ ErrorCode drawSimpleButton(Window* src) {
 }
 
 
-SDL_bool setNewImage(Window* src)
+ErrorCode setNewImage(Window* src)
 {
 	src->reDrawNeeded = SDL_FALSE;
 	SimpleButton* data = (SimpleButton*) (src->data);
@@ -110,7 +110,7 @@ SDL_bool setNewImage(Window* src)
 		imagePath = (char*) malloc(sizeof(char) * strlen(data->imagePath) +sizeof(char) +sizeof(char));// + backslash 0 + new disabled char
 		if(imagePath == NULL) {
 			printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
-			return SDL_FALSE;
+			return MEMORY_ERROR;
 		}
 		for (int i = 0; i < strlen(data->imagePath); ++i) {
 			char* currentStr = data->imagePath + i;
@@ -119,7 +119,7 @@ SDL_bool setNewImage(Window* src)
 				i++;
 				if(sprintf((imagePath + i), "%s",BMP_FILE_TYPE) <= 0) {
 					printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
-					return SDL_FALSE;
+					return GENERAL_ERROR;
 				}
 				break;
 			}
@@ -137,7 +137,11 @@ SDL_bool setNewImage(Window* src)
 		destroySimpleButton(src);
 		SDL_FreeSurface(loadingSurface); //It is safe to pass NULL
 		SDL_DestroyTexture(buttonTexture); ////It is safe to pass NULL
-		return SDL_FALSE ;
+		return MEMORY_ERROR ;
+	}
+	// free old texture
+	if(data->buttonTexture != NULL) {
+		SDL_DestroyTexture(data->buttonTexture);
 	}
 	data->buttonTexture = buttonTexture;
 	//free unnesecerray memory resources
@@ -145,10 +149,10 @@ SDL_bool setNewImage(Window* src)
 	if(data->isEnabled == SDL_FALSE) {
 		free(imagePath);
 	}
-	return SDL_TRUE;
+	return OK;
 }
 
-SDL_bool updateImage(Window* src, char* newImagePath){
+ErrorCode updateImage(Window* src, char* newImagePath){
 	SimpleButton* button = (SimpleButton*) (src->data);
 	src->reDrawNeeded = SDL_TRUE;
 	int newImageLen = strlen(newImagePath) +1;
@@ -156,13 +160,13 @@ SDL_bool updateImage(Window* src, char* newImagePath){
 	button->imagePath= (char*) malloc(sizeof(char) * newImageLen);
 	if(button->imagePath == NULL) {
 		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
-		return SDL_FALSE;
+		return MEMORY_ERROR;
 	}
 	if(strcpy(button->imagePath, newImagePath)== NULL) {
 		printErrorMessage(STRING_ERROR_MESSAGE);
-		return SDL_FALSE;
+		return GENERAL_ERROR;
 	}
-	return SDL_TRUE;
+	return OK;
 }
 
 void setButtonInnerReDraw(Window* src, SDL_bool reDraw) {

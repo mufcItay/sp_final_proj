@@ -231,17 +231,20 @@
 
 // enum for all the messages of board view
 typedef enum gameboardstatuses_t {
-	NEUTRAL,
-	TIE,
-	CHECK,
-	CHECKMATE,
-	PAWN_PROMOTION,
-	QUEEN_PROMOTION,
-	BISHOP_PROMOTION,
-	ROCK_PROMOTION,
-	KNIGHT_PROMOTION
+	NEUTRAL = 0x0,
+	TIE =  0x01,
+	CHECK = 0x02,
+	CHECKMATE = 0x04,
+	PAWN_PROMOTION = 0x10,
+	QUEEN_PROMOTION = 0x20,
+	BISHOP_PROMOTION = 0x40,
+	ROCK_PROMOTION = 0x80,
+	KNIGHT_PROMOTION = 0x100
 } GameBoardStatuses;
 
+// masks to get status out of the INT enum
+#define GAME_RESULT_STATUS_BITMASK 0x000F
+#define PROMOTION_STATUS_BITMASK 0xFFF0
 /*
  * The function makes deep copy of a rectangle
  */

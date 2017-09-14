@@ -73,7 +73,7 @@ Command* modeButtonHandler(Window* src, SDL_Event* event);
  * currentlySelectedMode - the mode that was currently selected by user
  * view - the mode selection view
  */
-SDL_bool updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view);
+ErrorCode updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view);
 
 /*
  * the function sets re draw state of the view and each of it's inner components

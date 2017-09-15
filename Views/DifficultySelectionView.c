@@ -63,8 +63,8 @@ Window** createDifficultyNavigationButtons(Window* holdingWindow, SDL_Renderer* 
 
 Window* createDifficultySelectionView(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
-	Window* res = malloc(sizeof(Window));
-	DifficultySelectionView* data = malloc(sizeof(DifficultySelectionView));
+	Window* res = calloc(1, sizeof(Window));
+	DifficultySelectionView* data = calloc(1, sizeof(DifficultySelectionView));
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
 	MainWindow* main = (MainWindow*)holdingWindow->data;
@@ -123,8 +123,12 @@ void destroyDifficultySelectionView(Window* src) {
 		return;
 	}
 	DifficultySelectionView* data = (DifficultySelectionView*) src->data;
-	destroyDifficultyButtons(data);
-	destroyNavigationDifficultyButtons(data);
+	if(data->difficultyButtons != NULL) {
+		destroyDifficultyButtons(data);
+	}
+	if(data->navigationButtons != NULL) {
+		destroyNavigationDifficultyButtons(data);
+	}
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
 	free(src);
@@ -182,11 +186,14 @@ Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event){
 	for (int i = 0; i< DIFFICULTY_SELECTION_WINDOW_DIFFICULTIES_AMOUNT; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->difficultyButtons[i], event) == SDL_TRUE){
 			// handle difficulty selection change
-			data->difficultyButtons[i]->handleEventWindow(data->difficultyButtons[i],event);
-			if(updateSelectedDifficulty(data->selectedDifficulty,i,data) != OK) {
-				// exit the program properly TODO: CHECK!!!
-				src->holdingWindow->holdingWindow->isClosed = SDL_TRUE;
+			cmd = data->difficultyButtons[i]->handleEventWindow(data->difficultyButtons[i],event);
+			if(cmd == NULL) {
 				return NULL;
+			}
+			if(updateSelectedDifficulty(data->selectedDifficulty,i,data) != OK) {
+				// update difficulty has failed, quit the game
+				cmd = createQuitCommand();
+				return cmd;
 			}
 			else {
 				// handle error in updating selected difficulty
@@ -254,12 +261,12 @@ ErrorCode updateSelectedDifficulty(int lastSelectedDifficulty, int currentlySele
 	if(imageName == NULL)
 	{
 		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
-		return SDL_FALSE;
+		return MEMORY_ERROR;
 	}
 	// update image of selected difficulty
 	if(sprintf(imageName, DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH, currentlySelectedDifficulty,DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_SELECTED) <= 0) {
 		printErrorMessage(STRING_ERROR_MESSAGE);
-		return SDL_FALSE;
+		return GENERAL_ERROR;
 	}
 	ErrorCode err =updateImage(selectedDiff, imageName);
 	if(err != OK) {

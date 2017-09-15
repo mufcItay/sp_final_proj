@@ -144,4 +144,14 @@ ErrorCode drawSelectedSoldier(Window* gameWindow,SDL_Event* event);
  */
 ErrorCode updateUndoState(Window* gameWindow, GameState* state);
 
+/*
+ * The function shows a message box to indicate to which soldier the computer promoted his pawn to
+ */
+ErrorCode showComputerPawnPromotion(GameBoardStatuses promotionStatus);
+
+/*
+ * the function updates the status image according to the game status
+ */
+ErrorCode updateGameStatusImage(GameBoardStatuses gameStatus, Window* statusBut);
+
 #endif

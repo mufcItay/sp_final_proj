@@ -105,11 +105,12 @@ char** createInitialBoard()
 void printErrorMessage(const char* message) {
 	int prefixLen = strlen(ERROR_MESSAGE_PREFIX);
 	int messageLen = strlen(message);
-	char* fullMessage = malloc(prefixLen + messageLen + 1);
+	// +1 for \n +1 \0
+	char* fullMessage = malloc(prefixLen + messageLen + 1 + 1);
 	if(fullMessage == NULL) {
 		return;
 	}
-	if(sprintf(fullMessage,"%s%s",ERROR_MESSAGE_PREFIX,message) <= 0 ) {
+	if(sprintf(fullMessage,"%s%s\n",ERROR_MESSAGE_PREFIX,message) <= 0 ) {
 		free(fullMessage);
 		return;
 	}

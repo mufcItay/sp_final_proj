@@ -118,8 +118,8 @@ Window** createLoadGameMenuButtons(Window* holdingWindow, SDL_Renderer* renderer
 
 Window* createLoadGameView(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
-	Window* res = malloc(sizeof(Window));
-	LoadGameView* data = malloc(sizeof(LoadGameView));
+	Window* res = calloc(1, sizeof(Window));
+	LoadGameView* data = calloc(1, sizeof(LoadGameView));
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
 	res->data = (void*) data;
@@ -158,8 +158,12 @@ void destroyLoadGameView(Window* src) {
 		return;
 	}
 	LoadGameView* data = (LoadGameView*) src->data;
-	destroyLoadMenuButtons(data->menuButtons);
-	destroyLoadSlotButtons(data,data->slotButtons);
+	if(data->menuButtons != NULL) {
+		destroyLoadMenuButtons(data->menuButtons);
+	}
+	if(data->slotButtons != NULL) {
+		destroyLoadSlotButtons(data,data->slotButtons);
+	}
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
 	free(src);
@@ -217,7 +221,10 @@ Command* handleEventLoadGameView(Window* src, SDL_Event* event){
 	for (int i = 0; i< data->slotsAmount; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->slotButtons[i], event) == SDL_TRUE){
 			// hnadle slot button events
-			data->slotButtons[i]->handleEventWindow(data->slotButtons[i],event);
+			cmd = data->slotButtons[i]->handleEventWindow(data->slotButtons[i],event);
+			if(cmd == NULL) {
+				return NULL;
+			}
 			if(getUpdatedImagePathForSlot(data->selectedSlot,i,data) != OK) {
 				return NULL;
 			}

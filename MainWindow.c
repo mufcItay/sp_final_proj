@@ -45,19 +45,15 @@ Window** createMainWindowWidgets(Window* window,SDL_Renderer* renderer) {
 
 void initializeViews(MainWindow* data, Window* res) {
 	// init and set views
-	data->boardViewWindow = (Window*) createBoardWindow(res, data->gameSettings,
-			data->gameState);
+	data->boardViewWindow = (Window*) createBoardWindow(res, data->gameSettings, data->gameState);
 	initWindow(data->boardViewWindow);
-	data->difficultySelectionViewWindow =
-			(Window*) createDifficultySelectionView(res, data->gameSettings,
-					data->gameState);
+	data->difficultySelectionViewWindow = (Window*) createDifficultySelectionView(res, data->gameSettings, data->gameState);
 	initWindow(data->difficultySelectionViewWindow);
+	data->modeSelectionViewWindow = (Window*) createModeSelectionView(res, data->gameSettings, data->gameState);
+	initWindow(data->modeSelectionViewWindow);
 	data->colorSelectionViewWindow = (Window*) createColorSelectionView(res,
 			data->gameSettings, data->gameState);
 	initWindow(data->colorSelectionViewWindow);
-	data->modeSelectionViewWindow = (Window*) createModeSelectionView(res,
-			data->gameSettings, data->gameState);
-	initWindow(data->modeSelectionViewWindow);
 	data->loadGameViewWindow = (Window*) createLoadGameView(res,
 			data->gameSettings, data->gameState);
 	initWindow(data->loadGameViewWindow);
@@ -65,12 +61,12 @@ void initializeViews(MainWindow* data, Window* res) {
 
 Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
-	Window* res = malloc(sizeof(Window));
+	Window* res = calloc(1,sizeof(Window));
 	if(res == NULL) {
 		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
-	MainWindow* data = malloc(sizeof(MainWindow));
+	MainWindow* data = calloc(1, sizeof(MainWindow));
 	if(data == NULL) {
 		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		free(res);
@@ -91,6 +87,7 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	data->numOfWidgets = MAIN_NUMBER_OF_BUTTONS;
 	data->window = window;
 	data->windowRenderer = renderer;
+
 	data->mainMenuWidgets = widgets;
 	data->view = MAIN_VIEW;
 	data->viewWindow = res;
@@ -133,8 +130,10 @@ void destroyMainWindow(Window* src) {
 		return;
 	}
 	MainWindow* data = (MainWindow*) src->data;
-	for (int i = 0; i < data->numOfWidgets; i++) {
-		destroyWindow(data->mainMenuWidgets[i]);
+	if(data->mainMenuWidgets != NULL) {
+		for (int i = 0; i < data->numOfWidgets; i++) {
+			destroyWindow(data->mainMenuWidgets[i]);
+		}
 	}
 	destroyViews(data);
 	free(src->location);

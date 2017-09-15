@@ -49,7 +49,7 @@ ErrorCode GUIHandleInput(void* src, GameSettings* settings, GameState* state){
 	// handle the event by calling it's unique handler
 	Command* cmd = window->handleEventWindow(window,&event);
 	if(cmd == NULL){
-		printErrorMessage(NULL_POINTER_ERROR);
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
 	ErrorCode ret = cmd->handleCommand(cmd, settings,state);

@@ -88,10 +88,10 @@ char* getModeImagePath(int mode, SDL_bool isSelected);
 /*
  * The function frees resources of mode buttons
  */
-void destroyModeButtons(ModeSelectionView* data);
+void destroyModeButtons(Window** modeButtons);
 
 /*
  * The function frees resources of mode view navigation buttons
  */
-void destroyModeNavigationButtons(ModeSelectionView* data);
+void destroyModeNavigationButtons(Window** navigationButtons);
 #endif

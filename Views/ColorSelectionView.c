@@ -95,12 +95,12 @@ Window** createColorNavigationButtons(Window* holdingWindow, SDL_Renderer* rende
 }
 
 Window* createColorSelectionView(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
-	Window* res = malloc(sizeof(Window));
+	Window* res = calloc(1, sizeof(Window));
 	if(res == NULL) {
 		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
 	}
-	ColorSelectionView* data = malloc(sizeof(ColorSelectionView));
+	ColorSelectionView* data = calloc(1,sizeof(ColorSelectionView));
 	if(data == NULL) {
 		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		return NULL;
@@ -148,8 +148,12 @@ void destroyColorSelectionView(Window* src) {
 	}
 	//free buttons
 	ColorSelectionView* data = (ColorSelectionView*) src->data;
-	destroyNavigationButtonsColorView(data->navigationButtons);
-	destroyColorButtons(data->colorButtons);
+	if(data->navigationButtons != NULL) {
+		destroyNavigationButtonsColorView(data->navigationButtons);
+	}
+	if(data->colorButtons != NULL) {
+		destroyColorButtons(data->colorButtons);
+	}
 	// free window resources
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
@@ -212,7 +216,10 @@ Command* handleEventColorSelectionView(Window* src, SDL_Event* event) {
 	// handle button click on color button
 	for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {
 		if (event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->colorButtons[i], event) == SDL_TRUE) {
-			data->colorButtons[i]->handleEventWindow(data->colorButtons[i], event);
+			cmd = data->colorButtons[i]->handleEventWindow(data->colorButtons[i], event);
+			if(cmd == NULL){
+				return NULL;
+			}
 			// update current selection or return null to indicate an error
 			if (updateSelectedColor(data->selectedColor, i, data) != OK) {
 				// TODO: command?

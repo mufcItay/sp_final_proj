@@ -97,8 +97,8 @@ Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 
 Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
-	Window* res = malloc(sizeof(Window));
-	GameBoardData* data = malloc(sizeof(GameBoardData));
+	Window* res = calloc(1,sizeof(Window));
+	GameBoardData* data = calloc(1,sizeof(GameBoardData));
 	res->data = (void*) data;
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
@@ -164,8 +164,12 @@ void destroyGameBoardWindow(Window* src) {
 		return;
 	}
 	GameBoardData* data = (GameBoardData*) src->data;
-	destroySoldierButtonMatrix(data->soldierButtons);
-	destroyMenuButtons(data->menuButtons);
+	if(data->soldierButtons != NULL) {
+		destroySoldierButtonMatrix(data->soldierButtons);
+	}
+	if(data->menuButtons != NULL) {
+		destroyMenuButtons(data->menuButtons);
+	}
 	destroyWindow(data->statusButton);
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
@@ -227,11 +231,14 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
-	Command* cmd;
+	Command* cmd = createNOPCommand();
 	GameBoardData* data = (GameBoardData*)src->data;
 	for (int i = 0; i < BOARD_WINDOW_BUTTONS_AMOUNT; ++i) {
 		if(isEventWindowRelated(data->menuButtons[i], event) == SDL_TRUE){
 			// handle menu buttons
+			if(data->selectedSoldier != NULL) {
+				return cmd;
+			}
 			cmd = data->menuButtons[i]->handleEventWindow(data->menuButtons[i],event);
 			if (cmd->data != NOP_COMMAND_DATA) {
 				return cmd;
@@ -255,8 +262,7 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 	if(err != OK) {
 		return NULL;
 	}
-
-	cmd = createNOPCommand();
+;
 	return cmd;
 }
 
@@ -452,47 +458,44 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	return cmd;
 }
 
-ErrorCode setStatusImage(GameBoardData* data) {
-	//GameBoardStatuses status = gtStatusOfGameFromNoam;
-	GameBoardStatuses status = NEUTRAL;
-	Window* statusBut = (Window*) data->statusButton;
-	// game status is 8 bit for game status and the rest is pawn promotion bits
-	GameBoardStatuses gameStatus = status & GAME_RESULT_STATUS_BITMASK;
-	GameBoardStatuses promotionStatus = status & PROMOTION_STATUS_BITMASK;
+ErrorCode updateGameStatusImage(GameBoardStatuses gameStatus, Window* statusBut) {
 	ErrorCode err = OK;
-	switch(gameStatus) {
-		case NEUTRAL:
-			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH);
-			break;
-		case TIE:
-			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH);
-			break;
-		case CHECK:
-			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH);
-			break;
-		case CHECKMATE:
-			err |= updateImage(statusBut,BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH);
-			break;
-		case PAWN_PROMOTION:
-		case BISHOP_PROMOTION:
-		case ROCK_PROMOTION:
-		case QUEEN_PROMOTION:
-		case KNIGHT_PROMOTION:
-			break;
-
+	switch (gameStatus) {
+	case NEUTRAL:
+		err |= updateImage(statusBut,
+				BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH);
+		break;
+	case TIE:
+		err |= updateImage(statusBut, BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH);
+		break;
+	case CHECK:
+		err |= updateImage(statusBut,
+				BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH);
+		break;
+	case CHECKMATE:
+		err |= updateImage(statusBut,
+				BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH);
+		break;
+	case PAWN_PROMOTION:
+	case BISHOP_PROMOTION:
+	case ROCK_PROMOTION:
+	case QUEEN_PROMOTION:
+	case KNIGHT_PROMOTION:
+		break;
 	}
+	return err;
+}
 
-	if(promotionStatus == 0) {
-		return err;
-	}
+ErrorCode showComputerPawnPromotion(GameBoardStatuses promotionStatus) {
+	ErrorCode err = OK;
 	switch (promotionStatus) {
 	case PAWN_PROMOTION:
 		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH);
-		err |= showInfoMessageBox(PAWN_PROMOTION_MESSAGE);
+		err = showInfoMessageBox(PAWN_PROMOTION_MESSAGE);
 		break;
 	case BISHOP_PROMOTION:
 		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH);
-		err |= showInfoMessageBox(BISHOP_PROMOTION_MESSAGE);
+		err = showInfoMessageBox(BISHOP_PROMOTION_MESSAGE);
 		break;
 	case ROCK_PROMOTION:
 		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH);
@@ -500,19 +503,36 @@ ErrorCode setStatusImage(GameBoardData* data) {
 		break;
 	case QUEEN_PROMOTION:
 		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH);
-		err |= showInfoMessageBox(QUEEN_PROMOTION_MESSAGE);
+		err = showInfoMessageBox(QUEEN_PROMOTION_MESSAGE);
 		break;
 	case KNIGHT_PROMOTION:
 		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH);
-		err |= showInfoMessageBox(KNIGHT_PROMOTION_MESSAGE);
+		err = showInfoMessageBox(KNIGHT_PROMOTION_MESSAGE);
 		break;
 	case NEUTRAL:
 	case TIE:
 	case CHECK:
 	case CHECKMATE:
-		return GENERAL_ERROR;
+		err = GENERAL_ERROR;
 		break;
 	}
+	return err;
+}
+
+ErrorCode setStatusImage(GameBoardData* data) {
+	//GameBoardStatuses status = gtStatusOfGameFromNoam;
+	GameBoardStatuses status = NEUTRAL;
+	Window* statusBut = (Window*) data->statusButton;
+	// game status is 8 bit for game status and the rest is pawn promotion bits
+	GameBoardStatuses gameStatus = status & GAME_RESULT_STATUS_BITMASK;
+	GameBoardStatuses promotionStatus = status & PROMOTION_STATUS_BITMASK;
+
+	ErrorCode err = OK;
+	err = updateGameStatusImage(gameStatus, statusBut);
+	if(promotionStatus == 0 || err != OK) {
+		return err;
+	}
+	err = showComputerPawnPromotion(promotionStatus);
 	return err;
 }
 

@@ -28,7 +28,7 @@ Window** createModeButtons(Window* holdingWindow, SDL_Renderer* renderer)
 			modeButtons[i] = (Window*) createSimpleButton(holdingWindow,renderer, &modeButtonR,imagePath ,modeButtonHandler);
 		}
 		if (modeButtons[i] == NULL) {
-			destroyModeButtons(holdingWindow->data);
+			destroyModeButtons(modeButtons);
 			return NULL;
 		}
 		initWindow(modeButtons[i]);
@@ -52,7 +52,7 @@ Window** createModeNavigationButtons(Window* holdingWindow, SDL_Renderer* render
 	initWindow(navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX]);
 	// handle navigation buttons creation error
 	if (navigationButtons[MODE_SELECTION_WINDOW_BACK_BUTTON_INDEX] == NULL || navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX] == NULL ) {
-		destroyModeNavigationButtons(holdingWindow->data);
+		destroyModeNavigationButtons(navigationButtons);
 		return NULL ;
 	}
 	return navigationButtons;
@@ -60,8 +60,16 @@ Window** createModeNavigationButtons(Window* holdingWindow, SDL_Renderer* render
 
 Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
-	Window* res = malloc(sizeof(Window));
-	ModeSelectionView* data = malloc(sizeof(ModeSelectionView));
+	Window* res = calloc(1,sizeof(Window));
+	if(res == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+		return NULL;
+	}
+	ModeSelectionView* data = calloc(1,sizeof(ModeSelectionView));
+	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+		return NULL;
+	}
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
 	MainWindow* main = (MainWindow*)holdingWindow->data;
@@ -71,6 +79,7 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	SDL_Renderer* renderer = main->windowRenderer;
 	Window** modeWidgets = createModeButtons(res, renderer);
 	Window** navigationButtons = createModeNavigationButtons(res, renderer);
+	res->data = (void*) data;
 	// set members
 	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
 			|| modeWidgets == NULL || navigationButtons == NULL) {
@@ -83,7 +92,6 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 	data->navigationButtons = navigationButtons;
 	// selected mode is zero based
 	data->selectedMode = gameSettings->mode -1;
-	res->data = (void*) data;
 	// handle buttons creation errors
 	res->destroyWindow = destroyModeSelectionView;
 	res->drawWindow = drawModeSelectionView;
@@ -100,18 +108,18 @@ Window* createModeSelectionView(Window* holdingWindow, GameSettings* gameSetting
 
 }
 
-void destroyModeButtons(ModeSelectionView* data) {
+void destroyModeButtons(Window** modeButtons) {
 	for (int i = 0; i < MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
-		destroyWindow(data->modeButtons[i]);
+		destroyWindow(modeButtons[i]);
 	}
-	free(data->modeButtons);
+	free(modeButtons);
 }
 
-void destroyModeNavigationButtons(ModeSelectionView* data) {
+void destroyModeNavigationButtons(Window** navigationButtons) {
 	for (int i = 0; i < MODE_SELECTION_WINDOW_NAVIGATIONS_AMOUNT; ++i) {
-		destroyWindow(data->navigationButtons[i]);
+		destroyWindow(navigationButtons[i]);
 	}
-	free(data->navigationButtons);
+	free(navigationButtons);
 }
 
 void destroyModeSelectionView(Window* src) {
@@ -120,8 +128,12 @@ void destroyModeSelectionView(Window* src) {
 		return;
 	}
 	ModeSelectionView* data = (ModeSelectionView*) src->data;
-	destroyModeButtons(data);
-	destroyModeNavigationButtons(data);
+	if(data->modeButtons  != NULL) {
+		destroyModeButtons(data->modeButtons);
+	}
+	if(data->navigationButtons != NULL) {
+		destroyModeNavigationButtons(data->navigationButtons);
+	}
 	SDL_DestroyRenderer(data->windowRenderer);
 	free(data);
 	free(src);
@@ -178,7 +190,10 @@ Command* handleEventModeSelectionView(Window* src, SDL_Event* event){
 	for (int i = 0; i< MODE_SELECTION_WINDOW_MODES_AMOUNT; ++i) {
 		if(event->type == SDL_MOUSEBUTTONUP && isEventWindowRelated(data->modeButtons[i], event) == SDL_TRUE){
 			// handle event for selection buttons
-			data->modeButtons[i]->handleEventWindow(data->modeButtons[i],event);
+			cmd = data->modeButtons[i]->handleEventWindow(data->modeButtons[i],event);
+			if(cmd == NULL) {
+				return NULL;
+			}
 			if(updateSelectedMode(data->selectedMode,i,data) != OK) {
 				return NULL;
 			}

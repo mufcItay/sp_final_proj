@@ -117,3 +117,21 @@ void printErrorMessage(const char* message) {
 	printf(fullMessage);
 	free(fullMessage);
 }
+
+
+GameState* copyGameState(GameState* gameState) {
+	GameState* copy = createGameState();
+	if(copy == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+		return NULL;
+	}
+	copy->turn = gameState->turn;
+	//copy history
+	for (int i = 0; i < BOARD_ROWS_AMOUNT; ++i) {
+		for (int j = 0; j < BOARD_COLUMNS_AMOUNT; ++j) {
+			copy->board[i][j] = gameState->board[i][j];
+		}
+	}
+
+	return copy;
+}

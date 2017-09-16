@@ -16,6 +16,20 @@ typedef enum errorcodes_t {
 	IMAGE_ERROR
 } ErrorCode;
 
+
+// enum for all the messages of board view
+typedef enum gameboardstatuses_t {
+	NEUTRAL = 0x0,
+	TIE =  0x01,
+	CHECK = 0x02,
+	CHECKMATE = 0x04,
+	PAWN_PROMOTION = 0x10,
+	QUEEN_PROMOTION = 0x20,
+	BISHOP_PROMOTION = 0x40,
+	ROCK_PROMOTION = 0x80,
+	KNIGHT_PROMOTION = 0x100
+} GameBoardStatuses;
+
 // error messages
 #define MEMORY_ALLOCATION_ERROR_MESSAGE "memory allocation error"
 #define NULL_POINTER_ERROR_MESSAGE "encountered invalid null pointer"
@@ -85,6 +99,11 @@ GameSettings* createGameSettings();
  * The function frees resources of GameState structure
  */
 void destroyGameState(GameState* gameState);
+
+/*
+ * The function creates a cpy og game state and returns it
+ */
+GameState* copyGameState(GameState* gameState);
 
 /*
  * The function frees resources of GameSettings structure

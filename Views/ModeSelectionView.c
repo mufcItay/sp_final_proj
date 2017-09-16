@@ -267,7 +267,6 @@ Command* modeButtonHandler(Window* src, SDL_Event* event){
 	return cmd;
 }
 
-
 ErrorCode updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view) {
 	// get window of selected mode
 	Window* selectedMode = (Window*) view->modeButtons[currentlySelectedMode];

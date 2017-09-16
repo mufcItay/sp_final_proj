@@ -229,18 +229,6 @@
 #define BMP_FILE_TYPE ".bmp"
 #define DISABLED_BUTTON_CHAR 'd'
 
-// enum for all the messages of board view
-typedef enum gameboardstatuses_t {
-	NEUTRAL = 0x0,
-	TIE =  0x01,
-	CHECK = 0x02,
-	CHECKMATE = 0x04,
-	PAWN_PROMOTION = 0x10,
-	QUEEN_PROMOTION = 0x20,
-	BISHOP_PROMOTION = 0x40,
-	ROCK_PROMOTION = 0x80,
-	KNIGHT_PROMOTION = 0x100
-} GameBoardStatuses;
 
 // masks to get status out of the INT enum
 #define GAME_RESULT_STATUS_BITMASK 0x000F

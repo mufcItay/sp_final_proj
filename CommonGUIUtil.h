@@ -225,6 +225,7 @@
 #define MODE_SELECTION_WINDOW_TWO_PLAYERS_BUTTON_NOT_SELECTED_PIC_PATH "./pics/modeView/twon.bmp"
 #define MODE_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "./pics/modeView/back.bmp"
 #define MODE_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH "./pics/modeView/next.bmp"
+#define MODE_SELECTION_WINDOW_START_BUTTON_PIC_PATH "./pics/modeView/start.bmp"
 
 #define BMP_FILE_TYPE ".bmp"
 #define DISABLED_BUTTON_CHAR 'd'

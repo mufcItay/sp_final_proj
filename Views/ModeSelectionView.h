@@ -94,4 +94,10 @@ void destroyModeButtons(Window** modeButtons);
  * The function frees resources of mode view navigation buttons
  */
 void destroyModeNavigationButtons(Window** navigationButtons);
+
+/*
+ * the function switches next button to start or next image according to last and currently selected mode.
+ */
+ErrorCode setNextButtonUpdatedImage(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view);
+
 #endif

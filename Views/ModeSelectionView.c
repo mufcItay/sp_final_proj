@@ -267,6 +267,25 @@ Command* modeButtonHandler(Window* src, SDL_Event* event){
 	return cmd;
 }
 
+ErrorCode setNextButtonUpdatedImage(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view) {
+	ErrorCode err = OK;
+	char* imagePath = NULL;
+	if(currentlySelectedMode == MODE_SELECTION_WINDOW_TWO_PLAYERS_INDEX) {
+		imagePath = MODE_SELECTION_WINDOW_START_BUTTON_PIC_PATH;
+		err = updateImage(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], imagePath);
+		if(err != OK) {
+			return err;
+		}
+	}
+	if(lastSelectedMode == MODE_SELECTION_WINDOW_TWO_PLAYERS_INDEX) {
+		imagePath = MODE_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH;
+		err = updateImage(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], imagePath);
+		if(err != OK) {
+			return err;
+		}
+	}
+	return err;
+}
 ErrorCode updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, ModeSelectionView* view) {
 	// get window of selected mode
 	Window* selectedMode = (Window*) view->modeButtons[currentlySelectedMode];
@@ -276,20 +295,7 @@ ErrorCode updateSelectedMode(int lastSelectedMode, int currentlySelectedMode, Mo
 	if(err != OK) {
 		return err;
 	}
-	if(currentlySelectedMode == MODE_SELECTION_WINDOW_TWO_PLAYERS_INDEX) {
-		imagePath = MODE_SELECTION_WINDOW_START_BUTTON_PIC_PATH;
-		ErrorCode err = updateImage(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], imagePath);
-		if(err != OK) {
-			return err;
-		}
-	}
-	if(lastSelectedMode == MODE_SELECTION_WINDOW_TWO_PLAYERS_INDEX) {
-		imagePath = MODE_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH;
-		ErrorCode err = updateImage(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], imagePath);
-		if(err != OK) {
-			return err;
-		}
-	}
+	setNextButtonUpdatedImage(lastSelectedMode, currentlySelectedMode, view);
 	setEnabledSimpleButton(view->navigationButtons[MODE_SELECTION_WINDOW_NEXT_BUTTON_INDEX], SDL_TRUE);
 	if(lastSelectedMode != MODE_UNSELECTED)
 	{

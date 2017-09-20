@@ -122,7 +122,7 @@ Command* handleEventSoldierButton(Window* src, SDL_Event* event) {
 	}
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		if(gameBoard->selectedSoldier == NULL) {
-			return NULL;
+			return cmd;
 		}
 		// perform movement
 		cmd = moveSelectedSoldierTo(gameBoard,src);

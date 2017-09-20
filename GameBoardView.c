@@ -8,7 +8,12 @@
 #include "Commands.h"
 #include "FileSystemUtil.h"
 #include "SaveGameMessageBox.h"
+#include "PawnPromotionMessageBox.h"
 #include "InfoMessageBox.h"
+
+//
+/////////////////TODO: test
+//#include "TEST/ChessGame.h"
 
 Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
@@ -433,7 +438,7 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	if(gameBoard->selectedSoldier == NULL){
 		return NULL;
 	}
-	Command* cmd;
+	Command* cmd = createNOPCommand();
 	SoldierButton* soldierToMove = (SoldierButton*)(gameBoard->selectedSoldier->data);
 	SoldierButton* destinationSoldier= (SoldierButton*)(toSoldier->data);
 
@@ -441,6 +446,36 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
+	// anyway, redraw next time to delete selected soldier blueprint
+	setGameBoardInnerReDraw(toSoldier->holdingWindow, SDL_TRUE);
+//	//TODO:TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//	ChessGame* cg = chessGameCreate(2,2,0);
+//	cg->currentPlayer = gameBoard->gameState->turn;
+//	cg->gameBoard = gameBoard->gameState->board;
+//	if(isValidMove(cg,soldierToMove->rowIndex,soldierToMove->columnIndex,destinationSoldier->rowIndex,destinationSoldier->columnIndex) == SDL_FALSE) {
+//		return cmd;
+//	}
+//
+//	CHESS_GAME_MESSAGE stat = checkStatus(cg);
+//	switch (stat) {
+//	case     CHESS_GAME_INVALID_MOVE :
+//	case     CHESS_GAME_INVALID_ARGUMENT:
+//	case     CHESS_GAME_NO_HISTORY:
+//	case     CHESS_UN_SPECIAL_STATUS:
+//		return NULL;
+//	case     CHESS_GAME_SUCCESS:
+//		updateGameStatusImage(NEUTRAL, gameBoard->statusButton);
+//		break;
+//	case     CHESS_GAME_CHECK:
+//		updateGameStatusImage(CHECK, gameBoard->statusButton);
+//				break;
+//	case     CHESS_GAME_MATE:
+//		updateGameStatusImage(CHECKMATE, gameBoard->statusButton);
+//				break;
+//	case     CHESS_GAME_TIE:
+//		updateGameStatusImage(TIE, gameBoard->statusButton);
+//				break;
+//	}
 //		if(invalid move) continue
 //		else - removes selection (gameBoard->selectedSoldier = NULL) and re draw
 //	return CreateNOPCommand();
@@ -454,7 +489,6 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	gameBoard->isGameSaved = SDL_FALSE;
 
 	//gui update
-	setGameBoardInnerReDraw(toSoldier->holdingWindow, SDL_TRUE);
 	return cmd;
 }
 

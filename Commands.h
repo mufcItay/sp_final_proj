@@ -1,5 +1,6 @@
 #ifndef COMMANDS_H_
 #define COMMANDS_H_
+
 #include "CommonStructures.h"
 #include "SDL2\SDL.h"
 #define NOP_COMMAND_DATA NULL
@@ -29,8 +30,8 @@ typedef enum difficultylevel_t {
  * enum to indicate user color
  */
 typedef enum usercoloer_t {
-	BLACK,
 	WHITE,
+	BLACK,
 	COLOR_UNDEFINED
 } UserColor;
 

@@ -1,7 +1,7 @@
-#include "CommonStructures.h"
-#include "Commands.h"
 #include "SDL2\SDL.h"
 #include "FileSystemUtil.h"
+#include "CommonStructures.h"
+#include "Commands.h"
 
 void destroyCommand(Command* src){
 	if(!src){

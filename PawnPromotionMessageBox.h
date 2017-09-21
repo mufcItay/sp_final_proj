@@ -1,8 +1,8 @@
 #ifndef PAWNPROMOTIONMESSAGEBOX_H_
 #define PAWNPROMOTIONMESSAGEBOX_H_
 
-#include "SDL2\SDL.h"
-#include "SDL2\SDL_video.h"
+#include "SDL.h"
+#include "SDL_video.h"
 #include "CommonGUIUtil.h"
 
 typedef enum mboxpawnpromotionbutton_t {

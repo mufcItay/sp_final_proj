@@ -103,7 +103,16 @@ Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, GameState* gameState) {
 	// allocate memory
 	Window* res = calloc(1,sizeof(Window));
+	if(res == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+		return NULL;
+	}
 	GameBoardData* data = calloc(1,sizeof(GameBoardData));
+	if(data == NULL) {
+		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
+		free(res);
+		return NULL;
+	}
 	res->data = (void*) data;
 	data->gameState = gameState;
 	data->gameSettings = gameSettings;
@@ -118,8 +127,7 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	SDL_Rect statusR = { .x = BOARD_STATUS_BUTTON_X_POS , .y = BOARD_STATUS_BUTTON_Y_POS, .h = BOARD_STATUS_BUTTON_HEIGHT, .w = BOARD_STATUS_BUTTON_WIDTH};
 	Window* statusWindow = createSimpleButton(res,renderer,&statusR,BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH,NULL);
 	// handle windows creation errors
-	if (res == NULL || data == NULL || holdingWindow == NULL || renderer == NULL
-			|| widgets == NULL || menuButtons == NULL|| statusWindow == NULL) {
+	if (holdingWindow == NULL || renderer == NULL || widgets == NULL || menuButtons == NULL|| statusWindow == NULL) {
 		printErrorMessage(MEMORY_ALLOCATION_ERROR_MESSAGE);
 		//We first destroy the renderer
 		SDL_DestroyRenderer(renderer);

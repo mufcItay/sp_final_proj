@@ -1,6 +1,6 @@
 #ifndef COMMONGUIUTIL_H_
 #define COMMONGUIUTIL_H_
-#include "SDL2\SDL_video.h"
+#include "SDL_video.h"
 #include "Commands.h"
 
 // redraw states
@@ -175,57 +175,57 @@
 #define SAVED_GAMES_DIRECTORY_PATH "./SavedGames/"
 
 // image paths
-#define NEW_GAME_PIC_PATH "./pics/MainWindow/newgame.bmp"
-#define LOAD_GAME_PIC_PATH "./pics/MainWindow/loadgame.bmp"
-#define EXIT_PIC_PATH "./pics/MainWindow/exit.bmp"
-#define SOLDIER_PICS_PATTERN "./pics/BoardView/soldiers/%c%c%c%c.BMP"
+#define NEW_GAME_PIC_PATH "pics/MainWindow/newgame.bmp"
+#define LOAD_GAME_PIC_PATH "pics/MainWindow/loadgame.bmp"
+#define EXIT_PIC_PATH "pics/MainWindow/exit.bmp"
+#define SOLDIER_PICS_PATTERN "pics/BoardView/soldiers/%c%c%c%c.bmp"
 
-#define BOARD_WINDOW_RESTART_BUTTON_PIC_PATH "./pics/BoardView/restart.bmp"
-#define BOARD_WINDOW_SAVE_GAME_BUTTON_PIC_PATH "./pics/BoardView/save.bmp"
-#define BOARD_WINDOW_LOAD_GAME_BUTTON_PIC_PATH "./pics/BoardView/load.bmp"
-#define BOARD_WINDOW_UNDO_BUTTON_PIC_PATH "./pics/BoardView/undo.bmp"
-#define BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH "./pics/BoardView/mainmenu.bmp"
-#define BOARD_WINDOW_EXIT_BUTTON_PIC_PATH "./pics/BoardView/exitboard.bmp"
+#define BOARD_WINDOW_RESTART_BUTTON_PIC_PATH "pics/BoardView/restart.bmp"
+#define BOARD_WINDOW_SAVE_GAME_BUTTON_PIC_PATH "pics/BoardView/save.bmp"
+#define BOARD_WINDOW_LOAD_GAME_BUTTON_PIC_PATH "pics/BoardView/load.bmp"
+#define BOARD_WINDOW_UNDO_BUTTON_PIC_PATH "pics/BoardView/undo.bmp"
+#define BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH "pics/BoardView/mainmenu.bmp"
+#define BOARD_WINDOW_EXIT_BUTTON_PIC_PATH "pics/BoardView/exitboard.bmp"
 
-#define BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH "./pics/BoardView/statuses/neutral.bmp"
-#define BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH "./pics/BoardView/statuses/tie.bmp"
-#define BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH "./pics/BoardView/statuses/check.bmp"
-#define BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH "./pics/BoardView/statuses/checkmate.bmp"
-#define BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compp.bmp"
-#define BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compk.bmp"
-#define BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compq.bmp"
-#define BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compb.bmp"
-#define BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH "./pics/BoardView/statuses/compr.bmp"
+#define BOARD_WINDOW_STATUS_NEUTRAL_BUTTON_PIC_PATH "pics/BoardView/statuses/neutral.bmp"
+#define BOARD_WINDOW_STATUS_TIE_BUTTON_PIC_PATH "pics/BoardView/statuses/tie.bmp"
+#define BOARD_WINDOW_STATUS_CHECK_BUTTON_PIC_PATH "pics/BoardView/statuses/check.bmp"
+#define BOARD_WINDOW_STATUS_CHECKMATE_BUTTON_PIC_PATH "pics/BoardView/statuses/checkmate.bmp"
+#define BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH "pics/BoardView/statuses/compp.bmp"
+#define BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH "pics/BoardView/statuses/compk.bmp"
+#define BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH "pics/BoardView/statuses/compq.bmp"
+#define BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH "pics/BoardView/statuses/compb.bmp"
+#define BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH "pics/BoardView/statuses/compr.bmp"
 
 
-#define LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH "./pics/loadGameView/%d%c.bmp"
-#define LOAD_GAME_WINDOW_LOAD_BUTTON_PIC_PATH "./pics/loadGameView/load.bmp"
-#define LOAD_GAME_WINDOW_BACK_BUTTON_PIC_PATH "./pics/loadGameView/back.bmp"
+#define LOAD_GAME_WINDOW_SLOT_BUTTON_PIC_PATH "pics/loadGameView/%d%c.bmp"
+#define LOAD_GAME_WINDOW_LOAD_BUTTON_PIC_PATH "pics/loadGameView/load.bmp"
+#define LOAD_GAME_WINDOW_BACK_BUTTON_PIC_PATH "pics/loadGameView/back.bmp"
 #define LOAD_GAME_WINDOW_PIC_PATH_SLOT_SELECTED 's'
 #define LOAD_GAME_WINDOW_PIC_PATH_SLOT_NOT_SELECTED 'n'
 #define LOAD_GAME_WINDOW_SLOT__PIC_PATH_LENGTH 27
 
-#define DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH "./pics/difficultyView/%d%c.bmp"
-#define DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH "./pics/difficultyView/next.bmp"
-#define DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "./pics/difficultyView/back.bmp"
+#define DIFFICULTY_SELECTION_WINDOW_DIFFICULTY_BUTTON_PIC_PATH "pics/difficultyView/%d%c.bmp"
+#define DIFFICULTY_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH "pics/difficultyView/next.bmp"
+#define DIFFICULTY_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "pics/difficultyView/back.bmp"
 #define DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_SELECTED 's'
 #define DIFFICULTY_SELECTION_WINDOW_PIC_PATH_SLOT_NOT_SELECTED 'n'
 #define DIFFICULTY_SELECTION_WINDOW_DIFF__PIC_PATH_LENGTH 29
 
-#define COLOR_SELECTION_WINDOW_BLACK_BUTTON_NOT_SELECTED_PIC_PATH "./pics/colorView/blackn.bmp"
-#define COLOR_SELECTION_WINDOW_WHITE_BUTTON_NOT_SELECTED_PIC_PATH "./pics/colorView/whiten.bmp"
-#define COLOR_SELECTION_WINDOW_BLACK_BUTTON_SELECTED_PIC_PATH "./pics/colorView/blacks.bmp"
-#define COLOR_SELECTION_WINDOW_WHITE_BUTTON_SELECTED_PIC_PATH "./pics/colorView/whites.bmp"
-#define COLOR_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "./pics/colorView/back.bmp"
-#define COLOR_SELECTION_WINDOW_START_BUTTON_PIC_PATH "./pics/colorView/start.bmp"
+#define COLOR_SELECTION_WINDOW_BLACK_BUTTON_NOT_SELECTED_PIC_PATH "pics/colorView/blackn.bmp"
+#define COLOR_SELECTION_WINDOW_WHITE_BUTTON_NOT_SELECTED_PIC_PATH "pics/colorView/whiten.bmp"
+#define COLOR_SELECTION_WINDOW_BLACK_BUTTON_SELECTED_PIC_PATH "pics/colorView/blacks.bmp"
+#define COLOR_SELECTION_WINDOW_WHITE_BUTTON_SELECTED_PIC_PATH "pics/colorView/whites.bmp"
+#define COLOR_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "pics/colorView/back.bmp"
+#define COLOR_SELECTION_WINDOW_START_BUTTON_PIC_PATH "pics/colorView/start.bmp"
 
-#define MODE_SELECTION_WINDOW_SINGLE_PLAYER_BUTTON_SELECTED_PIC_PATH "./pics/modeView/ones.bmp"
-#define MODE_SELECTION_WINDOW_SINGLE_PLAYER_BUTTON_NOT_SELECTED_PIC_PATH "./pics/modeView/onen.bmp"
-#define MODE_SELECTION_WINDOW_TWO_PLAYERS_BUTTON_SELECTED_PIC_PATH "./pics/modeView/twos.bmp"
-#define MODE_SELECTION_WINDOW_TWO_PLAYERS_BUTTON_NOT_SELECTED_PIC_PATH "./pics/modeView/twon.bmp"
-#define MODE_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "./pics/modeView/back.bmp"
-#define MODE_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH "./pics/modeView/next.bmp"
-#define MODE_SELECTION_WINDOW_START_BUTTON_PIC_PATH "./pics/modeView/start.bmp"
+#define MODE_SELECTION_WINDOW_SINGLE_PLAYER_BUTTON_SELECTED_PIC_PATH "pics/modeView/ones.bmp"
+#define MODE_SELECTION_WINDOW_SINGLE_PLAYER_BUTTON_NOT_SELECTED_PIC_PATH "pics/modeView/onen.bmp"
+#define MODE_SELECTION_WINDOW_TWO_PLAYERS_BUTTON_SELECTED_PIC_PATH "pics/modeView/twos.bmp"
+#define MODE_SELECTION_WINDOW_TWO_PLAYERS_BUTTON_NOT_SELECTED_PIC_PATH "pics/modeView/twon.bmp"
+#define MODE_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "pics/modeView/back.bmp"
+#define MODE_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH "pics/modeView/next.bmp"
+#define MODE_SELECTION_WINDOW_START_BUTTON_PIC_PATH "pics/modeView/start.bmp"
 
 #define BMP_FILE_TYPE ".bmp"
 #define DISABLED_BUTTON_CHAR 'd'
@@ -246,6 +246,11 @@ SDL_Rect* createInvlidRect();
  * the function is a utility to check if given char is lower case
  */
 SDL_bool isCharLoweCase(char c);
+
+/*
+ * the function makes char c low case if it is not already low case.
+ */
+char toLowerCase(char c);
 
 /*
  * the function converts difficulty button index to DifficutyLevel enum

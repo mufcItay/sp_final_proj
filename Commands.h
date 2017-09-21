@@ -2,7 +2,7 @@
 #define COMMANDS_H_
 
 #include "CommonStructures.h"
-#include "SDL2\SDL.h"
+#include "SDL.h"
 #define NOP_COMMAND_DATA NULL
 
 /*

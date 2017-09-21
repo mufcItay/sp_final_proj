@@ -55,6 +55,7 @@ SDL_bool setImageData(Window* src)
 	SoldierButton* data = (SoldierButton*) (src->data);
 	// get current image path
 	char* imagePath = getImagePath(data);
+	printErrorMessage(imagePath);
 	if(imagePath == NULL) {
 		return SDL_FALSE;
 	}
@@ -66,6 +67,7 @@ SDL_bool setImageData(Window* src)
 	if(data->buttonTexture != NULL) {
 		SDL_DestroyTexture(data->buttonTexture);
 	}
+
 	data->buttonTexture = buttonTexture;
 	// handle errors
 	if (data == NULL || loadingSurface == NULL || buttonTexture == NULL) {
@@ -75,6 +77,7 @@ SDL_bool setImageData(Window* src)
 		SDL_DestroyTexture(buttonTexture); ////It is safe to pass NULL
 		return SDL_FALSE ;
 	}
+
 	// free memory
 	SDL_FreeSurface(loadingSurface); //Surface is not actually needed after texture is created
 	free(imagePath);
@@ -144,8 +147,7 @@ ErrorCode drawSoldierButton(Window* src) {
 	ErrorCode err = OK;
 	SoldierButton* castData = (SoldierButton*) src->data;
 	//if the image has changed
-	if(src->reDrawNeeded == SDL_TRUE)
-	{
+	if(src->reDrawNeeded == SDL_TRUE) {
 		if(setImageData(src) == SDL_FALSE) {
 			return MEMORY_ERROR;
 		}
@@ -162,15 +164,13 @@ char* getImagePath(SoldierButton* src)
 	char soldierTypeChar;
 	char backgroundColorChar = src->soldierBGColor;
 	char isHighlightedChar = SOLDIER_BUTTON_NOT_HIGHLIGHTED;//(src->isHighlighted == SDL_TRUE) ? SOLDIER_BUTTON_HIGHLIGHTED:SOLDIER_BUTTON_NOT_HIGHLIGHTED;
-	if(src->soldierType == SOLDIER_TYPE_EMPTY)
-	{
+	if(src->soldierType == SOLDIER_TYPE_EMPTY) {
 		soldierColorChar = SOLDIER_COLOR_EMPTY;
 		soldierTypeChar = SOLDIER_TYPE_EMPTY;
 	}
-	else
-	{
+	else {
 		soldierColorChar = isCharLoweCase(src->soldierType) ? SOLDIER_COLOR_WHITE:SOLDIER_COLOR_BLACK;
-		soldierTypeChar = src->soldierType;
+		soldierTypeChar = toLowerCase(src->soldierType);
 	}
 	// allocate memory for path string
 	char* imageName = malloc(sizeof(char) +  sizeof(char) * SOLDIER_BUTTON_IMAGE_PATH_PREPOSTFIX_LENGTH);

@@ -1,4 +1,4 @@
-#include "SDL2\SDL.h"
+#include "SDL.h"
 #include "FileSystemUtil.h"
 #include "CommonStructures.h"
 #include "Commands.h"

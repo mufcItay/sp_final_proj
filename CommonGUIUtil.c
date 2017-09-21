@@ -37,6 +37,14 @@ SDL_bool isCharLoweCase(char c)
 	return (c >= 'a' && c <= 'z');
 }
 
+char toLowerCase(char c) {
+	char lower = c;
+	if(isCharLoweCase(c) == SDL_FALSE) {
+		lower += ('a' - 'A');
+	}
+	return lower;
+}
+
 DifficultyLevel getDifficulty(int difficultyButtonIndex) {
 	switch(difficultyButtonIndex) {
 		case DIFFICULTY_SELECTION_WINDOW_NOOB_BUTTON_INDEX:

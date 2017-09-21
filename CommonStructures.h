@@ -1,6 +1,6 @@
 #ifndef COMMONSTRUCTURES_H_
 #define COMMONSTRUCTURES_H_
-#include "SDL2\SDL.h"
+#include "SDL.h"
 
 // enum for all the messages of board view
 typedef enum gameboardstatuses_t {
@@ -30,6 +30,7 @@ typedef enum errorcodes_t {
 } ErrorCode;
 
 // error messages
+#define IMAGE_LOAD_ERROR_MESSAGE "image load failed"
 #define MEMORY_ALLOCATION_ERROR_MESSAGE "memory allocation error"
 #define NULL_POINTER_ERROR_MESSAGE "encountered invalid null pointer"
 #define STRING_ERROR_MESSAGE "string manipulation error"

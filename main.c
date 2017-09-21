@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "SDL2\SDL.h"
-#include "SDL2\SDL_video.h"
+#include "SDL.h"
+#include "SDL_video.h"
 #include "UIController.h"
 #include "GUIController.h"
 #include "CMDController.h"

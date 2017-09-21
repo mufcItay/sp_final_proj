@@ -1,7 +1,7 @@
 #ifndef WINDOW_H_
 #define WINDOW_H_
-#include "SDL2\SDL.h"
-#include "SDL2\SDL_video.h"
+#include "SDL.h"
+#include "SDL_video.h"
 #include "Commands.h"
 
 typedef struct window_t Window;

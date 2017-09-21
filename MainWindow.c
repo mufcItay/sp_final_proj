@@ -87,7 +87,6 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	data->numOfWidgets = MAIN_NUMBER_OF_BUTTONS;
 	data->window = window;
 	data->windowRenderer = renderer;
-
 	data->mainMenuWidgets = widgets;
 	data->view = MAIN_VIEW;
 	data->viewWindow = res;
@@ -101,6 +100,7 @@ Window* createMainWindow(GameSettings* gameSettings, GameState* gameState) {
 	}
 	// init and set views
 	initializeViews(data, res);
+
 	// handle errors
 	if (data->boardViewWindow == NULL || data->difficultySelectionViewWindow== NULL || data->modeSelectionViewWindow== NULL ||
 			data->colorSelectionViewWindow == NULL || data->loadGameViewWindow== NULL) {

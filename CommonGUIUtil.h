@@ -172,7 +172,7 @@
 #define SOLDIER_BUTTON_NOT_HIGHLIGHTED 'n'
 
 //saved games paths
-#define SAVED_GAMES_DIRECTORY_PATH "./SavedGames/"
+#define SAVED_GAMES_DIRECTORY_PATH "SavedGames/"
 
 // image paths
 #define NEW_GAME_PIC_PATH "pics/MainWindow/newgame.bmp"

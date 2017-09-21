@@ -55,7 +55,6 @@ SDL_bool setImageData(Window* src)
 	SoldierButton* data = (SoldierButton*) (src->data);
 	// get current image path
 	char* imagePath = getImagePath(data);
-	printErrorMessage(imagePath);
 	if(imagePath == NULL) {
 		return SDL_FALSE;
 	}

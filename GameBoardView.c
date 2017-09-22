@@ -89,6 +89,7 @@ Window** createBoardMenuButtons(Window* holdingWindow, SDL_Renderer* renderer){
 	menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &mainmenuR, BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_PIC_PATH, mainMenuButtonHandler);
 	menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] = createSimpleButton(holdingWindow,renderer, &exitR, BOARD_WINDOW_EXIT_BUTTON_PIC_PATH,exitBoardButtonHandler);
 
+
 	// if an error occurred, free memory
 	if (menuButtons[BOARD_WINDOW_RESTART_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_LOAD_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX] == NULL ||
 			menuButtons[BOARD_WINDOW_UNDO_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_MAIN_MENU_GAME_BUTTON_INDEX] == NULL || menuButtons[BOARD_WINDOW_EXIT_BUTTON_INDEX] == NULL) {
@@ -146,6 +147,7 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	data->isGameSaved = SDL_FALSE;
 	data->selectedSoldier = NULL;
 	data->statusButton = statusWindow;
+	data->dragDropIgnored = 0;
 	res->destroyWindow = destroyGameBoardWindow;
 	res->drawWindow = drawGameBoardWindow;
 	res->handleEventWindow = handleEventGameBoardWindow;
@@ -258,7 +260,6 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 			}
 		}
 	}
-
 	for (int i = 0; i< BOARD_WINDOW_ROWS_AMOUNT; ++i) {
 		for (int j= 0; j< BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
 			if(isEventWindowRelated(data->soldierButtons[i][j], event) == SDL_TRUE){
@@ -324,6 +325,8 @@ Command* undoButtonHandler(Window* src, SDL_Event* event) {
 		return cmd;
 	}
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
+		src->holdingWindow->reDrawNeeded = SDL_TRUE;
+		src->reDrawNeeded = SDL_TRUE;
 		cmd = createUndoCommand();
 	}
 
@@ -431,6 +434,12 @@ ErrorCode drawSelectedSoldier(Window* gameWindow,SDL_Event* event) {
 
 	SoldierButton* selectedSoldier = (SoldierButton*) game->selectedSoldier->data;
 	if(event->type == SDL_MOUSEMOTION) {
+		// avoid drawing drag and drop live motion for better performance
+		if(game->dragDropIgnored < MAX_DRAG_DROPIGNORED) {
+			++game->dragDropIgnored;
+			return err;
+		}
+		game->dragDropIgnored = 0;
 		setGameBoardInnerReDraw(gameWindow, SDL_TRUE);
 		SDL_MouseMotionEvent* mmE = (SDL_MouseMotionEvent*) event;
 		err = drawGameBoardWindow(gameWindow);

@@ -26,7 +26,7 @@
 #define XML_BOARD_END_TAG "\t</board>\n"
 #define XML_GAME_TAG "<game>\n"
 #define XML_GAME_END_TAG "</game>\n"
-#define XML_COLOR_TAG "\t<color>%d</color>\n"
+#define XML_COLOR_TAG "\t<user_color>%d</user_color>\n"
 #define XML_ROW_TAG "\t\t<row_%d>%s</row_%d>\n"
 #define XML_DIFFICULTY_TAG "\t<difficulty>%d</difficulty>\n"
 #define XML_MODE_TAG "\t<game_mode>%d</game_mode>\n"

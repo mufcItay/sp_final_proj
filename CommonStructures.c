@@ -14,6 +14,7 @@ GameState* createGameState(){
 	if(state->board == NULL) {
 		return NULL;
 	}
+	state->moveHistory = NULL;
 	state->turn = WHITE;
 	return state;
 
@@ -40,7 +41,9 @@ void destroyGameState(GameState* gameState) {
 		free(gameState->board[i]);
 	}
 	free(gameState->board);
-	//free(gameState->moveHistory);
+	if(gameState->moveHistory != NULL) {
+		free(gameState->moveHistory);
+	}
 	free(gameState);
 }
 

@@ -58,7 +58,7 @@
 #define BOARD_WINDOW_BGCOLOR_GREEN 140
 #define BOARD_WINDOW_BGCOLOR_BLUE 0
 #define BOARD_WINDOW_BGCOLOR_ALPHA 255
-
+#define MAX_DRAG_DROPIGNORED 10
 
 // load window GUI consts
 #define LOAD_GAME_WINDOW_WIDTH 800
@@ -226,6 +226,11 @@
 #define MODE_SELECTION_WINDOW_BACK_BUTTON_PIC_PATH "pics/modeView/back.bmp"
 #define MODE_SELECTION_WINDOW_NEXT_BUTTON_PIC_PATH "pics/modeView/next.bmp"
 #define MODE_SELECTION_WINDOW_START_BUTTON_PIC_PATH "pics/modeView/start.bmp"
+
+#define INFO_MBOX_LOAD_ERROR_MESSAGE "unable to load given slot"
+#define INFO_MBOX_SAVE_ERROR_MESSAGE "failed to save current game"
+#define INFO_MBOX_READ_DIR_ERROR_MESSAGE "failed scanning saved games directory"
+
 
 #define BMP_FILE_TYPE ".bmp"
 #define DISABLED_BUTTON_CHAR 'd'

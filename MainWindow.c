@@ -10,6 +10,7 @@
 #include "GameBoardView.h"
 #include "SimpleButton.h"
 #include "DifficultySelectionView.h"
+#include "InfoMessageBox.h"
 
 Window** createMainWindowWidgets(Window* window,SDL_Renderer* renderer) {
 	if (renderer == NULL ) {
@@ -331,10 +332,12 @@ ErrorCode handleMainWindowError(Window* src, ErrorCode err) {
 	// if solvable, solve
 	switch (err) {
 		case LOAD_ERROR:
+			showInfoMessageBox(INFO_MBOX_LOAD_ERROR_MESSAGE);
 			setCurrentView(src, LOAD_GAME_VIEW);
 			err = OK;
 			break;
 		case SAVE_ERROR:
+			showInfoMessageBox(INFO_MBOX_SAVE_ERROR_MESSAGE);
 			setCurrentView(src, BOARD_VIEW);
 			err = OK;
 			break;

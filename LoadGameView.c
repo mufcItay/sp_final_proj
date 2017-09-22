@@ -7,6 +7,7 @@
 #include "MainWindow.h"
 #include "FileSystemUtil.h"
 #include "Commands.h"
+#include "InfoMessageBox.h"
 
 
 Window** updateSlotButtons(Window* holdingWindow) {
@@ -58,6 +59,7 @@ Window** createSlotButtons(Window* holdingWindow, SDL_Renderer* renderer)
 	int availableSlots = getNumberOfSavedGames();
 	if(availableSlots == SLOTS_LOAD_ERROR) {
 		view->slotsAmount = 0;
+		showInfoMessageBox(INFO_MBOX_READ_DIR_ERROR_MESSAGE);
 		return slotButtons;
 	}
 	if(availableSlots > LOAD_GAME_WINDOW_SLOTS_AMOUNT) {

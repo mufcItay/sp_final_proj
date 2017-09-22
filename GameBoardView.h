@@ -35,6 +35,7 @@ struct gameBoard_t {
 	GameSettings* gameSettings;
 	GameState* gameState;
 	SDL_bool isGameSaved;
+	int dragDropIgnored;
 };
 
 /*

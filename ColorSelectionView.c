@@ -6,6 +6,7 @@
 #include "MainWindow.h"
 #include "CommonStructures.h"
 #include "Commands.h"
+#include "GameBoardView.h"
 
 void destroyColorButtons(Window** colorButtons) {
 	for (int i = 0; i < COLOR_SELECTION_WINDOW_COLORS_AMOUNT; ++i) {

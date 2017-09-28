@@ -314,6 +314,7 @@ Command* restartButtonHandler(Window* src, SDL_Event* event) {
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		cmd = createResetCommand();
 		src->holdingWindow->reDrawNeeded = SDL_TRUE;
+		setSaveEnabledState(src->holdingWindow,SDL_FALSE);
 		src->holdingWindow->setInnerWidgetsReDraw(src->holdingWindow,SDL_TRUE);
 	}
 	return cmd;
@@ -358,7 +359,7 @@ Command* exitBoardButtonHandler(Window* src, SDL_Event* event){
 }
 
 SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
-	SimpleButton* sb = data->menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX];
+	SimpleButton* sb = data->menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX]->data;
 	if(sb->isEnabled == SDL_FALSE) {
 		return SDL_FALSE;
 	}

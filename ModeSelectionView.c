@@ -1,5 +1,4 @@
 #include "ModeSelectionView.h"
-
 #include <stdlib.h>
 #include "SimpleButton.h"
 #include "CommonGUIUtil.h"
@@ -7,6 +6,7 @@
 #include "MainWindow.h"
 #include "CommonStructures.h"
 #include "Commands.h"
+#include "GameBoardView.h"
 
 Window** createModeButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {

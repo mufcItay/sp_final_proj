@@ -328,6 +328,7 @@ ErrorCode isSoldierValid(char soldier){
 	if(res == 0) {
 		printErrorMessage(INVALID_ARGUMENT_LOAD_MESSAGE);
 		return INVALID_ARGUMENT;
+	}
 	return OK;
 }
-}
+

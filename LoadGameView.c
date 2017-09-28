@@ -8,6 +8,7 @@
 #include "FileSystemUtil.h"
 #include "Commands.h"
 #include "InfoMessageBox.h"
+#include "GameBoardView.h"
 
 
 Window** updateSlotButtons(Window* holdingWindow) {

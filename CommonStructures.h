@@ -26,7 +26,8 @@ typedef enum errorcodes_t {
 	GENERAL_ERROR,
 	NULL_POINTER_ERROR,
 	CONTROLLER_END,
-	IMAGE_ERROR
+	IMAGE_ERROR,
+	INVALID_ARGUMENT
 } ErrorCode;
 
 // error messages
@@ -39,10 +40,19 @@ typedef enum errorcodes_t {
 #define LOAD_GAME_ERROR_MESSAGE "couldn't load game from XML"
 #define FILE_SYSTEM_ERROR_MESSAGE "couldn't access file system"
 #define SAVED_GAMES_DIR_CORRUPTED_ERROR_MESSAGE "Too many slots in saved games directory"
-#define GUI_ERROR_MESSAGE "yhe GUI has failed to be drawn"
+#define GUI_ERROR_MESSAGE "the GUI has failed to be drawn"
 #define BMP_FILE_TYPE ".bmp"
 #define ERROR_MESSAGE_PREFIX "ERROR: "
+#define INVALID_ARGUMENT_LOAD_MESSAGE "invalid argument loaded from xml file"
+#define EXPERT_DIFFICULTY_NOT_SUPPORTED_MESSAGE "Expert level not supported\n"
 
+#define EMPTY_ARGS_AMOUNT 1
+#define UITYPE_INDEX 1
+#define GUI_CONST 'g'
+#define CONSOLE_CONST 'c'
+#define UI_PREFIX_INDEX 0
+#define UI_CHAR_INDEX 1
+#define UI_PREFIX '-'
 #define MAX_SLOTS 5
 
 
@@ -129,4 +139,10 @@ ErrorCode setInitialGameState(GameState* state);
  * the function prints to console given error message.
  */
 void printErrorMessage(const char* message);
+
+/*
+ * the function switches between current turn to next turn
+ */
+void switchTurn(GameState* state);
+
 #endif

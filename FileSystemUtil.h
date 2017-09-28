@@ -67,4 +67,30 @@ ErrorCode reArrageSavedGames();
  */
 int writeDifficultyToXML(GameSettings* settings, FILE* gameFile);
 
+/*
+ * the function checks if given difficulty is invalid
+ */
+ErrorCode isDifficultyValid(int difficulty);
+
+/*
+ * the function checks if given turnis invalid
+ */
+ErrorCode isTurnValid(int turn);
+
+/*
+ * the function checks if given color is invalid
+ */
+ErrorCode isColorValid(int color);
+
+
+/*
+ * the function checks if given mode is invalid
+ */
+ErrorCode isModeValid(int mode);
+
+
+/*
+ * the function checks if given soldier char is invalid
+ */
+ErrorCode isSoldierValid(char soldier);
 #endif

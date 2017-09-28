@@ -11,9 +11,9 @@
 #include "PawnPromotionMessageBox.h"
 #include "InfoMessageBox.h"
 
-//
-/////////////////TODO: test
-//#include "TEST/ChessGame.h"
+/////TODO:TEST
+#include "co/moves.h"
+#include "co/utilities.h"
 
 Window*** createBoardSoldierButtons(Window* holdingWindow, SDL_Renderer* renderer)
 {
@@ -144,7 +144,6 @@ Window* createBoardWindow(Window* holdingWindow, GameSettings* gameSettings, Gam
 	data->windowRenderer = renderer;
 	data->soldierButtons = widgets;
 	data->menuButtons = menuButtons;
-	data->isGameSaved = SDL_FALSE;
 	data->selectedSoldier = NULL;
 	data->statusButton = statusWindow;
 	data->dragDropIgnored = 0;
@@ -161,7 +160,6 @@ void setBoard(Window* gameBoardWindow, char** boardToSet)
 {
 	gameBoardWindow->reDrawNeeded = SDL_TRUE;
 	GameBoardData* gameBoard = (GameBoardData*) gameBoardWindow->data;
-	gameBoard->isGameSaved = SDL_FALSE;
 	Window*** soldierButtons = gameBoard->soldierButtons;
 	for (int i = 0; i < BOARD_WINDOW_ROWS_AMOUNT; ++i) {
 		for (int j = 0; j < BOARD_WINDOW_COLUMNS_AMOUNT; ++j) {
@@ -280,12 +278,21 @@ Command* handleEventGameBoardWindow(Window* src, SDL_Event* event){
 	return cmd;
 }
 
+void setSaveEnabledState(Window* src, SDL_bool enabled) {
+	GameBoardData* data = (GameBoardData*) src->data;
+	setEnabledSimpleButton(data->menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX],enabled);
+}
+
 Command* saveButtonHandler(Window* src, SDL_Event* event) {
 	if (src == NULL || event == NULL ) {
 		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL;
 	}
 	Command* cmd = createNOPCommand();
+	SimpleButton* sb = (SimpleButton*) src->data;
+	if(sb->isEnabled == SDL_FALSE) {
+		return cmd;
+	}
 
 	if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
 		reArrageSavedGames();
@@ -293,8 +300,7 @@ Command* saveButtonHandler(Window* src, SDL_Event* event) {
 		char* path = (char*) malloc(pathLen * sizeof(char));
 		sprintf(path,SLOT_PATH_FORMAT,SAVED_GAMES_DIRECTORY_PATH,FIRST_SLOT_NAME,XML_FILE_TYPE);
 		cmd = createSaveCommand(path);
-		GameBoardData* data = (GameBoardData*) src->holdingWindow->data;
-		data->isGameSaved = SDL_TRUE;
+		setEnabledSimpleButton(src,SDL_FALSE);
 	}
 	return cmd;
 }
@@ -352,7 +358,8 @@ Command* exitBoardButtonHandler(Window* src, SDL_Event* event){
 }
 
 SDL_bool checkIfSaveGameNeeded(GameBoardData* data) {
-	if(data->isGameSaved == SDL_TRUE) {
+	SimpleButton* sb = data->menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX];
+	if(sb->isEnabled == SDL_FALSE) {
 		return SDL_FALSE;
 	}
 	MBoxSaveGameButton selectedButton = getUserSaveGameDescision();
@@ -465,7 +472,37 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	}
 	// anyway, redraw next time to delete selected soldier blueprint
 	setGameBoardInnerReDraw(toSoldier->holdingWindow, SDL_TRUE);
-//	//TODO:TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	/////TODO:TEST
+	getMovesPosition(gameBoard->gameState->board, gameBoard->gameState->turn, soldierToMove->rowIndex, soldierToMove->columnIndex);
+	int result = isLegalMove_no_ptr(soldierToMove->rowIndex, soldierToMove->columnIndex, destinationSoldier->rowIndex, destinationSoldier->columnIndex);
+	if (result == true) {
+		//                move(command,color);
+
+		freeMoves_all();
+//		int check_status = isKingThreatened(gameBoard->gameState->board, invertColor(gameBoard->gameState->turn)) ;
+//
+//		int allowed_moves_opponent = calc_all_allowed_moves (gameBoard->gameState->board, invertColor(gameBoard->gameState->turn));
+//
+//		if ( ( allowed_moves_opponent == 1 ) &&  ( check_status == 1) ) {  // no moves allowed
+//			updateGameStatusImage(CHECKMATE, gameBoard->statusButton);
+//		}
+//		if ( ( allowed_moves_opponent == 0 ) && (check_status == 1)) {
+//			updateGameStatusImage(CHECK, gameBoard->statusButton);
+//		}
+//		if ( ( allowed_moves_opponent == 1 ) && (check_status == 0)) {
+//			updateGameStatusImage(TIE, gameBoard->statusButton);
+//				}
+
+
+	}
+		else {
+		gameBoard->selectedSoldier = NULL;
+		return cmd;
+	}
+
+
+	//	//TODO:TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //	ChessGame* cg = chessGameCreate(2,2,0);
 //	cg->currentPlayer = gameBoard->gameState->turn;
 //	cg->gameBoard = gameBoard->gameState->board;
@@ -503,9 +540,7 @@ Command* moveSelectedSoldierTo(GameBoardData* gameBoard, Window* toSoldier) {
 	SDL_Point origin = {.x = soldierToMove->rowIndex, .y = soldierToMove->columnIndex};
 	SDL_Point destination = {.x = destinationSoldier->rowIndex, .y = destinationSoldier->columnIndex};
 	cmd = createMoveCommand(origin,destination);
-	gameBoard->isGameSaved = SDL_FALSE;
-
-	//gui update
+	setEnabledSimpleButton(gameBoard->menuButtons[BOARD_WINDOW_SAVE_GAME_BUTTON_INDEX],SDL_TRUE);
 	return cmd;
 }
 
@@ -541,23 +576,18 @@ ErrorCode showComputerPawnPromotion(GameBoardStatuses promotionStatus) {
 	ErrorCode err = OK;
 	switch (promotionStatus) {
 	case PAWN_PROMOTION:
-		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_PAWN_PROMOTION_BUTTON_PIC_PATH);
 		err = showInfoMessageBox(PAWN_PROMOTION_MESSAGE);
 		break;
 	case BISHOP_PROMOTION:
-		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_BISHOP_PROMOTION_BUTTON_PIC_PATH);
 		err = showInfoMessageBox(BISHOP_PROMOTION_MESSAGE);
 		break;
 	case ROCK_PROMOTION:
-		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_ROCK_PROMOTION_BUTTON_PIC_PATH);
 		err = showInfoMessageBox(ROCK_PROMOTION_MESSAGE);
 		break;
 	case QUEEN_PROMOTION:
-		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_QUEEN_PROMOTION_BUTTON_PIC_PATH);
 		err = showInfoMessageBox(QUEEN_PROMOTION_MESSAGE);
 		break;
 	case KNIGHT_PROMOTION:
-		//err = updateImage(statusBut,BOARD_WINDOW_STATUS_KNIGHT_PROMOTION_BUTTON_PIC_PATH);
 		err = showInfoMessageBox(KNIGHT_PROMOTION_MESSAGE);
 		break;
 	case NEUTRAL:
@@ -571,7 +601,7 @@ ErrorCode showComputerPawnPromotion(GameBoardStatuses promotionStatus) {
 }
 
 ErrorCode setStatusImage(GameBoardData* data) {
-	//GameBoardStatuses status = gtStatusOfGameFromNoam;
+	//TODO: GameBoardStatuses status = gtStatusOfGameFromNoam;
 	GameBoardStatuses status = NEUTRAL;
 	Window* statusBut = (Window*) data->statusButton;
 	// game status is 8 bit for game status and the rest is pawn promotion bits

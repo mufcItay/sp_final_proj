@@ -30,8 +30,8 @@ typedef enum difficultylevel_t {
  * enum to indicate user color
  */
 typedef enum usercoloer_t {
-	WHITE,
-	BLACK,
+	BLACK = 0,
+	WHITE = 1,
 	COLOR_UNDEFINED
 } UserColor;
 

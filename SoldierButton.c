@@ -18,7 +18,7 @@ Window* createSoldierButton(Window* holdingWindow, SDL_Renderer* windowRenderer,
 		return NULL ;
 	}
 	// create rectangle and actual button
-	SDL_Rect location = { .x = col * SOLDIER_BUTTON_IMAGE_WIDTH , .y = row * SOLDIER_BUTTON_IMAGE_HEIGHT, .h = SOLDIER_BUTTON_IMAGE_HEIGHT, .w = SOLDIER_BUTTON_IMAGE_WIDTH };
+	SDL_Rect location = { .x = col * SOLDIER_BUTTON_IMAGE_WIDTH , .y = (BOARD_ROWS_AMOUNT - row -1) * SOLDIER_BUTTON_IMAGE_HEIGHT, .h = SOLDIER_BUTTON_IMAGE_HEIGHT, .w = SOLDIER_BUTTON_IMAGE_WIDTH };
 	// set data members
 	res->location = copyRect(&location);
 	res->holdingWindow = holdingWindow;

@@ -222,7 +222,6 @@ Command* handleEventColorSelectionView(Window* src, SDL_Event* event) {
 			}
 			// update current selection or return null to indicate an error
 			if (updateSelectedColor(data->selectedColor, i, data) != OK) {
-				// TODO: command?
 				cmd = createQuitCommand();
 				src->holdingWindow->holdingWindow->isClosed = SDL_TRUE;
 				return cmd;
@@ -261,6 +260,8 @@ Command* startButtonHandler(Window* src, SDL_Event* event) {
 	}
 	if (event->type
 			== SDL_MOUSEBUTTONUP&& event->button.button == SDL_BUTTON_LEFT) {
+		MainWindow* mw = (MainWindow*) src->holdingWindow->holdingWindow->data;
+		setSaveEnabledState(mw->boardViewWindow,SDL_FALSE);
 		setCurrentView(src->holdingWindow->holdingWindow, BOARD_VIEW);
 		cmd = createStartCommand();
 	}

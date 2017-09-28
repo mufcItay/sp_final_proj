@@ -1,9 +1,9 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "FileSystemUtil.h"
 #include "CommonGUIUtil.h"
 #include "CommonStructures.h"
 #include "Commands.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <dirent.h>
 
 int getNumberOfSavedGames() {
@@ -102,22 +102,25 @@ ErrorCode saveGame(GameSettings* settings, GameState* state, char* path) {
 		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
-	int currentModeXML = (settings->mode == MULTI_PLAYER) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
+	int currentModeXML = (settings->mode == MULTI_PLAYER) ? XML_MODE_MULTIPLAYER : XML_MODE_SINGLE_PLAYER;
 	if (fprintf(gameFile, XML_MODE_TAG, currentModeXML) <= 0) {
 		fclose(gameFile);
 		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
 		return SAVE_ERROR;
 	}
-	if (writeDifficultyToXML(settings, gameFile) == DIFFICULTY_UNDEFINED) {
-		fclose(gameFile);
-		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
-		return SAVE_ERROR;
-	}
-	int currentColorXML = (settings->color == BLACK) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
-	if (fprintf(gameFile, XML_COLOR_TAG, currentColorXML) <= 0) {
-		fclose(gameFile);
-		printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
-		return SAVE_ERROR;
+	// save difficulty and color only for single player game
+	if(settings->mode == SINGLE_PLAYER) {
+		if (writeDifficultyToXML(settings, gameFile) == DIFFICULTY_UNDEFINED) {
+			fclose(gameFile);
+			printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
+			return SAVE_ERROR;
+		}
+		int currentColorXML = (settings->color == BLACK) ? XML_COLOR_BLACK : XML_COLOR_WHITE;
+		if (fprintf(gameFile, XML_COLOR_TAG, currentColorXML) <= 0) {
+			fclose(gameFile);
+			printErrorMessage(SAVE_GAME_ERROR_MESSAGE);
+			return SAVE_ERROR;
+		}
 	}
 	if (fprintf(gameFile, XML_BOARD_TAG) <= 0) {
 		fclose(gameFile);
@@ -164,43 +167,53 @@ ErrorCode loadGame(GameSettings* settings, GameState* state, char* path) {
 	fscanf(gameFile, XML_TITLE_TAG);
 	fscanf(gameFile, XML_GAME_TAG);
 	int currentTurnXML = COLOR_UNDEFINED;
-	if (fscanf(gameFile, XML_TURN_TAG, &currentTurnXML) <= 0) {
+	if (fscanf(gameFile, XML_TURN_TAG, &currentTurnXML) <= 0 || isTurnValid(currentTurnXML) == INVALID_ARGUMENT) {
 		fclose(gameFile);
 		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return LOAD_ERROR;
 	}
+
 	state->turn = currentTurnXML == XML_COLOR_WHITE ? WHITE : BLACK;
 	int currentModeXML = MODE_UNDEFINED;
-	if (fscanf(gameFile, XML_MODE_TAG, &currentModeXML) <= 0) {
+	if (fscanf(gameFile, XML_MODE_TAG, &currentModeXML) <= 0 || isModeValid(currentModeXML) == INVALID_ARGUMENT) {
 		fclose(gameFile);
 		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 		return LOAD_ERROR;
 	}
 	settings->mode = (currentModeXML == XML_MODE_MULTIPLAYER) ? MULTI_PLAYER : SINGLE_PLAYER;
-	if (updateDifficulty(settings, gameFile) == DIFFICULTY_UNDEFINED) {
-		fclose(gameFile);
-		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
-		return LOAD_ERROR;
+
+	if(settings->mode == SINGLE_PLAYER) {
+		if (updateDifficulty(settings, gameFile) == DIFFICULTY_UNDEFINED || isDifficultyValid(settings->difficulty) == INVALID_ARGUMENT) {
+			fclose(gameFile);
+			printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
+			return LOAD_ERROR;
+		}
+		int currentColorXML = COLOR_UNDEFINED;
+		if (fscanf(gameFile, XML_COLOR_TAG, &currentColorXML) <= 0 || isColorValid(currentColorXML) == INVALID_ARGUMENT) {
+			fclose(gameFile);
+			printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
+			return LOAD_ERROR;
+		}
+		settings->color = (settings->color == XML_COLOR_BLACK) ? BLACK : WHITE;
 	}
-	int currentColorXML = COLOR_UNDEFINED;
-	if (fscanf(gameFile, XML_COLOR_TAG, &currentColorXML) <= 0) {
-		fclose(gameFile);
-		printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
-		return LOAD_ERROR;
-	}
-	settings->color = (settings->color == XML_COLOR_BLACK) ? BLACK : WHITE;
 	fscanf(gameFile, XML_BOARD_TAG);
 	// parse board tag
 	for (int i = BOARD_ROWS_AMOUNT; i > 0; i--) {
 		int rowIndex = -1;
 		// read line by line and fill the board
 		char soldierTypes[BOARD_COLUMNS_AMOUNT];
-		if (fscanf(gameFile, XML_ROW_TAG, &rowIndex, soldierTypes, &currentColorXML) <= 0) {
+		int temp = 0;
+		if (fscanf(gameFile, XML_ROW_TAG, &rowIndex, soldierTypes, &temp) <= 0) {
 			fclose(gameFile);
 			printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
 			return LOAD_ERROR;
 		}
 		for (int j = 0; j < BOARD_COLUMNS_AMOUNT; ++j) {
+			if(isSoldierValid(soldierTypes[j]) == INVALID_ARGUMENT) {
+				fclose(gameFile);
+				printErrorMessage(LOAD_GAME_ERROR_MESSAGE);
+				return LOAD_ERROR;
+			}
 			state->board[i-1][j] = soldierTypes[j];
 		}
 	}
@@ -266,4 +279,55 @@ int updateDifficulty(GameSettings* settings, FILE* gameFile) {
 	}
 
 	return settings->difficulty;
+}
+
+ErrorCode isDifficultyValid(int difficulty){
+	if(difficulty == EXPERT) {
+		printErrorMessage(EXPERT_DIFFICULTY_NOT_SUPPORTED_MESSAGE);
+		return INVALID_ARGUMENT;
+	}
+	if(difficulty < NOOB || difficulty > HARD) {
+		printErrorMessage(INVALID_ARGUMENT_LOAD_MESSAGE);
+		return INVALID_ARGUMENT;
+	}
+	return OK;
+}
+ErrorCode isTurnValid(int turn){
+	if(turn != BLACK && turn != WHITE) {
+		printErrorMessage(INVALID_ARGUMENT_LOAD_MESSAGE);
+		return INVALID_ARGUMENT;
+	}
+	return OK;
+}
+ErrorCode isColorValid(int color){
+	if(color != BLACK && color != WHITE) {
+		printErrorMessage(INVALID_ARGUMENT_LOAD_MESSAGE);
+		return INVALID_ARGUMENT;
+	}
+	return OK;
+}
+ErrorCode isModeValid(int mode){
+	if(mode != MULTI_PLAYER && mode != SINGLE_PLAYER) {
+		printErrorMessage(INVALID_ARGUMENT_LOAD_MESSAGE);
+		return INVALID_ARGUMENT;
+	}
+	return OK;
+}
+ErrorCode isSoldierValid(char soldier){
+	int res = 0;
+	if(soldier != SOLDIER_TYPE_EMPTY) {
+		soldier = toLowerCase(soldier);
+	}
+	res |= soldier == SOLDIER_TYPE_EMPTY;
+	res |= soldier == SOLDIER_TYPE_WHITE_PAWN;
+	res |= soldier == SOLDIER_TYPE_WHITE_BISHOP;
+	res |= soldier == SOLDIER_TYPE_WHITE_KNIGHT;
+	res |= soldier == SOLDIER_TYPE_WHITE_ROCK;
+	res |= soldier == SOLDIER_TYPE_WHITE_QUEEN;
+	res |= soldier == SOLDIER_TYPE_WHITE_KING;
+	if(res == 0) {
+		printErrorMessage(INVALID_ARGUMENT_LOAD_MESSAGE);
+		return INVALID_ARGUMENT;
+	return OK;
+}
 }

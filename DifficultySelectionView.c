@@ -197,7 +197,7 @@ Command* handleEventDifficultySelectionView(Window* src, SDL_Event* event){
 			}
 			else {
 				// handle error in updating selected difficulty
-				DifficultyLevel selectedDifficulty = getColor(data->selectedDifficulty);
+				DifficultyLevel selectedDifficulty = getDifficulty(data->selectedDifficulty);
 				cmd = createDifficultyCommand(selectedDifficulty);
 				return cmd;
 			}

@@ -268,6 +268,8 @@ Command* loadSlotButtonHandler(Window* src, SDL_Event* event){
 			return NULL;
 		}
 		cmd = createLoadCommand(path);
+		MainWindow* mw = (MainWindow*) src->holdingWindow->holdingWindow->data;
+		setSaveEnabledState(mw->boardViewWindow,SDL_FALSE);
 		setCurrentView(src->holdingWindow->holdingWindow, BOARD_VIEW);
 	}
 	return cmd;

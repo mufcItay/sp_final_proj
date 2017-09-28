@@ -298,10 +298,7 @@ ErrorCode handleGameModeCommand(Command* cmd, GameSettings* settings, GameState*
 	}
 	GameModeCommand* modeCmd = (GameModeCommand*) cmd->data;
 	settings->mode = modeCmd->mode;
-	if(modeCmd->mode == MULTI_PLAYER) {
-		ErrorCode err = setInitialGameState(state);
-		return err;
-	}
+
 	return OK;
 }
 
@@ -317,16 +314,6 @@ ErrorCode handleDifficultyCommand(Command* cmd, GameSettings* settings, GameStat
 }
 
 ErrorCode handleQuitCommand(Command* cmd, GameSettings* settings, GameState* state){return OK;}
-
-ErrorCode handleResetCommand(Command* cmd, GameSettings* settings, GameState* state) {
-	if(cmd == NULL || settings == NULL || state == NULL) {
-		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
-		return NULL_POINTER_ERROR;
-	}
-
-	ErrorCode err = setInitialGameState(state);
-	return err;
-}
 
 ErrorCode handleUserColorCommand(Command* cmd, GameSettings* settings, GameState* state)
 {
@@ -370,20 +357,20 @@ ErrorCode handleMoveCommand(Command* cmd, GameSettings* settings, GameState* sta
 		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
 		return NULL_POINTER_ERROR;
 	}
-	// if move invalid get out. supposed to check it here or in the UI? cause error message happens in UI
+
+	// TODO: if move invalid get out. supposed to check it here or in the UI? cause error message happens in UI
 	MoveCommand* moveCmd = (MoveCommand*) cmd->data;
 	char soldierTypeToMove = state->board[moveCmd->originPoint.x][moveCmd->originPoint.y];
 	state->board[moveCmd->originPoint.x][moveCmd->originPoint.y] = SOLDIER_TYPE_EMPTY;
 	state->board[moveCmd->destinationPoint.x][moveCmd->destinationPoint.y] = soldierTypeToMove;
+	switchTurn(state);
 
 	if(settings->mode == SINGLE_PLAYER) {
-		// get and perform computer play
-	}
-	else {
-		state->turn =  state->turn == WHITE ? BLACK : WHITE;
+		// TODO: get and perform computer play
+		switchTurn(state);
 	}
 
-	// update undo array
+	// TODO: update undo array
 
 	return OK;
 }
@@ -394,8 +381,22 @@ ErrorCode handleStartCommand(Command* cmd, GameSettings* settings, GameState* st
 		return NULL_POINTER_ERROR;
 	}
 
-
 	ErrorCode err = setInitialGameState(state);
+	if(settings->mode == SINGLE_PLAYER && settings->color == BLACK) {
+		// TODO: play first computer turn using MINMAX
+		switchTurn(state);
+	}
+	return err;
+}
+
+
+ErrorCode handleResetCommand(Command* cmd, GameSettings* settings, GameState* state) {
+	if(cmd == NULL || settings == NULL || state == NULL) {
+		printErrorMessage(NULL_POINTER_ERROR_MESSAGE);
+		return NULL_POINTER_ERROR;
+	}
+
+	ErrorCode err = handleStartCommand(cmd, settings, state);
 	return err;
 }
 

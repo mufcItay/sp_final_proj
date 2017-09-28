@@ -7,6 +7,23 @@
 #include "CMDController.h"
 #include "Window.h"
 
+/*
+ * the function sets the relevant controller according to command line arguments
+ */
+void setController(int argc, char* argv[], UIController* controller) {
+	if(argc == EMPTY_ARGS_AMOUNT) {
+		setCMDController(controller);
+	}
+	else if(argv[UITYPE_INDEX][UI_PREFIX_INDEX] == UI_PREFIX) {
+		if(argv[UITYPE_INDEX][UI_CHAR_INDEX] == GUI_CONST) {
+			setGUIController(controller);
+		}
+		else if(argv[UITYPE_INDEX][UI_CHAR_INDEX] == CONSOLE_CONST) {
+			setCMDController(controller);
+		}
+	}
+}
+
 int main(int argc, char* argv[]) {
 	UIController controller;
 	GameSettings* gameSettings = createGameSettings();
@@ -17,8 +34,9 @@ int main(int argc, char* argv[]) {
 	if (gameState == NULL) {
 		return MEMORY_ERROR;
 	}
-	// set GUI or CMD controller according to command line args
-	setGUIController(&controller);
+
+	// set relevant controller according to command line args
+	setController(argc, argv, &controller);
 	void* ui = controller.init(gameSettings, gameState);
 	while (ui != NULL) {
 		// handle user input
@@ -39,3 +57,4 @@ int main(int argc, char* argv[]) {
 	destroyGameState(gameState);
 	return OK;
 }
+

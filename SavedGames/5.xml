@@ -3,15 +3,15 @@
 	<current_turn>1</current_turn>
 	<game_mode>1</game_mode>
 	<difficulty>2</difficulty>
-	<color>1</color>
+	<user_color>1</user_color>
 	<board>
-		<row_8>rnbqkbnr</row_8>
-		<row_7>mmmmmmmm</row_7>
+		<row_8>RNBQKBNR</row_8>
+		<row_7>MMM_____</row_7>
 		<row_6>________</row_6>
-		<row_5>________</row_5>
+		<row_5>___MMMMM</row_5>
 		<row_4>________</row_4>
 		<row_3>________</row_3>
-		<row_2>MMMMMMMM</row_2>
-		<row_1>RNBQKBNR</row_1>
+		<row_2>mmmmmmmm</row_2>
+		<row_1>rnbqkbnr</row_1>
 	</board>
 </game>

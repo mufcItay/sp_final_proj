@@ -34,7 +34,6 @@ struct gameBoard_t {
 	Window* selectedSoldier;
 	GameSettings* gameSettings;
 	GameState* gameState;
-	SDL_bool isGameSaved;
 	int dragDropIgnored;
 };
 
@@ -155,4 +154,8 @@ ErrorCode showComputerPawnPromotion(GameBoardStatuses promotionStatus);
  */
 ErrorCode updateGameStatusImage(GameBoardStatuses gameStatus, Window* statusBut);
 
+/*
+ * the function sets save button enabled state
+ */
+void setSaveEnabledState(Window* src, SDL_bool enabled);
 #endif

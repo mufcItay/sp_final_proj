@@ -235,10 +235,11 @@ Command* nextModeButtonHandler(Window* src, SDL_Event* event){
 		}
 		enum WindowView nextView = DIFFICULTY_SELECTION_VIEW;
 		if(modeSelectionView->selectedMode == MODE_SELECTION_WINDOW_TWO_PLAYERS_INDEX) {
+			MainWindow* mw = (MainWindow*) src->holdingWindow->holdingWindow->data;
+			setSaveEnabledState(mw->boardViewWindow,SDL_FALSE);
 			nextView = BOARD_VIEW;
 		}
 		setCurrentView(src->holdingWindow->holdingWindow, nextView);
-		cmd = createGameModeCommand(modeSelectionView->selectedMode);
 		return cmd;
 	}
 	return cmd;
